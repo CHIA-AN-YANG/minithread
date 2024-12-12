@@ -27,13 +27,12 @@ public class AccountService {
     }
 
     public Account getAccount(String username) {
-        // use try catch
         try {
             log.info("Account found: " + accountRepository.findByUsername(username));
             return accountRepository.findByUsername(username).get();
         } catch (Exception e) {
             log.error("Account not found with username: " + username, e);
-            throw new RuntimeException("Account not found with username: " + username);
+            throw new AccountNotFoundException(username);
         }
     }
 
@@ -101,7 +100,7 @@ public class AccountService {
             return accountRepository.save(existingAccount);
         }
         log.error("Account not found with username: " + username);
-        throw new RuntimeException("Account not found with username: " + username);
+        throw new AccountNotFoundException(username);
     }
 
     // add delete account
@@ -109,16 +108,30 @@ public class AccountService {
         if (accountRepository.findByUsername(username).isPresent()) {
             accountRepository.deleteByUsername(username);
         }
-        throw new RuntimeException("Account not found with username: " + username);
+        throw new AccountNotFoundException(username);
     }
 
     private void validatePasswordStrength(String password) {
         if (password == null || password.length() < 8) {
-            throw new RuntimeException("Password must be at least 8 characters long");
+            throw new PasswordMismatchException("Password must be at least 8 characters long");
         }
 
         if (!password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
-            throw new RuntimeException("Password must include uppercase, lowercase, number, and special character");
+            throw new PasswordMismatchException(
+                    "Password must include uppercase, lowercase, number, and special character");
+        }
+    }
+
+    public static class AccountNotFoundException extends RuntimeException {
+        public AccountNotFoundException(String username) {
+            super(String.format("Account not found with username: %s", username));
+        }
+    }
+
+    // create PasswordMismatchException
+    public class PasswordMismatchException extends RuntimeException {
+        public PasswordMismatchException(String message) {
+            super(message);
         }
     }
 }

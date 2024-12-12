@@ -4,7 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+
+import co.elastic.clients.elasticsearch._types.query_dsl.Like;
+
 
 @Entity
 public class Post {
@@ -13,6 +18,7 @@ public class Post {
     private Long id;
     @Setter
     @Getter
+    @Column(name = "content", columnDefinition = "text")
     private String content;
     @Setter
     @Getter
@@ -27,15 +33,38 @@ public class Post {
     @Column(name = "keywords")
     private String keywords;
 
+    @Setter
+    @Getter
+    @ManyToOne
+    @JoinColumn(name = "parent_post_id", nullable = true)
+    private Post parentPost;
+
+    @Setter
+    @Getter
+    @OneToMany(mappedBy = "parentPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Post> comments = new HashSet<>();
+
+    @Setter
+    @Getter
+    @ManyToMany
+    @JoinTable(name = "likes", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "account_id"))
+    private Set<Account> accounts = new HashSet<>();
+
     public Post() {
     }
 
-    public Post(String content, String author, String createdAt, String updatedAt, String keywords) {
+    public Post(String content, String author,
+            String createdAt, String updatedAt,
+            String keywords, Set<Account> accounts,
+            Post parentPost, Set<Post> comments) {
         this.content = content;
         this.author = author;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.keywords = keywords;
+        this.accounts = accounts;
+        this.parentPost = parentPost;
+        this.comments = comments;
     }
 
     @Override

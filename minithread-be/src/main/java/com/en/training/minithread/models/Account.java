@@ -1,18 +1,16 @@
 package com.en.training.minithread.models;
 
-import com.en.training.minithread.dto.AccountResponse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
+import co.elastic.clients.elasticsearch._types.query_dsl.Like;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "accounts") // Table name in the database
-@Getter
-@Setter
 public class Account {
 
     @Id
@@ -34,8 +32,14 @@ public class Account {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
+    @Setter
+    @Getter
+    @ManyToMany(mappedBy = "accounts")
+    private Set<Post> posts = new HashSet<>();
+
     // Default constructor
-    public Account() {}
+    public Account() {
+    }
 
     // Parameterized constructor
     public Account(String username, String email) {
