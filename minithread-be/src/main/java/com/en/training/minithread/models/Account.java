@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 public class Account {
 
@@ -32,8 +34,6 @@ public class Account {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Setter
-    @Getter
     @ManyToMany(mappedBy = "accounts")
     private Set<Post> posts = new HashSet<>();
 

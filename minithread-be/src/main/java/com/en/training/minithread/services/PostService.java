@@ -25,7 +25,7 @@ public class PostService {
             log.info("Post found: " + postRepository.findById(id));
             return this.postRepository.findById(id);
         } catch (Exception e) {
-            log.error("Post not found with id: " + id, e);
+            log.error("Cannot get post. Post not found with id: " + id, e);
             throw new PostNotFoundException(id);
         }
     }
@@ -36,7 +36,7 @@ public class PostService {
             newPost.setContent(content);
             newPost.setAuthor(author);
             Post createdPost = createRawPost(newPost);
-            log.info("Post created: " + createdPost);
+            log.info(String.format("Post created: %s", createdPost));
             return createdPost;
         } catch (Exception e) {
             log.error("Error creating post with content: " + content, e);
@@ -55,7 +55,7 @@ public class PostService {
             existingPost.setKeywords(updatedPost.getKeywords());
             return postRepository.save(existingPost);
         }
-        log.error("Post not found with id: " + id);
+        log.error("Cannot update post. Post not found with id: " + id);
         throw new PostNotFoundException(id);
     }
 
@@ -64,10 +64,10 @@ public class PostService {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
             Post existingPost = post.get();
-            existingPost.setParentpostId(parentId);
+            setParentPostById(id, parentId);
             return postRepository.save(existingPost);
         }
-        log.error("Post not found with id: " + id);
+        log.error("Cannot set parent post. Post not found with id: " + id);
         throw new PostNotFoundException(id);
     }
 

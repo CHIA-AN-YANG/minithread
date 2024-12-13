@@ -10,42 +10,33 @@ import java.util.Set;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Like;
 
-
+@Setter
+@Getter
 @Entity
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Setter
-    @Getter
+
     @Column(name = "content", columnDefinition = "text")
     private String content;
-    @Setter
-    @Getter
+
     private String author;
-    @Setter
-    @Getter
+
     private String createdAt;
-    @Setter
-    @Getter
+
     private String updatedAt;
-    @Getter
+
     @Column(name = "keywords")
     private String keywords;
 
-    @Setter
-    @Getter
     @ManyToOne
     @JoinColumn(name = "parent_post_id", nullable = true)
     private Post parentPost;
 
-    @Setter
-    @Getter
     @OneToMany(mappedBy = "parentPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> comments = new HashSet<>();
 
-    @Setter
-    @Getter
     @ManyToMany
     @JoinTable(name = "likes", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "account_id"))
     private Set<Account> accounts = new HashSet<>();

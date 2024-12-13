@@ -10,9 +10,14 @@ import java.util.Map;
 @RestController
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String home() {
         return "Welcome to the app! <a href='/oauth2/authorization/google'>Login with Google</a>";
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "Welcome to the app dashboard, you have successfully logged in";
     }
 
     @GetMapping("/user")
