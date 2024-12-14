@@ -16,3 +16,6 @@ sdk use java 23.0.1-amzn
 cd minithread/minithread-be
 mvn spring-boot:run
 ```
+
+### Check Swagger
+go to `http://localhost:8080/swagger-ui.html`
