@@ -11,3 +11,6 @@
 - [] find out how to start in VS code
 
 
+### Run in Visual Studio Code
+1. Install Extension Pack for Java from Microsoft and Spring Boot Extension Pack
+2. On the left tool bar, a hexgon Spring Boot icon will appear. Select Spring Boot Icon and Hit Play button
