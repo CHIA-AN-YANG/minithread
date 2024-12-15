@@ -1,6 +1,11 @@
 package com.en.training.minithread.controllers;
 
+import com.en.training.minithread.controllers.wsdtos.AccountWsDTO;
+import com.en.training.minithread.models.Account;
+import com.en.training.minithread.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,8 +17,11 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private AccountService accountService;
+
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody AccountWsDTO loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
@@ -22,31 +30,11 @@ public class AuthenticationController {
         );
 
         if (authentication.isAuthenticated()) {
-            return "User authenticated successfully!";
+            Account account = accountService.getAccount(loginRequest.getUsername());
+            return ResponseEntity.ok(account);
         } else {
-            return "Authentication failed!";
-        }
-    }
-
-    static class LoginRequest {
-        private String username  = "root";
-        private String password = "test";
-
-        // Getters and setters
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
+            // If authentication fails, return 401 with error message
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid email or password"));
         }
     }
 }

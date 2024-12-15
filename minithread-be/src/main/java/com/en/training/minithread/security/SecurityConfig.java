@@ -1,5 +1,7 @@
 package com.en.training.minithread.security;
 
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.web.SecurityFilterChain;
 
 
@@ -27,31 +30,31 @@ public class SecurityConfig {
         String client = clientId;
 
         // Restful from Claud.ai
-//        http.csrf(csrf -> csrf.disable())
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                )
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/public/**", "/error", "/home").permitAll() // publicly accessible api
-//                        .requestMatchers("/api/**").authenticated() // api for login user only
-//                )
-//                .oauth2ResourceServer(oauth2 -> oauth2
-//                        .jwt(Customizer.withDefaults())
-//                );
-
-        http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/home", "/error", "/public/**").permitAll()
-                        .anyRequest().authenticated()
+        http.csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization/google")
-                        .defaultSuccessUrl("/dashboard")
-                        .failureUrl("/login?error")
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/public/**", "/error", "/home").permitAll() // publicly accessible api
+                        .requestMatchers("/api/**").authenticated() // api for login user only
                 )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                        .permitAll()
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults())
                 );
+
+//        http.authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers("/home", "/error", "/public/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .oauth2Login(oauth2 -> oauth2
+//                        .loginPage("/oauth2/authorization/google")
+//                        .defaultSuccessUrl("/dashboard")
+//                        .failureUrl("/login?error")
+//                )
+//                .logout(logout -> logout
+//                        .logoutSuccessUrl("/")
+//                        .permitAll()
+//                );
 
         return http.build();
     }
@@ -67,16 +70,8 @@ public class SecurityConfig {
     }
 
 
-
-//    @Bean
-//    public JwtDecoder jwtDecoder(ClientRegistrationRepository registrations) {
-//        ClientRegistration clientRegistration = registrations.findByRegistrationId(clientId);
-//
-//        if (clientRegistration == null) {
-//            throw new IllegalArgumentException("Client registration not found");
-//        }
-//
-//        return NimbusJwtDecoder.withIssuerLocation(clientRegistration.getProviderDetails().getIssuerUri())
-//                .build();
-//    }
+    @Bean
+    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    }
 }
