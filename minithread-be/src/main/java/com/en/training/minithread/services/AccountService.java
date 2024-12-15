@@ -68,7 +68,7 @@ public class AccountService {
         if (account == null || StringUtils.isBlank(rawPassword)) {
             throw new IllegalArgumentException("Account and password must not be null");
         }
-
+        account.setUsername(account.getUsername());
         account.setPassword(passwordEncoder.encode(rawPassword));
 
         return accountRepository.save(account);
@@ -97,6 +97,8 @@ public class AccountService {
             existingAccount.setUsername(updatedAccount.getUsername());
             existingAccount.setEmail(updatedAccount.getEmail());
             existingAccount.setBio(updatedAccount.getBio());
+            existingAccount.setProfilePicture(updatedAccount.getProfilePicture());
+
             return accountRepository.save(existingAccount);
         }
         log.error("Account not found with username: " + username);

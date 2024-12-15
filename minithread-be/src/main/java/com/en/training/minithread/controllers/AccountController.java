@@ -18,7 +18,7 @@ public class AccountController {
     private AccountService accountService;
 
     // Get an account by ID
-    @GetMapping("/{id}")
+    @GetMapping("/{username}")
     public ResponseEntity<Account> getAccountById(@PathVariable String username, Principal principal) {
         try {
             Account account = accountService.getAccount(username);
@@ -35,7 +35,7 @@ public class AccountController {
     }
 
     // Update an account
-    @PutMapping("/{id}")
+    @PutMapping("/{username}")
     public ResponseEntity<Account> updateAccount(@PathVariable String username, @RequestBody Account account) {
         try {
             Account updatedAccount = accountService.updateAccount(username, account);
@@ -46,7 +46,7 @@ public class AccountController {
     }
 
     // Delete an account
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{username}")
     public ResponseEntity<Void> deleteAccount(@PathVariable String username) {
         accountService.deleteAccount(username);
         return ResponseEntity.noContent().build();

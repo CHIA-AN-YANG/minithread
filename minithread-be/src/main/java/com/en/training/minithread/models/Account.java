@@ -1,6 +1,7 @@
 package com.en.training.minithread.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
+@Data
 public class Account {
 
     @Id
@@ -33,6 +33,9 @@ public class Account {
 
     @Column(columnDefinition = "TEXT")
     private String bio;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> roles;
 
     @ManyToMany(mappedBy = "accounts")
     private Set<Post> posts = new HashSet<>();

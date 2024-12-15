@@ -1,6 +1,7 @@
 package com.en.training.minithread.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +11,8 @@ import java.util.Set;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Like;
 
-@Setter
-@Getter
 @Entity
+@Data
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
