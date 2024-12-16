@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### compiled code ###
+node_modules/
+frontend/out/
+
 ### STS ###
 .apt_generated
 .classpath
@@ -31,6 +35,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Next ###
+.next/
 
 ### Custom
 .DS_Store
