@@ -49,7 +49,7 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
+      <h2 className="text-xl font-bold mb-4">Login</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
