@@ -3,9 +3,12 @@ package com.en.training.minithread.controllers;
 import com.en.training.minithread.controllers.wsdtos.AccountWsDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.services.AccountService;
+import com.en.training.minithread.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +17,22 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
+
+    @Autowired
+    private TokenService tokenService;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private AccountService accountService;
+
 
     @Operation(summary = "Register a new account", description = "Register a new account to the system")
     @ApiResponses(value = {
@@ -53,5 +64,17 @@ public class AuthenticationController {
             // If authentication fails, return 401 with error message
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
+    }
+
+    @Operation(summary = "Token", description = "Get token for authentication")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token issued"),
+            @ApiResponse(responseCode = "403", description = "Account access is denied")
+    })
+    @PostMapping("/token")
+    public String token(Authentication authentication) {
+        String token = tokenService.generateToken(authentication);
+        LOG.debug("Token granted: {}", token);
+        return token;
     }
 }
