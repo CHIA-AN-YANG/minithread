@@ -1,8 +1,5 @@
 package com.en.training.minithread.controllers.wsdtos;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class AccountWsDTO {
     private String username;
     private String password;

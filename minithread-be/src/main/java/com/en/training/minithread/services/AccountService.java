@@ -2,12 +2,10 @@ package com.en.training.minithread.services;
 
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
-import com.en.training.minithread.models.LoadDatabase;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +17,8 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public AccountService(AccountRepository accountRepository,
+    public AccountService(
+            AccountRepository accountRepository,
             PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;

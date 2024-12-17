@@ -4,6 +4,9 @@ import com.en.training.minithread.models.Account;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.AccountService.AccountNotFoundException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +14,15 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/accounts")
-public class AccountController {
+@RequestMapping("/api/admin")
+public class AdminController {
 
     @Autowired
     private AccountService accountService;
 
-    // Get an account by ID
+    @Operation(summary = "Get an account by username", description = "Fetch an account by their unique username")
+    @ApiResponse(responseCode = "200", description = "Account found")
+    @ApiResponse(responseCode = "404", description = "Account not found")
     @GetMapping("/{username}")
     public ResponseEntity<Account> getAccountById(@PathVariable String username, Principal principal) {
         try {
@@ -28,13 +33,17 @@ public class AccountController {
         }
     }
 
-    // Create a new account
+    @Operation(summary = "Create an account", description = "Create a new account")
+    @ApiResponse(responseCode = "201", description = "Account created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input provided")
     @PostMapping
     public Account createAccount(@PathVariable String email, @PathVariable String name) {
         return accountService.createAccountIfNotExist(email, name);
     }
 
-    // Update an account
+    @Operation(summary = "Update an account", description = "Update an existing account")
+    @ApiResponse(responseCode = "200", description = "Account updated successfully")
+    @ApiResponse(responseCode = "404", description = "Account not found")
     @PutMapping("/{username}")
     public ResponseEntity<Account> updateAccount(@PathVariable String username, @RequestBody Account account) {
         try {
@@ -45,7 +54,9 @@ public class AccountController {
         }
     }
 
-    // Delete an account
+    @Operation(summary = "Delete an account", description = "Delete an existing account")
+    @ApiResponse(responseCode = "204", description = "Account deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Account not found")
     @DeleteMapping("/{username}")
     public ResponseEntity<Void> deleteAccount(@PathVariable String username) {
         accountService.deleteAccount(username);

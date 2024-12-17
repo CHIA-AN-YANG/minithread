@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/auth")
-public class AuthenticationController {
+@RequestMapping("api/auth")
+public class AuthController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private TokenService tokenService;
