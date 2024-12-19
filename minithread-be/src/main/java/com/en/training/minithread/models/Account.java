@@ -1,18 +1,17 @@
 package com.en.training.minithread.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.Like;
-
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
+@Data
 public class Account {
 
     @Id
@@ -28,11 +27,22 @@ public class Account {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @CreatedDate
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP")
+    private Date createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP")
+    private Date updatedAt;
+
     @Column(name = "profile_picture")
     private UUID profilePicture; // Nullable field for profile picture
 
     @Column(columnDefinition = "TEXT")
     private String bio;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> roles;
 
     @ManyToMany(mappedBy = "accounts")
     private Set<Post> posts = new HashSet<>();

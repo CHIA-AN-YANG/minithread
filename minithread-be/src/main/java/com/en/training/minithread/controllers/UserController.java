@@ -3,24 +3,21 @@ package com.en.training.minithread.controllers;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.util.Map;
 
 @RestController
-public class HomeController {
+@RequestMapping("api/user")
+public class UserController {
 
-    @GetMapping("/home")
-    public String home() {
-        return "Welcome to the app! <a href='/oauth2/authorization/google'>Login with Google</a>";
-    }
-
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "Welcome to the app dashboard, you have successfully logged in";
-    }
-
-    @GetMapping("/user")
+    @Operation(summary = "Get user details", description = "Fetch the details of the currently logged in user")
+    @ApiResponse(responseCode = "200", description = "User details found")
+    @GetMapping("/details")
     public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
         return principal.getAttributes();
     }

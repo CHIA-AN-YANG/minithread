@@ -1,3 +1,14 @@
+### Set up rsa keys
+Go to `certs` folder in `resources`
+Run the following script
+
+```bash
+openssl genrsa -out keypair.pem 2048
+openssl rsa -in keypair.pem -pubout -out public.pem
+openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in keypair.pem -out private.pem
+```
+
+
 ### Run in Visual Studio Code
 1. Install Extension Pack for Java from Microsoft and Spring Boot Extension Pack
 2. Please check and make sure you have the correct Java version (23)
@@ -16,3 +27,6 @@ sdk use java 23.0.1-amzn
 cd minithread/minithread-be
 mvn spring-boot:run
 ```
+
+### Check Swagger
+go to `http://localhost:8080/swagger-ui.html`

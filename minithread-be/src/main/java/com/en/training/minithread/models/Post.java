@@ -1,18 +1,14 @@
 package com.en.training.minithread.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.Like;
-
-@Setter
-@Getter
 @Entity
+@Data
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,14 +17,20 @@ public class Post {
     @Column(name = "content", columnDefinition = "text")
     private String content;
 
-    private String author;
+    @CreatedDate
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP")
+    private Date createdAt;
 
-    private String createdAt;
+    @LastModifiedDate
+    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP")
+    private Date updatedAt;
 
-    private String updatedAt;
-
-    @Column(name = "keywords")
+    @Column()
     private String keywords;
+
+    @ManyToOne
+    @JoinColumn(name = "account", table="account", nullable = false)
+    private Account author;
 
     @ManyToOne
     @JoinColumn(name = "parent_post_id", nullable = true)
@@ -44,14 +46,11 @@ public class Post {
     public Post() {
     }
 
-    public Post(String content, String author,
-            String createdAt, String updatedAt,
+    public Post(String content, Account author,
             String keywords, Set<Account> accounts,
             Post parentPost, Set<Post> comments) {
         this.content = content;
         this.author = author;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.keywords = keywords;
         this.accounts = accounts;
         this.parentPost = parentPost;
@@ -72,7 +71,7 @@ public class Post {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, content, author);
+        return Objects.hash(id, author);
     }
 
     @Override
