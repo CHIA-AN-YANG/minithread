@@ -1,6 +1,6 @@
 FROM node:20.18.0-alpine
 
-ENV NEXT_PUBLIC_API_PORT=4000
+ENV NEXT_PUBLIC_API_PORT=8080
 ENV NEXT_PUBLIC_API_URL=http://localhost
 
 # Set working directory

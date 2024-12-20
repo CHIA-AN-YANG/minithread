@@ -1,22 +1,31 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
-add .env file
-use node v20.18
+1. add .env file
+2. use node v20.18
 ```bash
 nvm use v20.18.0
 ```
+3. install next (I develop this project with 15.0.2)
+```bash
+npm install -g next@15.0.2
+```
+4. install dependencies
 ```bash
 npm install --force
+# or
 yarn install
 ```
 
-Run the development server:
+4. Run the development server:
+**If next cannot be found, try adding "npx" at the beginning**
 
 ```bash
 npm run dev
 # or
 yarn dev
+# or 
+npx next dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
