@@ -6,10 +6,10 @@ import { postAuthToken } from '@/app/api/authAdaptor';
 const Cookies = require('js-cookie');
 const TOKEN_COOKIE = 'auth_token';
 
-export const getAuth = (code: string): AppThunk => (dispatch) => {
+export const getAuth = (formData: FormData): AppThunk => (dispatch) => {
   try {
     dispatch(setStatusLoading());
-    postAuthToken(code).then((response) => {
+    postAuthToken(formData).then((response) => {
 
       if (response.status === 200 && (<AuthResponse>response).data.valid === true) {
         dispatch(getAuthSuccess((<AuthResponse>response).data.token!));

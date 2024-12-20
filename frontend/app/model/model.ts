@@ -1,8 +1,10 @@
 export interface UserData {
   username: string;
-  photo: string;
-  desc: string;
-  quote: string;
+  email: string;
+  profilePicture: string;
+  bio: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AuthState {

@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import { getAuth } from '../store/features/user/actions/authActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectStatus, selectError } from '../store/features/user/selectors/authSelectors';
+import { AppDispatch } from '../store/store';
+import router from 'next/router';
+import { EntityStatus } from '../model/model';
 
 interface LoginFormData {
   email: string;
@@ -11,9 +18,28 @@ const LoginForm: React.FC = () => {
     email: '',
     password: '',
   });
-
+  const dispatch = useDispatch<AppDispatch>();
+  const status = useSelector(selectStatus) as string;
+  const apiErrorMsg = useSelector(selectError) as string;
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (status === EntityStatus.SUCCESS) {
+      router.push('/profile');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (apiErrorMsg && apiErrorMsg.includes('401')) {
+      setErrorMessage("The code you enter is not valid.");
+    }
+  }, [apiErrorMsg]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -24,6 +50,18 @@ const LoginForm: React.FC = () => {
       [name]: value,
     }));
   };
+
+  if (status === EntityStatus.LOADING || status === EntityStatus.SUCCESS) {
+    return (
+      <>
+        <div className="loader"></div>
+        <p className="loading-msg">{
+          (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "code authenticated..."
+        }</p>
+      </>);
+  }
+
+  if (!isClient) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,15 +74,10 @@ const LoginForm: React.FC = () => {
       return;
     }
 
-    try {
-      const response = await axios.post('/login', formData);
-      if (response.status === 200 || response.status === 201) {
-        setSuccessMessage('Login successful!');
-        setFormData({ email: '', password: '' });
-      }
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || 'An error occurred during login.');
-    }
+    const formDataObj = new FormData();
+    formDataObj.append('email', formData.email);
+    formDataObj.append('password', formData.password);
+    dispatch(getAuth(formDataObj));
   };
 
   return (
@@ -80,7 +113,7 @@ const LoginForm: React.FC = () => {
           Login
         </button>
       </form>
-      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage}</p>}
+      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}
       {successMessage && <p className="mt-4 text-sm text-green-500">{successMessage}</p>}
     </div>
   );

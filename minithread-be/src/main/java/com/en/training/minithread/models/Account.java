@@ -44,8 +44,8 @@ public class Account {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
 
-    @ManyToMany(mappedBy = "accounts")
-    private Set<Post> posts = new HashSet<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Post> posts;
 
     // Default constructor
     public Account() {

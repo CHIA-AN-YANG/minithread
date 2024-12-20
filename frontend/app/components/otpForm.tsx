@@ -112,7 +112,7 @@ const OTPForm: React.FC = () => {
   };
 
   const submitCode = async (event: React.FormEvent, code: string) => {
-    dispatch(getAuth(code));
+    // do nothing;
   };
 
   const setInputFocus = (prevInputs: CustomInput[], index: number) => {

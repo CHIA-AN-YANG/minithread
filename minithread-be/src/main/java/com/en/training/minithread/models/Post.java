@@ -28,8 +28,8 @@ public class Post {
     @Column()
     private String keywords;
 
-    @ManyToOne
-    @JoinColumn(name = "account", table="account", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author", nullable = false)
     private Account author;
 
     @ManyToOne

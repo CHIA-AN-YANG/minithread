@@ -71,6 +71,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Token issued"),
             @ApiResponse(responseCode = "403", description = "Account access is denied")
     })
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/token")
     public String token(Authentication authentication) {
         String token = tokenService.generateToken(authentication);
