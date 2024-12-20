@@ -52,10 +52,10 @@ const UserProfile = () => {
             <section className='left-panel' style={(imageLoaded || window.location.hostname.includes('netlify')) ? {} : { filter: 'brightness(0.5)' }}>
 
               {window.location.hostname.includes('netlify') ?
-                <img src={user.photo} alt={user.username + "\'s photo"} />
+                <img src={user.profilePicture} alt={user.username + "\'s profilePicture"} />
                 :
                 <Image
-                  src={user.photo}
+                  src={user.profilePicture}
                   alt={user.username + "\'s photo"}
                   placeholder='empty'
                   width={400}
@@ -72,9 +72,7 @@ const UserProfile = () => {
               </div>
 
               <div className="intro">
-                <p><em>&ldquo;{user.quote}&rdquo;</em></p>
-                <br />
-                <p>{user.desc}</p>
+                <p>{user.bio}</p>
               </div>
 
               <div className='ctas'>

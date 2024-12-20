@@ -6,6 +6,10 @@ use node v20.18
 ```bash
 nvm use v20.18.0
 ```
+```bash
+npm install --force
+yarn install
+```
 
 Run the development server:
 
