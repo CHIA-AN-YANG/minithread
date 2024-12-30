@@ -31,7 +31,7 @@ const UserProfile = () => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    router.push('/');
+    router.push('/login');
   };
 
   if (!isClient) return null;
@@ -44,18 +44,35 @@ const UserProfile = () => {
   );
 
   if (status === EntityStatus.SUCCESS) {
-    if (!user) router.push('/404');
+    if (!user) { router.push('/404'); };
     return (
       <div className='user-profile-panel'>
-        {user &&
+        {user ?
           <>
-            <section className='left-panel' style={(imageLoaded || window.location.hostname.includes('netlify')) ? {} : { filter: 'brightness(0.5)' }}>
+            <section className='left-panel'>
+              <div>
+                <h3>id: {user.username}!</h3>
+                <h3 className='welcome-txt'><em>name: Anna Yang{user.name}</em></h3>
+                <hr />
+              </div>
 
-              {window.location.hostname.includes('netlify') ?
-                <img src={user.profilePicture} alt={user.username + "\'s profilePicture"} />
-                :
+              <div className="intro">
+                <p>{user.bio} is Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, consequuntur.</p>
+              </div>
+
+              <div className="ctas" role="button" onClick={() => handleLogout()}>
+                <span className="secondary">logout</span>
+              </div>
+            </section>
+            <section className='right-panel'>
+              <Image src="/images/default-profile-picture.jpg"
+                alt={user.username + "\'s profilePicture"}
+                width={100}
+                height={100}
+              />
+              {(user.profilePicture?.length) && imageLoaded &&
                 <Image
-                  src={user.profilePicture}
+                  src={user.profilePicture!}
                   alt={user.username + "\'s photo"}
                   placeholder='empty'
                   width={400}
@@ -65,27 +82,10 @@ const UserProfile = () => {
                 />
               }
             </section>
-            <section className='right-panel'>
-              <div>
-                <h2 className='welcome-txt'>Welcome, {user.username}!</h2>
-                <hr />
-              </div>
-
-              <div className="intro">
-                <p>{user.bio}</p>
-              </div>
-
-              <div className='ctas'>
-                <a className='primary' onClick={() => handleLogout()}>Logout</a>
-              </div>
-            </section>
-          </>
-        }
+          </> : <div className="loader"></div>}
       </div >
     );
   }
-
-  return <div className="loader"></div>;
 };
 
 export default UserProfile;

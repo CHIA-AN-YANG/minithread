@@ -32,4 +32,4 @@ mvn spring-boot:run
 ```
 
 ### Check Swagger
-go to `http://localhost:8080/swagger-ui/index.html`
+- Navigate to `http://localhost:8080/swagger-ui/index.html`

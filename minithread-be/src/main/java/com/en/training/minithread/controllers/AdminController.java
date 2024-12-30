@@ -37,8 +37,12 @@ public class AdminController {
     @ApiResponse(responseCode = "201", description = "Account created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input provided")
     @PostMapping
-    public Account createAccount(@PathVariable String email, @PathVariable String name) {
-        return accountService.createAccountIfNotExist(email, name);
+    public Account createAccount(
+            @PathVariable String username,
+            @PathVariable String password,
+            @PathVariable String email
+    ) {
+        return accountService.createAccountIfNotExist(username, password, email);
     }
 
     @Operation(summary = "Update an account", description = "Update an existing account")

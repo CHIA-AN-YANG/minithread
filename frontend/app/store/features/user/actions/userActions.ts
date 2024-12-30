@@ -1,7 +1,7 @@
 import { getVerifiedUser } from '@/app/api/authAdaptor';
-import { UserResponse, UserData } from '@/app/model/model';
+import { UserData } from '@/app/model/model';
 import { AppThunk } from '@/app/store/store';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { setStatusLoading, setUser, setStatusSuccess, clearUser, setError, setStatusError, setStatusIdle } from '../reducers/authSliceReducer';
 
 const Cookies = require('js-cookie');
@@ -16,8 +16,9 @@ export const getUser = (): AppThunk => async (dispatch) => {
       return;
     }
     getVerifiedUser(token).then((response) => {
-      if (response.status === 200) {
-        dispatch(getUserSuccess((<UserResponse>response).data));
+      if (response.status === 200 || response.status === 201) {
+        console.log('response', JSON.stringify(response, null, 2));
+        dispatch(getUserSuccess((<AxiosResponse<UserData>>response).data));
         return;
       } else {
         dispatch(getUserFail((<AxiosError>response).message || 'Failed to fetch user'));

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { getAuth } from '../store/features/user/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectStatus, selectError } from '../store/features/user/selectors/authSelectors';
 import { AppDispatch } from '../store/store';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { EntityStatus } from '../model/model';
 
 interface LoginFormData {
@@ -18,6 +18,7 @@ const LoginForm: React.FC = () => {
     email: '',
     password: '',
   });
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const status = useSelector(selectStatus) as string;
   const apiErrorMsg = useSelector(selectError) as string;
@@ -85,9 +86,9 @@ const LoginForm: React.FC = () => {
       <h2 className="text-xl font-bold mb-4">Login</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">email:</label>
           <input
-            type="email"
+            type="text"
             id="email"
             name="email"
             value={formData.email}

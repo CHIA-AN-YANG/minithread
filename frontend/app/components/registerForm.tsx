@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { registerUser } from '../api/authAdaptor';
 
 interface FormData {
-  name: string;
   username: string;
   email: string;
   password: string;
@@ -10,7 +10,6 @@ interface FormData {
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
     username: '',
     email: '',
     password: '',
@@ -35,16 +34,20 @@ const RegisterForm: React.FC = () => {
     setSuccessMessage('');
 
     // Basic validation
-    if (!formData.name || !formData.username || !formData.email || !formData.password) {
+    if (!formData.username || !formData.email || !formData.password) {
       setErrorMessage('All fields are required.');
       return;
     }
 
     try {
-      const response = await axios.post('api/register', formData);
+      const data = new FormData();
+      data.append('username', formData.username);
+      data.append('email', formData.email);
+      data.append('password', formData.password);
+      const response = await registerUser(data);
       if (response.status === 200 || response.status === 201) {
         setSuccessMessage('Registration successful!');
-        setFormData({ name: '', username: '', email: '', password: '' });
+        setFormData({ username: '', email: '', password: '' });
       }
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || 'An error occurred during registration.');
@@ -55,17 +58,6 @@ const RegisterForm: React.FC = () => {
     <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-xl font-bold mb-4">Register</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username:</label>
           <input

@@ -1,8 +1,8 @@
-import { AuthResponse } from '@/app/model/model';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { setError, setStatusLoading, setStatusError, setStatusSuccess } from '../reducers/authSliceReducer';
 import { AppThunk } from '../../../store';
 import { postAuthToken } from '@/app/api/authAdaptor';
+import { AuthData } from '@/app/model/model';
 const Cookies = require('js-cookie');
 const TOKEN_COOKIE = 'auth_token';
 
@@ -11,11 +11,9 @@ export const getAuth = (formData: FormData): AppThunk => (dispatch) => {
     dispatch(setStatusLoading());
     postAuthToken(formData).then((response) => {
 
-      if (response.status === 200 && (<AuthResponse>response).data.valid === true) {
-        dispatch(getAuthSuccess((<AuthResponse>response).data.token!));
-        return;
-      } else if ((<AuthResponse>response).data && (<AuthResponse>response).data.valid === false) {
-        dispatch(getAuthFail('Invalid code'));
+      if (response.status === 200) {
+        console.log('response', JSON.stringify(response, null, 2));
+        dispatch(getAuthSuccess((<AxiosResponse<AuthData>>response).data));
         return;
       } else {
         dispatch(getAuthFail((<AxiosError>response).message || 'authentication failed'));
@@ -27,8 +25,8 @@ export const getAuth = (formData: FormData): AppThunk => (dispatch) => {
   }
 };
 
-export const getAuthSuccess = (token: string): AppThunk => (dispatch) => {
-  Cookies.set(TOKEN_COOKIE, token, { sameSite: 'strict', secure: true });
+export const getAuthSuccess = (data: AuthData): AppThunk => (dispatch) => {
+  Cookies.set(TOKEN_COOKIE, data.token!, { sameSite: 'strict', secure: true });
   dispatch(setStatusSuccess());
 };
 

@@ -1,10 +1,23 @@
 export interface UserData {
   username: string;
   email: string;
-  profilePicture: string;
-  bio: string;
-  createdAt: Date;
-  updatedAt: Date;
+  name?: string;
+  profilePicture?: string;
+  bio?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface PostData {
+  id: string;
+  author: string;
+  content: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  parentPost?: string;
+  comments?: PostData[];
+  likesUser?: string[];
+  likesCount?: number;
 }
 
 export interface AuthState {
@@ -14,16 +27,12 @@ export interface AuthState {
   status: EntityStatus;
 }
 
-export interface AuthResponse extends Response {
-  data: {
-    valid: boolean,
-    token?: string
-  }
+export interface AuthData {
+  valid: boolean,
+  token?: string,
+  message?: string
 }
 
-export interface UserResponse extends Response {
-  data: UserData
-}
 
 export type EntityState<T> = {
   value: T | null;

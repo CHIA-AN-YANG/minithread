@@ -1,13 +1,19 @@
 package com.en.training.minithread.controllers;
 
 import com.en.training.minithread.controllers.dtos.CreatePostRequest;
+import com.en.training.minithread.controllers.dtos.PostDTO;
+import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.services.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,10 +21,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
+@Tag(name = "Posts", description = "Operations for posts")
 @RequestMapping("/api/posts")
 public class PostController {
 
@@ -75,12 +87,18 @@ public class PostController {
       @ApiResponse(responseCode = "400", description = "Invalid input provided")
   })
   @PostMapping()
-  public Post createPost(@RequestBody CreatePostRequest request) {
+  public ResponseEntity<PostDTO> createPost(@RequestBody CreatePostRequest request, Authentication authentication) {
     final String postContent = request.getContent();
-    final String authorId = request.getAuthor();
-
-    Post createdPost = postService.createPost(postContent, authorId);
-    return createdPost;
+    if (authentication == null || !authentication.isAuthenticated()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    final String username = jwt.getClaim("sub");
+    final Post post = postService.createPost(postContent, username);
+    PostDTO postDTO = postService.mapPostToPostDTO(post);
+    return ResponseEntity.status(HttpStatus.CREATED).body(postDTO);
   }
 
   @Operation(summary = "Update a post", description = "Update an existing post in the system")

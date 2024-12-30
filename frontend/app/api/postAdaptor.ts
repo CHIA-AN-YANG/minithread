@@ -1,9 +1,27 @@
 import axios, { AxiosError } from 'axios';
-import { AuthResponse, UserResponse } from '../model/model';
+import { PostData } from '../model/model';
+import { getApiUrl } from './util';
 
-let apiUrl: string;
-if (process.env.NEXT_PUBLIC_API_PORT == undefined || process.env.NEXT_PUBLIC_API_PORT == 'undefined') {
-  apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
-} else {
-  apiUrl = process.env.NEXT_PUBLIC_API_URL + ":" + process.env.NEXT_PUBLIC_API_PORT;
+const apiUrl = getApiUrl();
+
+export const getPost = async (postId: string): Promise<PostData | AxiosError> => {
+  return await axios.get(apiUrl + '/api/posts/' + postId, {
+    headers: {
+      'Cache-Control': 'no-cache, must-revalidate',
+      'Content-Type': 'application/json',
+    }
+  }).catch((error) => {
+    return error
+  });
+}
+
+const postPost = async (formData: FormData): Promise<PostData | AxiosError> => {
+  return await axios.post(apiUrl + '/api/posts', formData, {
+    headers: {
+      'Cache-Control': 'no-cache, must-revalidate',
+      'Content-Type': 'application/json',
+    }
+  }).catch((error) => {
+    return error
+  });
 }

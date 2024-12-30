@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +14,6 @@ import java.util.UUID;
 @Entity
 @Data
 public class Account {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -21,19 +21,22 @@ public class Account {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, length = 255)
     private String email;
 
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(length = 50)
+    private String name;
+
     @CreatedDate
-    @Column(name = "createdAt", columnDefinition = "TIMESTAMP")
-    private Date createdAt;
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP")
-    private Date updatedAt;
+    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime updatedAt;
 
     @Column(name = "profile_picture")
     private UUID profilePicture; // Nullable field for profile picture

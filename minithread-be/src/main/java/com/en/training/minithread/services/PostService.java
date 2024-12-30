@@ -1,5 +1,6 @@
 package com.en.training.minithread.services;
 
+import com.en.training.minithread.controllers.dtos.PostDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.en.training.minithread.models.Post;
@@ -114,6 +115,32 @@ public class PostService {
             return "Post deleted successfully";
         }
         throw new PostNotFoundException(id);
+    }
+
+    public PostDTO mapPostToPostDTO(Post post) {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId(post.getId().toString());
+        if (post.getParentPost() != null) {
+            postDTO.setParentPost(post.getParentPost().getId().toString());
+        }
+        if (post.getContent() != null) {
+            postDTO.setContent(post.getContent());
+        }
+        if (post.getComments() != null) {
+            List<PostDTO> commentsList = post.getComments().stream().map(this::mapPostToPostDTO).toList();
+            ArrayList<PostDTO> arrayList = new ArrayList<>(commentsList);
+            postDTO.setComments(arrayList);
+        }
+        if (post.getAuthor() != null) {
+            postDTO.setAuthor(post.getAuthor().getUsername());
+        }
+        if (post.getCreatedAt() != null) {
+            postDTO.setCreatedAt(post.getCreatedAt().toString());
+        }
+        if (post.getUpdatedAt() != null) {
+            postDTO.setUpdatedAt(post.getUpdatedAt().toString());
+        }
+        return postDTO;
     }
 
     public static class PostNotFoundException extends RuntimeException {

@@ -7,7 +7,6 @@ export default function ProfilePage() {
 
   return (
     <div className="page">
-      <h1>User Profile</h1>
       <main className="main">
         <Provider store={store}>
           <UserProfile />

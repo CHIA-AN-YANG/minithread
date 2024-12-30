@@ -34,7 +34,7 @@ public class AccountService {
         }
     }
 
-    public Account createAccountIfNotExist(String username, String rawPassword) {
+    public Account createAccountIfNotExist(String username, String rawPassword, String email) {
         try {
             Optional<Account> account = accountRepository.findByUsername(username);
             if (account.isPresent()) {
@@ -42,7 +42,7 @@ public class AccountService {
             } else {
                 Account newAccount = new Account();
                 newAccount.setUsername(username);
-                Account createdAccount = createAccount(newAccount, rawPassword);
+                Account createdAccount = createAccount(newAccount, rawPassword, email);
                 log.info("Account created: " + createdAccount);
                 return createdAccount;
             }
@@ -61,13 +61,14 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
-    public Account createAccount(Account account, String rawPassword) {
+    public Account createAccount(Account account, String rawPassword, String email) {
 
         if (account == null || StringUtils.isBlank(rawPassword)) {
             throw new IllegalArgumentException("Account and password must not be null");
         }
         account.setUsername(account.getUsername());
         account.setPassword(passwordEncoder.encode(rawPassword));
+        account.setEmail(email);
 
         return accountRepository.save(account);
     }
