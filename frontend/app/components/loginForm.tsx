@@ -9,13 +9,13 @@ import { useRouter } from 'next/navigation';
 import { EntityStatus } from '../model/model';
 
 interface LoginFormData {
-  email: string;
+  username: string;
   password: string;
 }
 
 const LoginForm: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
+    username: '',
     password: '',
   });
   const router = useRouter();
@@ -38,7 +38,7 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     if (apiErrorMsg && apiErrorMsg.includes('401')) {
-      setErrorMessage("The code you enter is not valid.");
+      setErrorMessage("The username or passoword you entered is invalid.");
     }
   }, [apiErrorMsg]);
 
@@ -70,13 +70,13 @@ const LoginForm: React.FC = () => {
     setSuccessMessage('');
 
     // Basic validation
-    if (!formData.email || !formData.password) {
+    if (!formData.username || !formData.password) {
       setErrorMessage('All fields are required.');
       return;
     }
 
     const formDataObj = new FormData();
-    formDataObj.append('email', formData.email);
+    formDataObj.append('username', formData.username);
     formDataObj.append('password', formData.password);
     dispatch(getAuth(formDataObj));
   };
@@ -86,18 +86,18 @@ const LoginForm: React.FC = () => {
       <h2 className="text-xl font-bold mb-4">Login</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">email:</label>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-500">username</label>
           <input
             type="text"
-            id="email"
-            name="email"
-            value={formData.email}
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password:</label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-500">password</label>
           <input
             type="password"
             id="password"

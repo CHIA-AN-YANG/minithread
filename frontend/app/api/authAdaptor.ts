@@ -5,7 +5,7 @@ import { getApiUrl } from './util';
 const apiUrl = getApiUrl();
 export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<AuthData> | AxiosError> => {
 
-  const username = formData.get('email') as string;
+  const username = formData.get('username') as string;
   const password = formData.get('password') as string;
   const basicAuth = `Basic ${btoa(`${username}:${password}`)}`;
 

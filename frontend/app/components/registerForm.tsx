@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { registerUser } from '../api/authAdaptor';
+import { useSelector } from 'react-redux';
+import { selectError } from '../store/features/user/selectors/authSelectors';
 
 interface FormData {
   username: string;
@@ -17,6 +19,7 @@ const RegisterForm: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const apiErrorMsg = useSelector(selectError) as string;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -27,6 +30,12 @@ const RegisterForm: React.FC = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (apiErrorMsg && apiErrorMsg.includes('401')) {
+      setErrorMessage("The code you enter is not valid.");
+    }
+  }, [apiErrorMsg]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +68,7 @@ const RegisterForm: React.FC = () => {
       <h2 className="text-xl font-bold mb-4">Register</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username:</label>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-500">username</label>
           <input
             type="text"
             id="username"
@@ -70,7 +79,7 @@ const RegisterForm: React.FC = () => {
           />
         </div>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-500">email</label>
           <input
             type="email"
             id="email"
@@ -81,7 +90,7 @@ const RegisterForm: React.FC = () => {
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password:</label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-500">password</label>
           <input
             type="password"
             id="password"
@@ -97,7 +106,7 @@ const RegisterForm: React.FC = () => {
           Register
         </button>
       </form>
-      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage}</p>}
+      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}
       {successMessage && <p className="mt-4 text-sm text-green-500">{successMessage}</p>}
     </div>
   );
