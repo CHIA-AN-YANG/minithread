@@ -71,7 +71,7 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
             className="flex items-center justify-center px-1 py-1 text-lg"
             aria-label="reply"
           >
-            <i className="lni lni-share-1  lni-lg text-slate-500 hover:text-blue-600"
+            <i className="lni lni-message-3-text  lni-lg text-slate-500 hover:text-blue-600"
             ></i>
           </button>
           <button

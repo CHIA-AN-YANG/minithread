@@ -51,13 +51,13 @@ const UserProfile = () => {
           <>
             <section className='left-panel'>
               <div>
-                <h3>id: {user.username}!</h3>
-                <h3 className='welcome-txt'><em>name: Anna Yang{user.name}</em></h3>
+                <h3>{user.username}!</h3>
+                <h3 className='welcome-txt'><em>{user.name}</em></h3>
                 <hr />
               </div>
 
               <div className="intro">
-                <p>{user.bio} is Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, consequuntur.</p>
+                <p>{user.bio}</p>
               </div>
 
               <div className="ctas" role="button" onClick={() => handleLogout()}>

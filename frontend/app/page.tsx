@@ -3,6 +3,7 @@ import OTPForm from './components/otpForm';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import Post from './components/post';
+import InputBar from './components/InputBar';
 
 const commentList = [
   {
@@ -23,6 +24,7 @@ export default function Home() {
             createdAt="2021-08-01T12:00:00Z"
             content="example post The component now uses Tailwind CSS for styling. Tailwind's utility classes are applied directly to the elements for a clean and responsive design. Let me know if you'd like further customizations!"
             commentList={commentList}></Post>
+          <InputBar />
         </Provider>
       </main>
     </div>
