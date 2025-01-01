@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-
+interface InputBarProps {
+  parent: string;
+}
 
 
 const InputBar: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
+  const [parent, setParent] = useState<string>(''); // Parent thread id
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleSend = () => {
+    // send post => view personal page
+    // send comment => view latest thread page
     if (inputValue.trim()) {
       console.log('Message sent:', inputValue);
       setInputValue('');

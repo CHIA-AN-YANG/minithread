@@ -27,11 +27,22 @@ export const registerUser = async (formData: FormData): Promise<AxiosResponse<Us
 }
 
 export const getVerifiedUser = async (token: string): Promise<AxiosResponse<UserData> | AxiosError> => {
-  return await axios.get(apiUrl + '/api/user/detail', {
+  return await axios.get(apiUrl + '/api/me/detail', {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Content-Type': 'application/json',
+    }
+  }).catch((error) => {
+    return error
+  });
+}
+
+export const updateUser = async (formData: FormData, token: string): Promise<AxiosResponse<UserData> | AxiosError> => {
+  return await axios.put(apiUrl + '/api/me/update', formData, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
     }
   }).catch((error) => {
     return error
