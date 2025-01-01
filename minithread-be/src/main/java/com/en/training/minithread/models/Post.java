@@ -6,7 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -22,17 +22,17 @@ public class Post {
 
     @CreatedDate
     @Column(name = "createdAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updatedAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column()
     private String keywords;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author", referencedColumnName = "username",  nullable = false)
+    @JoinColumn(name = "author", referencedColumnName = "username", nullable = false)
     private Account author;
 
     @ManyToOne

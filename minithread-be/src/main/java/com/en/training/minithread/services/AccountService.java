@@ -1,5 +1,7 @@
 package com.en.training.minithread.services;
 
+import com.en.training.minithread.controllers.dtos.AccountDTO;
+import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -88,15 +91,20 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account updateAccount(String username, Account updatedAccount) {
+    public Account updateAccount(String username, UpdateUserRequest request) {
 
         Optional<Account> account = accountRepository.findByUsername(username);
         if (account.isPresent()) {
             Account existingAccount = account.get();
-            existingAccount.setUsername(updatedAccount.getUsername());
-            existingAccount.setEmail(updatedAccount.getEmail());
-            existingAccount.setBio(updatedAccount.getBio());
-            existingAccount.setProfilePicture(updatedAccount.getProfilePicture());
+
+            if (request.getBio() != null)
+                existingAccount.setBio(request.getBio());
+            if (request.getEmail() != null)
+                existingAccount.setEmail(request.getEmail());
+            if (request.getName() != null)
+                existingAccount.setName(request.getName());
+            if (request.getProfilePicture() != null)
+                existingAccount.setProfilePicture(UUID.fromString(request.getProfilePicture()));
 
             return accountRepository.save(existingAccount);
         }
@@ -110,6 +118,15 @@ public class AccountService {
             accountRepository.deleteByUsername(username);
         }
         throw new AccountNotFoundException(username);
+    }
+
+    public AccountDTO mapAccountToAccountDTO(Account account) {
+        AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
+        accountDTO.setEmail(account.getEmail());
+        accountDTO.setBio(account.getBio());
+        accountDTO.setCreatedAt(account.getCreatedAt().toString());
+        accountDTO.setUpdatedAt(account.getUpdatedAt().toString());
+        return accountDTO;
     }
 
     private void validatePasswordStrength(String password) {

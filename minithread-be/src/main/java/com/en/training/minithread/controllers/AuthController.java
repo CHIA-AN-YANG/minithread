@@ -1,8 +1,11 @@
 package com.en.training.minithread.controllers;
 
+import com.en.training.minithread.controllers.dtos.AccountDTO;
+import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.TokenService;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -77,4 +81,19 @@ public class AuthController {
                     .body(response);
         }
     }
+
+//    public ResponseEntity<?> handleAuth(
+//            Authentication authentication) {
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//        if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+//        final String username = jwt.getClaim("sub");
+//        if (StringUtils.isBlank(username)) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }
+//        return username;
+//    }
 }
