@@ -1,6 +1,7 @@
 package com.en.training.minithread.controllers;
 
 import com.en.training.minithread.controllers.dtos.CreatePostRequest;
+import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.PostDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
@@ -46,9 +47,13 @@ public class PostController {
       @ApiResponse(responseCode = "404", description = "post not found", content = @Content)
   })
   @GetMapping("/{id}")
-  public Post getPostById(@PathVariable Long id) {
+  public ResponseEntity<PostDTO> getPostById(@PathVariable Long id) {
     Optional<Post> post = postService.getPost(id);
-    return post.orElse(null);
+    if(post.isPresent()) {
+      PostDTO postDTO = postService.mapPostToPostDTO(post.get());
+      return ResponseEntity.ok(postDTO);
+    }
+    return ResponseEntity.notFound().build();
   }
 
   // GET /posts?page=0&size=5&sortBy=title&sortDir=desc
@@ -73,12 +78,24 @@ public class PostController {
       @ApiResponse(responseCode = "404", description = "Posts not found", content = @Content)
   })
   @GetMapping("/by-author/{username}")
-  public Page<Post> getUserPosts(
+  public ResponseEntity<PageResponse<PostDTO>> getUserPosts(
       @PathVariable String username,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "5") int size) {
     Sort sort = Sort.by("createdAt").descending();
-    return postService.getPostList(PageRequest.of(page, size, sort), username);
+    try {
+      Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort), username);
+      List<PostDTO> postDTOList = pageResultPost.getContent().stream().map(postService::mapPostToPostDTO).toList();
+      PageResponse<PostDTO> pageResultPostDTO = new PageResponse<>(
+              postDTOList,
+              pageResultPost.getNumber(),
+              pageResultPost.getSize(),
+              pageResultPost.getTotalElements()
+      );
+      return ResponseEntity.ok(pageResultPostDTO);
+    } catch (Exception e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @Operation(summary = "Create a new post", description = "Add a new post to the system")
@@ -108,9 +125,10 @@ public class PostController {
       @ApiResponse(responseCode = "404", description = "Post not found")
   })
   @PutMapping("/{id}")
-  public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody CreatePostRequest request) {
+  public ResponseEntity<PostDTO> updatePost(@PathVariable Long id, @RequestBody CreatePostRequest request) {
     final String postContent = request.getContent();
     Post updatedPost = postService.updatePost(id, postContent);
-    return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+    PostDTO postDTO = postService.mapPostToPostDTO(updatedPost);
+    return new ResponseEntity<>(postDTO, HttpStatus.OK);
   }
 }
