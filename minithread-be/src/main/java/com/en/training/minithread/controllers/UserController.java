@@ -50,17 +50,19 @@ public class UserController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        final AccountDTO account = new AccountDTO(currentUser.getUsername(), currentUser.getEmail());
+        final AccountDTO account = new AccountDTO(currentUser.getName(), currentUser.getUsername());
         account.setName(StringUtils.isNotBlank(currentUser.getName()) ? currentUser.getName() : "");
         account.setBio(StringUtils.isNotBlank(currentUser.getBio()) ? currentUser.getBio() : "");
 
         return ResponseEntity.ok(account);
     }
 
-    @PutMapping(value = "/update", consumes = "multipart/form-data")
+    @PutMapping(value = "/update")
     public ResponseEntity<AccountDTO> updateCurrentUser(
             Authentication authentication,
-            @RequestBody UpdateUserRequest request) {
+            @RequestParam String bio,
+            @RequestParam String name,
+            @RequestParam String email) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -71,7 +73,7 @@ public class UserController {
         if (StringUtils.isBlank(username)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        final Account account = this.accountService.updateAccount(username, request);
+        final Account account = this.accountService.updateAccount(username, email, name, bio);
         final AccountDTO accountDTO = this.accountService.mapAccountToAccountDTO(account);
         return ResponseEntity.ok(accountDTO);
 

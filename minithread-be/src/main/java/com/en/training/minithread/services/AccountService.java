@@ -91,20 +91,20 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account updateAccount(String username, UpdateUserRequest request) {
+    public Account updateAccount(String username, String email, String name, String bio) {
 
         Optional<Account> account = accountRepository.findByUsername(username);
         if (account.isPresent()) {
             Account existingAccount = account.get();
 
-            if (request.getBio() != null)
-                existingAccount.setBio(request.getBio());
-            if (request.getEmail() != null)
-                existingAccount.setEmail(request.getEmail());
-            if (request.getName() != null)
-                existingAccount.setName(request.getName());
-            if (request.getProfilePicture() != null)
-                existingAccount.setProfilePicture(UUID.fromString(request.getProfilePicture()));
+            if (bio != null)
+                existingAccount.setBio(bio);
+            if (email != null)
+                existingAccount.setEmail(email);
+            if (name != null)
+                existingAccount.setName(name);
+            // if (request.getProfilePicture() != null)
+            // existingAccount.setProfilePicture(UUID.fromString(request.getProfilePicture()));
 
             return accountRepository.save(existingAccount);
         }
@@ -123,9 +123,15 @@ public class AccountService {
     public AccountDTO mapAccountToAccountDTO(Account account) {
         AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
         accountDTO.setEmail(account.getEmail());
-        accountDTO.setBio(account.getBio());
-        accountDTO.setCreatedAt(account.getCreatedAt().toString());
-        accountDTO.setUpdatedAt(account.getUpdatedAt().toString());
+        if (StringUtils.isNotBlank(account.getBio())) {
+            accountDTO.setBio(account.getBio());
+        }
+        if (account.getCreatedAt() != null) {
+            accountDTO.setCreatedAt(account.getCreatedAt().toString());
+        }
+        if (account.getUpdatedAt() != null) {
+            accountDTO.setUpdatedAt(account.getUpdatedAt().toString());
+        }
         return accountDTO;
     }
 
