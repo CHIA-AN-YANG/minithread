@@ -9,16 +9,12 @@ const MeNavbar: React.FC<MeNavbarProps> = ({ page }) => {
 
 
   return (
-    <div className="flex justify-around mb-2">
-      <Link href="/me">
-        <a className={"btn w-2/5 py-2 text-center border-blue-500 " + (isMePage ? "border-b-4" : "border-b-2")}>
-          My Threads
-        </a>
+    <div className="flex w-full justify-around mb-2">
+      <Link href="/me" className={"btn grow mr-1 py-2 text-center border-blue-500 " + (isMePage ? "border-b-4" : "border-b-2")}>
+        My Threads
       </Link>
-      <Link href="/me/comments">
-        <a className={"btn w-2/5 py-2 text-center border-blue-500 " + (isMePage ? "border-b-2" : "border-b-4")}>
-          Replies
-        </a>
+      <Link href="/me/comments" className={"btn grow ml-1 py-2 text-center border-blue-500 " + (isMePage ? "border-b-2" : "border-b-4")}>
+        Replies
       </Link>
     </div>
   );

@@ -12,12 +12,19 @@ export interface PostData {
   id: string;
   author: string;
   content: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
   parentPost?: string;
   comments?: PostData[];
   likesUser?: string[];
   likesCount?: number;
+}
+
+export interface Pagination<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  numberOfElements: number;
 }
 
 export interface AuthState {

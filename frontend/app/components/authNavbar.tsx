@@ -10,7 +10,7 @@ const AuthNavbar: React.FC<AuthNavbarProps> = ({ page }) => {
   const pathname = usePathname();
 
   return (
-    <nav className="flex justify-around space-x-4 p-4 bg-sky-100">
+    <nav className="w-full flex justify-around space-x-4 p-4 bg-sky-100">
       <Link href="/register" className={`flex ${page === 'registration' ? 'font-bold' : 'hover:underline'}`}>
         Register
       </Link>

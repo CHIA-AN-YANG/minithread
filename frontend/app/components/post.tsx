@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import 'lineicons/dist/lineicons.css';
+import { PostData } from '../model/model';
+import { store } from '../store/store';
 
 type PostProps = {
   id: string;
@@ -8,14 +10,16 @@ type PostProps = {
   author: string;
   createdAt: string;
   parentPost?: string;
-  commentList?: PostProps[];
-  likeCount?: number;
+  commentList?: PostData[];
+  likesCount?: number;
   // onReply: (id: string) => void;
   // onDelete: (id: string) => void;
 };
 
-const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentList, createdAt, likeCount }) => {
+const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentList, createdAt, likesCount }) => {
   const [likes, setLikes] = useState(0);
+  const username = store.getState().auth.user?.username;
+  const auth = author === username;
 
   const handleLike = () => {
     likes === 0 ? setLikes(1) : setLikes(0);
@@ -31,6 +35,7 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
     });
   };
   const handleDate = (isoDate: string): string => {
+    const now = new Date();
     const date = new Date(isoDate);
     return date.toLocaleDateString(undefined, {
       year: 'numeric',
@@ -64,7 +69,7 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
             aria-label="like"
           >
             <i className="lni lni-heart lni-lg text-slate-500 hover:text-blue-600 mr-1"
-            ></i>{(likeCount || 0) + likes}
+            ></i>{(likesCount || 0) + likes}
           </button>
           <button
             onClick={handleReply}
@@ -81,21 +86,28 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
           >
             <i className="lni lni-link-2-angular-right lni-lg text-slate-500 hover:text-blue-600"></i>
           </button>
-          <button
-            onClick={handleDelete}
-            className="flex items-center justify-center px-1 py-1 text-lg"
-            aria-label="delete"
-          >
-            <i className="lni lni-trash-3 lni-lg text-slate-500 hover:text-blue-600"></i>
-          </button>
+          {auth && (
+            <button
+              onClick={handleDelete}
+              className="flex items-center justify-center px-1 py-1 text-lg"
+              aria-label="delete"
+            >
+              <i className="lni lni-trash-3 lni-lg text-slate-500 hover:text-blue-600"></i>
+            </button>
+          )}
         </footer>
       </article>
       {commentList && commentList.length > 0 && (
         <div>
           {commentList.map((comment) => (
-            <Post key={comment.id} {...comment}
-            // onReply={onReply} 
-            // onDelete={onDelete} 
+            <Post
+              key={comment.id} {...comment}
+              id={comment.id}
+              author={comment.author}
+              content={comment.content}
+              createdAt={comment.createdAt || ""}
+              likesCount={comment.likesCount}
+              parentPost={id}
             />
           ))}
         </div>

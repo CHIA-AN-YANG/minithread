@@ -23,7 +23,7 @@ export default function Home() {
           <Post id="0012" author="John Doe"
             createdAt="2021-08-01T12:00:00Z"
             content="example post The component now uses Tailwind CSS for styling. Tailwind's utility classes are applied directly to the elements for a clean and responsive design. Let me know if you'd like further customizations!"
-            commentList={commentList}></Post>
+          ></Post>
           <InputBar />
         </Provider>
       </main>

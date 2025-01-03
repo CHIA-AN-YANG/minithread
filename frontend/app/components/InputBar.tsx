@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { postPost } from '../api/postAdaptor';
 interface InputBarProps {
   parent: string;
 }
@@ -13,19 +14,24 @@ const InputBar: React.FC = () => {
   };
 
   const handleSend = () => {
-    // send post => view personal page
+    // send post => view personal page or single post page?
     // send comment => view latest thread page
+
     if (inputValue.trim()) {
-      console.log('Message sent:', inputValue);
+      postPost(inputValue).then((response) => {
+        console.log('Post sent:', response);
+      }).catch((error) => {
+        console.error('Error sending post:', error);
+      });
       setInputValue('');
     }
   };
 
   return (
-    <div className="flex items-center  border border-gray-300 rounded-lg p-2 bg-white">
+    <div className="flex items-center pt-2 bg-white">
       <input
         type="text"
-        className="flex-grow text-left px-3 py-2 outline-none text-gray-700 rounded-full"
+        className="flex-grow text-left px-3 py-2 outline-none text-gray-700 border border-gray-300 rounded-full"
         placeholder="What's new?"
         value={inputValue}
         onChange={handleInputChange}

@@ -46,25 +46,27 @@ const UserProfile = () => {
   if (status === EntityStatus.SUCCESS) {
     if (!user) { router.push('/404'); };
     return (
-      <div className='user-profile-panel'>
+      <div className="grid sm:grid-cols-[1fr_8rem] grid-cols-[1fr_5rem] sm:gap-4 gap-2 h-32 w-full overflow-hidden">
         {user ?
           <>
-            <section className='left-panel'>
-              <div>
-                <h3>{user.username}!</h3>
-                <h3 className='welcome-txt'><em>{user.name}</em></h3>
-                <hr />
+            <section className="justify-start flex flex-col">
+              <div className="flex pb-2 justify-between w-full sm:border-b-2 border-gray-300 border-solid">
+                <div className="flex flex-col ">
+                  <h3>{user.username}</h3>
+                  <h3 className="font-bold">{user.name}</h3>
+                </div>
+                <div className="ctas" role="button" onClick={() => handleLogout()}>
+                  <span className="secondary">logout</span>
+                </div>
               </div>
+              <hr />
 
-              <div className="intro">
+              <div className="h-15 flex overflow-y-scroll">
                 <p>{user.bio}</p>
               </div>
-
-              <div className="ctas" role="button" onClick={() => handleLogout()}>
-                <span className="secondary">logout</span>
-              </div>
             </section>
-            <section className='right-panel'>
+
+            <section className="flex overflow-hidden sm:m-1 my-auto min-w-20 min-h-20 w-20 h-20 align-center right-panel">
               <Image src="/images/default-profile-picture.jpg"
                 alt={user.username + "\'s profilePicture"}
                 width={100}
@@ -75,8 +77,8 @@ const UserProfile = () => {
                   src={user.profilePicture!}
                   alt={user.username + "\'s photo"}
                   placeholder='empty'
-                  width={400}
-                  height={253}
+                  width={200}
+                  height={200}
                   onLoad={() => setImageLoaded(true)}
                   priority
                 />
