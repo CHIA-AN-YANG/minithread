@@ -7,6 +7,7 @@ import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.services.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -89,9 +90,10 @@ public class PostController {
       PageResponse<PostDTO> pageResultPostDTO = new PageResponse<>(
               postDTOList,
               pageResultPost.getNumber(),
-              pageResultPost.getSize(),
+              pageResultPost.getTotalPages(),
               pageResultPost.getTotalElements()
       );
+
       return ResponseEntity.ok(pageResultPostDTO);
     } catch (Exception e) {
       return ResponseEntity.notFound().build();
@@ -106,6 +108,7 @@ public class PostController {
   @PostMapping()
   public ResponseEntity<PostDTO> createPost(@RequestBody CreatePostRequest request, Authentication authentication) {
     final String postContent = request.getContent();
+    final String parentPostId = request.getParent();
     if (authentication == null || !authentication.isAuthenticated()) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -113,7 +116,12 @@ public class PostController {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
     final String username = jwt.getClaim("sub");
-    final Post post = postService.createPost(postContent, username);
+    final Post post;
+    if(StringUtils.isNotBlank(parentPostId)){
+      post = postService.createComment(postContent, username, Long.valueOf(parentPostId));
+    } else {
+      post = postService.createPost(postContent, username);
+    }
     PostDTO postDTO = postService.mapPostToPostDTO(post);
     return ResponseEntity.status(HttpStatus.CREATED).body(postDTO);
   }

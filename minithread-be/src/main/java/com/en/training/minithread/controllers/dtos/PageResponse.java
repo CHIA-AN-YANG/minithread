@@ -10,13 +10,13 @@ import java.util.List;
 public class PageResponse<T> {
     private List<T> content;
     private int pageNumber;
-    private int pageSize;
+    private int totalPages;
     private long totalElements;
 
-    public PageResponse(List<T> content, int pageNumber, int pageSize, long totalElements){
+    public PageResponse(List<T> content, int pageNumber, int totalPages, long totalElements){
         this.content = content;
         this.pageNumber = pageNumber;
-        this.pageSize = pageSize;
+        this.totalPages = totalPages;
         this.totalElements = totalElements;
     }
 }

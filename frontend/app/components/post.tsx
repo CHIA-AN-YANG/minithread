@@ -2,7 +2,9 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import 'lineicons/dist/lineicons.css';
 import { PostData } from '../model/model';
-import { store } from '../store/store';
+import { AppDispatch, store } from '../store/store';
+import { startInput } from '../store/features/user/actions/postActions';
+import { useDispatch } from 'react-redux';
 
 type PostProps = {
   id: string;
@@ -20,13 +22,14 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
   const [likes, setLikes] = useState(0);
   const username = store.getState().auth.user?.username;
   const auth = author === username;
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleLike = () => {
     likes === 0 ? setLikes(1) : setLikes(0);
   };
 
   const handleReply = () => {
-    // onReply(id);
+    dispatch(startInput(id));
   };
 
   const handleDelete = () => {
@@ -76,8 +79,8 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
             className="flex items-center justify-center px-1 py-1 text-lg"
             aria-label="reply"
           >
-            <i className="lni lni-message-3-text  lni-lg text-slate-500 hover:text-blue-600"
-            ></i>
+            <i className="lni lni-message-2  lni-lg text-slate-500 hover:text-blue-600"
+            ></i>{(commentList || []).length}
           </button>
           <button
             onClick={() => copyPostLink(id)}

@@ -19,8 +19,8 @@ export const getPost = async (postId: string): Promise<PostData | AxiosError> =>
   });
 }
 
-export const postPost = async (content: string): Promise<AxiosResponse<PostData> | AxiosError> => {
-  return await axios.post(apiUrl + '/api/posts', { author: "test-user_001", content }, {
+export const postPost = async (inputData: { content: string, parent?: string }): Promise<AxiosResponse<PostData> | AxiosError> => {
+  return await axios.post(apiUrl + '/api/posts', inputData, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Cache-Control': 'no-cache, must-revalidate',

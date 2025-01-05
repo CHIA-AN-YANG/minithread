@@ -1,30 +1,28 @@
 "use client";
 import UserProfile from '../components/userProfile';
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import { store } from '../store/store';
 import MeNavbar from '../components/meNavbar';
 import PostList from '../components/PostList';
-import { selectUser } from '../store/features/user/selectors/authSelectors';
-import { useState, useEffect } from 'react';
-import { UserData } from '../model/model';
-import InputBar from '../components/InputBar';
+import InputForm from '../components/InputForm';
+import BottomNavbar from '../components/BottomNavbar';
 
 export default function ProfilePage() {
-  // const [isClient, setIsClient] = useState(false);
-
-
 
 
   return (
     <div className="page">
-      <main className="main-profile">
-        <Provider store={store}>
+
+      <Provider store={store}>
+        <main className="main-profile">
           <UserProfile />
           <MeNavbar page="me" />
           <PostList isMePage={true} />
-          <InputBar />
-        </Provider>
-      </main>
+          <BottomNavbar />
+          <InputForm />
+        </main>
+      </Provider>
+
     </div>
   );
 }

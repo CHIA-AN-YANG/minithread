@@ -26,7 +26,11 @@ export interface Pagination<T> {
   totalElements: number;
   numberOfElements: number;
 }
-
+export interface UiState {
+  inputForm: string;
+  parent: string | null;
+  content: string;
+}
 export interface AuthState {
   user: UserData | null;
   error: string | null;
