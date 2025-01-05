@@ -1,11 +1,11 @@
 "use client";
-import UserProfile from '../components/userProfile';
+import UserProfile from '../components/UserPanel';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
-import MeNavbar from '../components/meNavbar';
-import PostList from '../components/PostList';
-import InputForm from '../components/InputForm';
-import BottomNavbar from '../components/BottomNavbar';
+import MeNavbar from '../components/navbar/MeNavbar';
+import PostList from '../components/ThreadList';
+import InputForm from '../components/form/InputForm';
+import BottomNavbar from '../components/navbar/BottomNavbar';
 
 export default function ProfilePage() {
 

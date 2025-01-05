@@ -8,14 +8,14 @@ export interface UserData {
   updatedAt?: Date;
 }
 
-export interface PostData {
+export interface ThreadData {
   id: string;
   author: string;
   content: string;
   createdAt?: string;
   updatedAt?: string;
-  parentPost?: string;
-  comments?: PostData[];
+  parentThread?: string;
+  comments?: ThreadData[];
   likesUser?: string[];
   likesCount?: number;
 }

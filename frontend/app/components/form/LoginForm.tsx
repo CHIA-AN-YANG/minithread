@@ -1,12 +1,12 @@
 "use client";
 
 import React, { use, useEffect, useState } from 'react';
-import { getAuth } from '../store/features/user/actions/authActions';
+import { getAuth } from '../../store/features/user/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectStatus, selectError } from '../store/features/user/selectors/authSelectors';
-import { AppDispatch } from '../store/store';
+import { selectStatus, selectError } from '../../store/features/user/selectors/authSelectors';
+import { AppDispatch } from '../../store/store';
 import { useRouter } from 'next/navigation';
-import { EntityStatus } from '../model/model';
+import { EntityStatus } from '../../model/model';
 
 interface LoginFormData {
   username: string;

@@ -35,7 +35,7 @@
   height: calc(100vh - 2rem);
 }
 
-.author-posts header>h3 {
+.author-threads header>h3 {
   display: none;
 }
 

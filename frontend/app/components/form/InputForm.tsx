@@ -1,9 +1,8 @@
-import React, { use, useEffect, useState } from 'react';
-import { postPost } from '../api/postAdaptor';
-import { endInput, sendPost, updateContent } from '../store/features/user/actions/postActions';
+import React, { useState } from 'react';
+import { endInput, sendThread, updateContent } from '../../store/features/user/actions/threadActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectInputFormOpen } from '../store/features/user/selectors/uiSelectors';
-import { AppDispatch, store } from '../store/store';
+import { selectInputFormOpen } from '../../store/features/user/selectors/uiSelectors';
+import { AppDispatch } from '../../store/store';
 
 
 
@@ -27,7 +26,7 @@ const InputForm: React.FC = () => {
   const handleSend = () => {
     if (uiState === 'open' && inputValue.trim()) {
       dispatch(updateContent(inputValue));
-      dispatch(sendPost());
+      dispatch(sendThread());
       dispatch(endInput());
     }
   };

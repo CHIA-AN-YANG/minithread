@@ -1,9 +1,9 @@
 "use client"
 import Link from 'next/link';
-import { startInput } from '../store/features/user/actions/postActions';
+import { startInput } from '../../store/features/user/actions/threadActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
-import { selectInputFormOpen, selectParent } from '../store/features/user/selectors/uiSelectors';
+import { AppDispatch, RootState } from '../../store/store';
+import { selectInputFormOpen, selectParent } from '../../store/features/user/selectors/uiSelectors';
 
 const BottomNavbar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

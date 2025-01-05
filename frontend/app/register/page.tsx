@@ -1,9 +1,8 @@
 "use client";
-import UserProfile from '../components/userProfile';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
-import RegisterForm from '../components/registerForm';
-import AuthNavbar from '../components/authNavbar';
+import AuthNavbar from '../components/navbar/AuthNavbar';
+import RegisterForm from '../components/form/RegisterForm';
 
 export default function ProfilePage() {
 

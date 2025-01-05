@@ -9,7 +9,7 @@ import { EntityStatus } from '../model/model';
 import { useRouter } from 'next/navigation';
 import { loadUser, logoutUser } from '../store/features/user/actions/userActions';
 
-const UserProfile = () => {
+const UserPanel = () => {
   const [isClient, setIsClient] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
@@ -90,4 +90,4 @@ const UserProfile = () => {
   }
 };
 
-export default UserProfile;
+export default UserPanel;

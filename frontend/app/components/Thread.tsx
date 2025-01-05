@@ -1,24 +1,22 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import 'lineicons/dist/lineicons.css';
-import { PostData } from '../model/model';
 import { AppDispatch, store } from '../store/store';
-import { startInput } from '../store/features/user/actions/postActions';
+import { startInput } from '../store/features/user/actions/threadActions';
 import { useDispatch } from 'react-redux';
+import { ThreadData } from '../model/model';
 
-type PostProps = {
+type ThreadProps = {
   id: string;
   content: string;
   author: string;
   createdAt: string;
-  parentPost?: string;
-  commentList?: PostData[];
+  parentThread?: string;
+  commentList?: ThreadData[];
   likesCount?: number;
-  // onReply: (id: string) => void;
-  // onDelete: (id: string) => void;
 };
 
-const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentList, createdAt, likesCount }) => {
+const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, createdAt, likesCount }) => {
   const [likes, setLikes] = useState(0);
   const username = store.getState().auth.user?.username;
   const auth = author === username;
@@ -59,7 +57,7 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
 
   return (
     <>
-      <article className={`border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50 ${parentPost ? 'ml-4 border-l-4 border-gray-400' : ''}`}>
+      <article className={`border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50 ${parentThread ? 'ml-4 border-l-4 border-gray-400' : ''}`}>
         <header className="mb-3">
           <h3 className="text-sm font-semibold">{author}</h3>
           <p className="text-xs text-gray-500"><time>{handleDate(createdAt)}</time></p>
@@ -103,21 +101,20 @@ const Post: React.FC<PostProps> = ({ id, content, author, parentPost, commentLis
       {commentList && commentList.length > 0 && (
         <div>
           {commentList.map((comment) => (
-            <Post
+            <Thread
               key={comment.id} {...comment}
               id={comment.id}
               author={comment.author}
               content={comment.content}
               createdAt={comment.createdAt || ""}
               likesCount={comment.likesCount}
-              parentPost={id}
+              parentThread={id}
             />
           ))}
         </div>
       )}
-
     </>
   );
 };
 
-export default Post;
+export default Thread;

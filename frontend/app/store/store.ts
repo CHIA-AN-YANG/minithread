@@ -14,7 +14,7 @@ declare global {
 
 export const store = configureStore({
   reducer: rootReducer,
-  //preloadedState: typeof window !== 'undefined' ? window.__INITIAL_STATE__ as { auth: AuthState, inputForm: UiState } : {},
+  preloadedState: typeof window !== 'undefined' ? window.__INITIAL_STATE__ as { auth: AuthState, inputForm: UiState } : {},
 });
 
 export type RootState = ReturnType<typeof store.getState>;

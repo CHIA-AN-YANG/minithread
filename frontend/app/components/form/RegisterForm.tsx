@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { registerUser } from '../api/authAdaptor';
+import { registerUser } from '../../api/authAdaptor';
 import { useSelector } from 'react-redux';
-import { selectError } from '../store/features/user/selectors/authSelectors';
+import { selectError } from '../../store/features/user/selectors/authSelectors';
 
 interface FormData {
   username: string;
