@@ -1,0 +1,44 @@
+.left-panel {
+  position: relative;
+  width: 70%;
+  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  text-align: left;
+  text-align-last: left;
+}
+
+.right-panel img {
+  object-fit: cover;
+  margin: auto;
+}
+
+.right-panel {
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.ctas {
+  height: 2rem;
+  margin: 0.5rem;
+  margin-inline-start: auto;
+  color: royalblue;
+  background-color: lightskyblue;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .left-panel img {
+    height: Min(40vh, 500px);
+  }
+
+  .ctas {
+    height: 1.4rem;
+    margin: 0.5rem;
+    padding: 0.2rem 0.5rem;
+  }
+}

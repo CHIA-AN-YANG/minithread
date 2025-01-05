@@ -1,3 +1,6 @@
+### frontend 
+for frontend development, please see the readme in `./frontend`.
+
 ### Set up rsa keys
 Go to `certs` folder in `resources`
 Run the following script
@@ -29,4 +32,4 @@ mvn spring-boot:run
 ```
 
 ### Check Swagger
-go to `http://localhost:8080/swagger-ui.html`
+- Navigate to `http://localhost:8080/swagger-ui/index.html`

@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 public class CreatePostRequest {
     private String content;
-    private String author;
+    private String parent;
 }

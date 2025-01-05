@@ -4,10 +4,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Data
 public class Post {
     @Id
@@ -18,18 +21,18 @@ public class Post {
     private String content;
 
     @CreatedDate
-    @Column(name = "createdAt", columnDefinition = "TIMESTAMP")
-    private Date createdAt;
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP")
-    private Date updatedAt;
+    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private LocalDateTime updatedAt;
 
     @Column()
     private String keywords;
 
-    @ManyToOne
-    @JoinColumn(name = "account", table="account", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author", referencedColumnName = "username", nullable = false)
     private Account author;
 
     @ManyToOne

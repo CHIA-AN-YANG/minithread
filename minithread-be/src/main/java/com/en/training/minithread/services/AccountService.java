@@ -1,5 +1,7 @@
 package com.en.training.minithread.services;
 
+import com.en.training.minithread.controllers.dtos.AccountDTO;
+import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -34,7 +37,7 @@ public class AccountService {
         }
     }
 
-    public Account createAccountIfNotExist(String username, String rawPassword) {
+    public Account createAccountIfNotExist(String username, String rawPassword, String email) {
         try {
             Optional<Account> account = accountRepository.findByUsername(username);
             if (account.isPresent()) {
@@ -42,7 +45,7 @@ public class AccountService {
             } else {
                 Account newAccount = new Account();
                 newAccount.setUsername(username);
-                Account createdAccount = createAccount(newAccount, rawPassword);
+                Account createdAccount = createAccount(newAccount, rawPassword, email);
                 log.info("Account created: " + createdAccount);
                 return createdAccount;
             }
@@ -61,13 +64,14 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
-    public Account createAccount(Account account, String rawPassword) {
+    public Account createAccount(Account account, String rawPassword, String email) {
 
         if (account == null || StringUtils.isBlank(rawPassword)) {
             throw new IllegalArgumentException("Account and password must not be null");
         }
         account.setUsername(account.getUsername());
         account.setPassword(passwordEncoder.encode(rawPassword));
+        account.setEmail(email);
 
         return accountRepository.save(account);
     }
@@ -87,15 +91,20 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account updateAccount(String username, Account updatedAccount) {
+    public Account updateAccount(String username, String email, String name, String bio) {
 
         Optional<Account> account = accountRepository.findByUsername(username);
         if (account.isPresent()) {
             Account existingAccount = account.get();
-            existingAccount.setUsername(updatedAccount.getUsername());
-            existingAccount.setEmail(updatedAccount.getEmail());
-            existingAccount.setBio(updatedAccount.getBio());
-            existingAccount.setProfilePicture(updatedAccount.getProfilePicture());
+
+            if (bio != null)
+                existingAccount.setBio(bio);
+            if (email != null)
+                existingAccount.setEmail(email);
+            if (name != null)
+                existingAccount.setName(name);
+            // if (request.getProfilePicture() != null)
+            // existingAccount.setProfilePicture(UUID.fromString(request.getProfilePicture()));
 
             return accountRepository.save(existingAccount);
         }
@@ -109,6 +118,21 @@ public class AccountService {
             accountRepository.deleteByUsername(username);
         }
         throw new AccountNotFoundException(username);
+    }
+
+    public AccountDTO mapAccountToAccountDTO(Account account) {
+        AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
+        accountDTO.setEmail(account.getEmail());
+        if (StringUtils.isNotBlank(account.getBio())) {
+            accountDTO.setBio(account.getBio());
+        }
+        if (account.getCreatedAt() != null) {
+            accountDTO.setCreatedAt(account.getCreatedAt().toString());
+        }
+        if (account.getUpdatedAt() != null) {
+            accountDTO.setUpdatedAt(account.getUpdatedAt().toString());
+        }
+        return accountDTO;
     }
 
     private void validatePasswordStrength(String password) {
