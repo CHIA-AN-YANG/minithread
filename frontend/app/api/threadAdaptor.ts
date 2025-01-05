@@ -7,8 +7,8 @@ const TOKEN_COOKIE = 'auth_token';
 const apiUrl = getApiUrl();
 const token = Cookies.get(TOKEN_COOKIE);
 
-export const getThread = async (postId: string): Promise<ThreadData | AxiosError> => {
-  return await axios.get(apiUrl + '/api/posts/' + postId, {
+export const getThread = async (postthreadId: string): Promise<ThreadData | AxiosError> => {
+  return await axios.get(apiUrl + '/api/threads/' + postthreadId, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Cache-Control': 'no-cache, must-revalidate',
@@ -20,7 +20,7 @@ export const getThread = async (postId: string): Promise<ThreadData | AxiosError
 }
 
 export const postThread = async (inputData: { content: string, parent?: string }): Promise<AxiosResponse<ThreadData> | AxiosError> => {
-  return await axios.post(apiUrl + '/api/posts', inputData, {
+  return await axios.post(apiUrl + '/api/threads', inputData, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Cache-Control': 'no-cache, must-revalidate',
@@ -32,7 +32,7 @@ export const postThread = async (inputData: { content: string, parent?: string }
 }
 
 export const getAuthorThreadList = async (author: string, page?: number): Promise<AxiosResponse<Pagination<ThreadData>> | AxiosError> => {
-  let url = apiUrl + '/api/posts/by-author/' + author;
+  let url = apiUrl + '/api/threads/by-author/' + author;
   if (page !== undefined) {
     url += `?page=${page}`;
   }

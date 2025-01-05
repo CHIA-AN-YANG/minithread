@@ -1,6 +1,6 @@
 package com.en.training.minithread.services;
 
-import com.en.training.minithread.controllers.dtos.PostDTO;
+import com.en.training.minithread.controllers.dtos.ThreadDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.en.training.minithread.models.Post;
@@ -117,30 +117,30 @@ public class PostService {
         throw new PostNotFoundException(id);
     }
 
-    public PostDTO mapPostToPostDTO(Post post) {
-        PostDTO postDTO = new PostDTO();
-        postDTO.setId(post.getId().toString());
+    public ThreadDTO mapPostToThreadDTO(Post post) {
+        ThreadDTO threadDTO = new ThreadDTO();
+        threadDTO.setId(post.getId().toString());
         if (post.getParentPost() != null) {
-            postDTO.setParentPost(post.getParentPost().getId().toString());
+            threadDTO.setParentPost(post.getParentPost().getId().toString());
         }
         if (post.getContent() != null) {
-            postDTO.setContent(post.getContent());
+            threadDTO.setContent(post.getContent());
         }
         if (post.getComments() != null) {
-            List<PostDTO> commentsList = post.getComments().stream().map(this::mapPostToPostDTO).toList();
-            ArrayList<PostDTO> arrayList = new ArrayList<>(commentsList);
-            postDTO.setComments(arrayList);
+            List<ThreadDTO> commentsList = post.getComments().stream().map(this::mapPostToThreadDTO).toList();
+            ArrayList<ThreadDTO> arrayList = new ArrayList<>(commentsList);
+            threadDTO.setComments(arrayList);
         }
         if (post.getAuthor() != null) {
-            postDTO.setAuthor(post.getAuthor().getUsername());
+            threadDTO.setAuthor(post.getAuthor().getUsername());
         }
         if (post.getCreatedAt() != null) {
-            postDTO.setCreatedAt(post.getCreatedAt().toString());
+            threadDTO.setCreatedAt(post.getCreatedAt().toString());
         }
         if (post.getUpdatedAt() != null) {
-            postDTO.setUpdatedAt(post.getUpdatedAt().toString());
+            threadDTO.setUpdatedAt(post.getUpdatedAt().toString());
         }
-        return postDTO;
+        return threadDTO;
     }
 
     public static class PostNotFoundException extends RuntimeException {
