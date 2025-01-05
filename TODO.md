@@ -22,7 +22,7 @@ Bugfix
 
 ### Jan new TODOs
 [] Redux
- - [] centralized myPost store. When create or delete post it should instantly update /profile page
+ - [] centralized myPost store. When create or delete post it should instantly update /profile page🔥
 
 [] Page
  - [] Update Profile page
@@ -33,11 +33,14 @@ Bugfix
 [] Other functionalities
  - [] Navigation: homepage, latest, edit profile(on profile page only), logout(on profile page only)
  - [] Comment functionality
+  - [] can create comment
+  - [] show comment number on posts
+  - [] show comments on single post
  - [] Follow functionality
  - [] Like functionality
 
 [] Apis
- - [] Some get api should be open to public
+ - [] Some get api should be open to public 🔥🔥🔥
  - [] Set Comment
  - [] like a post / unlike a post
  - [] follow a user / unfollow a user
