@@ -2,7 +2,7 @@ import { getVerifiedUser } from '@/app/api/authAdaptor';
 import { UserData } from '@/app/model/model';
 import { AppThunk } from '@/app/store/store';
 import { AxiosError, AxiosResponse } from 'axios';
-import { setStatusLoading, setUser, setStatusSuccess, clearUser, setError, setStatusError, setStatusIdle } from '../reducers/authSliceReducer';
+import { setStatusLoading, setUser, setStatusSuccess, clearUser, setError, setStatusError, setStatusIdle } from '../reducers/slices/authSliceReducer';
 
 const Cookies = require('js-cookie');
 const TOKEN_COOKIE = 'auth_token';

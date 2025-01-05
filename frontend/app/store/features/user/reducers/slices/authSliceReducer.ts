@@ -58,4 +58,4 @@ export const {
   setStatusIdle
 } = authSlice.actions;
 
-export default authSlice.reducer;
+export default authSlice;

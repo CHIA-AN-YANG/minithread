@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { setError, setStatusLoading, setStatusError, setStatusSuccess } from '../reducers/authSliceReducer';
+import { setError, setStatusLoading, setStatusError, setStatusSuccess } from '../reducers/slices/authSliceReducer';
 import { AppThunk } from '../../../store';
 import { postAuthToken } from '@/app/api/authAdaptor';
 import { AuthData } from '@/app/model/model';

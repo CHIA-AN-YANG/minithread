@@ -1,19 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { ThunkAction, Action } from '@reduxjs/toolkit';
-import authReducer from './features/user/reducers/authSliceReducer';
-import { AuthState } from '../model/model';
+import { AuthState, UiState } from '../model/model';
+import rootReducer from './features/user/reducers/rootReducer';
 
 declare global {
   interface Window {
-    __INITIAL_STATE__: { auth: AuthState };
+    __INITIAL_STATE__: {
+      auth: AuthState,
+      inputForm: UiState
+    };
   }
 }
 
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-  },
-  preloadedState: typeof window !== 'undefined' ? window.__INITIAL_STATE__ as { auth: AuthState } : {},
+  reducer: rootReducer,
+  //preloadedState: typeof window !== 'undefined' ? window.__INITIAL_STATE__ as { auth: AuthState, inputForm: UiState } : {},
 });
 
 export type RootState = ReturnType<typeof store.getState>;
