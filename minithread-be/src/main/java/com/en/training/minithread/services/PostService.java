@@ -49,7 +49,7 @@ public class PostService {
 
     public Page<Post> getPostList(PageRequest pageRequest, String username) {
         try {
-            return postRepository.findByAuthor_Username(username, pageRequest);
+            return postRepository.findTopLevelPostsByAuthor(username, pageRequest);
         } catch (Exception e) {
             log.error("Cannot get post pagination.", e);
             List<Post> emptyList = Collections.emptyList();
