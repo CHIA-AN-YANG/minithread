@@ -5,6 +5,8 @@ import { AppDispatch, store } from '../store/store';
 import { startInput } from '../store/features/user/actions/threadActions';
 import { useDispatch } from 'react-redux';
 import { ThreadData } from '../model/model';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 type ThreadProps = {
   id: string;
@@ -48,21 +50,26 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   };
 
   const copyPostLink = (id: string): void => {
+    console.log('copying post link');
     const baseUrl = window.location.origin;
-    const postUrl = `${baseUrl}/post/${id}`;
+    const postUrl = `${baseUrl}/threads/${id}`;
     navigator.clipboard.writeText(postUrl)
-      .then(() => console.log('Post link copied to clipboard!'))
-      .catch(() => console.log('Failed to copy post link.'));
+      .then(() => toast.success('Post link copied to clipboard!'))
+      .catch(() => toast.error('Failed to copy post link.'));
   };
 
   return (
     <>
       <article className={`border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50 ${parentThread ? 'ml-4 border-l-4 border-gray-400' : ''}`}>
         <header className="mb-3">
-          <h3 className="text-sm font-semibold">{author}</h3>
+          <Link href={`/user/${author}`}>
+            <h3 className="text-sm font-semibold">{author}</h3>
+          </Link>
           <p className="text-xs text-gray-500"><time>{handleDate(createdAt)}</time></p>
         </header>
-        <p className="text-base mb-3">{content}</p>
+        <Link href={`/thread/${id}`}>
+          <p className="text-base mb-3">{content}</p>
+        </Link>
         <footer className="flex space-x-2">
           <button
             onClick={handleLike}

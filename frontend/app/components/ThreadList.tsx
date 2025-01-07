@@ -2,10 +2,12 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { getAuthorThreadList } from '../api/threadAdaptor';
+import { getAuthorCommentsList, getAuthorThreadList, getLatestThreadList } from '../api/threadAdaptor';
 import { ThreadData, Pagination } from '../model/model';
 import { selectUser } from '../store/features/user/selectors/authSelectors';
 import Thread from './Thread';
+import { useRouter } from 'next/router';
+import { Toaster } from 'react-hot-toast';
 
 
 interface ThreadListProps {
@@ -18,17 +20,17 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(false);
   const user = useSelector(selectUser);
-
-
+  const router = useRouter();
+  const { id } = router.query;
 
   useEffect(() => {
     setIsLoading(true);
-    user?.username && getNewPosts(user.username);
+    getThreadsFunction();
   }, [user]);
 
   useEffect(() => {
     setIsLoading(true);
-    user?.username && getNewPosts(user.username);
+    getThreadsFunction();
   }, [page]);
 
   const loadMore = () => {
@@ -41,7 +43,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
     }
   };
 
-  const getNewPosts = (username: string) => {
+  const getAuthorThreads = (username: string) => {
     const p = page;
     getAuthorThreadList(username, p).then((response) => {
       if (response instanceof AxiosError) {
@@ -49,13 +51,13 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
         return;
       }
 
-      const newPosts = (response as AxiosResponse<Pagination<ThreadData>>).data;
-      if (newPosts.content && newPosts.content.length) {
-        console.log("newPosts:", newPosts);
-        const oldPosts = [...threads];
-        const updatedPosts = [...oldPosts, ...newPosts.content];
-        setThreads(updatedPosts);
-        (newPosts.totalPages > (page + 1)) ? setHasMore(true) : setHasMore(false);
+      const newThreads = (response as AxiosResponse<Pagination<ThreadData>>).data;
+      if (newThreads.content && newThreads.content.length) {
+        console.log("newThreads:", newThreads);
+        const oldThreads = [...threads];
+        const updatedThreads = [...oldThreads, ...newThreads.content];
+        setThreads(updatedThreads);
+        (newThreads.totalPages > (page + 1)) ? setHasMore(true) : setHasMore(false);
       }
     }).catch((error) => {
       console.error("Error fetching posts:", error);
@@ -64,10 +66,77 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
     });
   };
 
+  const getAuthorComments = () => {
+    const p = page;
+    getAuthorCommentsList(p).then((response) => {
+      if (response instanceof AxiosError) {
+        setIsLoading(false);
+        return;
+      }
+
+      const newThreads = (response as AxiosResponse<Pagination<ThreadData>>).data;
+      if (newThreads.content && newThreads.content.length) {
+        console.log("newThreads:", newThreads);
+        const oldThreads = [...threads];
+        const updatedThreads = [...oldThreads, ...newThreads.content];
+        setThreads(updatedThreads);
+        (newThreads.totalPages > (page + 1)) ? setHasMore(true) : setHasMore(false);
+      }
+    }).catch((error) => {
+      console.error("Error fetching posts:", error);
+    }).finally(() => {
+      setIsLoading(false);
+    });
+  };
+
+  const getLatestThreads = () => {
+    const p = page;
+    getLatestThreadList(p).then((response) => {
+      if (response instanceof AxiosError) {
+        setIsLoading(false);
+        return;
+      }
+
+      const newThreads = (response as AxiosResponse<Pagination<ThreadData>>).data;
+      if (newThreads.content && newThreads.content.length) {
+        console.log("newThreads:", newThreads);
+        const oldThreads = [...threads];
+        const updatedThreads = [...oldThreads, ...newThreads.content];
+        setThreads(updatedThreads);
+        (newThreads.totalPages > (page + 1)) ? setHasMore(true) : setHasMore(false);
+      }
+    }).catch((error) => {
+      console.error("Error fetching posts:", error);
+    }).finally(() => {
+      setIsLoading(false);
+    });
+  };
+  const getThreadsFunction = () => {
+    console.log("router.pathname:", router.pathname);
+    switch (router.pathname) {
+      case '/me/threads':
+        user?.username && getAuthorThreads(user.username);
+        break;
+      case '/me/comments':
+        getAuthorComments();
+        break;
+      case '/':
+        getLatestThreads();
+        break;
+      default:
+        if (router.pathname.includes('/user') && id?.length) {
+          getAuthorThreads(id as string);
+        }
+        break;
+    }
+  }
+
 
 
   return (
+
     <div className={`h-full overflow-y-scroll ${isMePage ? 'author-threads' : ''}`}>
+      {router.pathname}
       {isLoading && <div className="m-4 mx-auto"><div className="loader"></div></div>}
       {threads.length ? threads.map((thread) => (
         <Thread key={thread.id}
@@ -89,6 +158,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
           {isLoading ? "Loading..." : "Load More"}
         </button>
       )}
+      <div><Toaster /></div>
     </div>
   );
 
