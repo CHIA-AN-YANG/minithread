@@ -1,51 +1,30 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { Pagination, ThreadData } from '../model/model';
-import { getApiUrl } from './util';
-const Cookies = require('js-cookie');
-const TOKEN_COOKIE = 'auth_token';
+import { authedGet, authedPost, get } from './baseAdaptor';
 
-const apiUrl = getApiUrl();
-const token = Cookies.get(TOKEN_COOKIE);
 
-export const getThread = async (postthreadId: string): Promise<ThreadData | AxiosError> => {
-  return await axios.get(apiUrl + '/api/threads/' + postthreadId, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, must-revalidate',
-      'Content-Type': 'application/json',
-    }
-  }).catch((error) => {
-    return error
-  });
+export const getThread = async (postthreadId: string): Promise<AxiosResponse<ThreadData> | AxiosError> => {
+  return await authedGet<ThreadData>(`/threads/${postthreadId}`);
 }
 
 export const postThread = async (inputData: { content: string, parent?: string }): Promise<AxiosResponse<ThreadData> | AxiosError> => {
-  return await axios.post(apiUrl + '/api/threads', inputData, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, must-revalidate',
-      'Content-Type': 'application/json',
-    }
-  }).catch((error) => {
-    return error
-  });
+  return await authedPost<ThreadData>('/threads', inputData);
 }
 
 export const getAuthorThreadList = async (author: string, page?: number): Promise<AxiosResponse<Pagination<ThreadData>> | AxiosError> => {
-  let url = apiUrl + '/api/threads/by-author/' + author;
-  if (page !== undefined) {
-    url += `?page=${page}`;
-  }
+  let url = `/threads/by-author/${author}`;
+  page && (url += `?page=${page}`);
+  return await get<Pagination<ThreadData>>(url);
+}
 
-  return await axios.get(url, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, must-revalidate',
-      'Content-Type': 'application/json',
-    }
-  }).then((response) => {
-    return response;
-  }).catch((error) => {
-    return error;
-  });
+export const getAuthorCommentsList = async (page?: number): Promise<AxiosResponse<Pagination<ThreadData>> | AxiosError> => {
+  let url = '/me/comments';
+  page && (url += `?page=${page}`);
+  return await authedGet<Pagination<ThreadData>>(url);
+}
+
+export const getLatestThreadList = async (page?: number): Promise<AxiosResponse<Pagination<ThreadData>> | AxiosError> => {
+  let url = '/threads/latest';
+  page && (url += `?page=${page}`);
+  return await get<Pagination<ThreadData>>(url);
 }
