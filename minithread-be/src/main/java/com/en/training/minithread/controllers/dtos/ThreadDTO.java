@@ -15,6 +15,7 @@ public class ThreadDTO {
   private String createdAt;
   private String updatedAt;
   private ArrayList<ThreadDTO> comments;
+  private int commentCount;
 
   public ThreadDTO() {
     this.id = "";

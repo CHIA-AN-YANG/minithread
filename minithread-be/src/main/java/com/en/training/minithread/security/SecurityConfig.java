@@ -56,26 +56,33 @@ public class SecurityConfig {
     }
 
     @Bean
+    public InMemoryUserDetailsManager users() {
+        return new InMemoryUserDetailsManager(User.withUsername("chiouchiou").password("{noop}password").authorities("read").build());
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(withDefaults()))
                 .authorizeHttpRequests(authorize -> authorize
                         // swagger
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // Public endpoints
+                        .requestMatchers(HttpMethod.GET,"/api/user/**", "/api/threads/by-author/**", "/api/threads/latest").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/threads/***").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login","/api/auth/register").permitAll()
                         // Protected endpoints
-                        .requestMatchers("/api/me/**").authenticated()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.POST, "/api/threads").authenticated()
+//                        .requestMatchers(HttpMethod.DELETE, "/api/threads/*").authenticated()
+//                        .requestMatchers("/api/me/*").authenticated()
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(withDefaults()))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
 

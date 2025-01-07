@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findByAuthor_Username(String username, Pageable pageable);
 
+  @Query("SELECT p FROM Post p WHERE p.parentPost IS NULL")
+  Page<Post> findAllNotComments(Pageable pageable);
+
   @Query("SELECT p FROM Post p WHERE p.author = :username AND p.parentPost IS NULL")
   Page<Post> findTopLevelPostsByAuthor(
           @Param("username") String username,

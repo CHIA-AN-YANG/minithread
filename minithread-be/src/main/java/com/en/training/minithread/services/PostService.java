@@ -13,10 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class PostService {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
     private final PostRepository postRepository;
@@ -39,7 +42,7 @@ public class PostService {
 
     public Page<Post> getPostList(PageRequest pageRequest) {
         try {
-            return postRepository.findAll(pageRequest);
+            return postRepository.findAllNotComments(pageRequest);
         } catch (Exception e) {
             log.error("Cannot get post pagination.", e);
             List<Post> emptyList = Collections.emptyList();
@@ -50,6 +53,16 @@ public class PostService {
     public Page<Post> getPostList(PageRequest pageRequest, String username) {
         try {
             return postRepository.findTopLevelPostsByAuthor(username, pageRequest);
+        } catch (Exception e) {
+            log.error("Cannot get post pagination.", e);
+            List<Post> emptyList = Collections.emptyList();
+            return new PageImpl<>(emptyList, PageRequest.of(0, 5), 0);
+        }
+    }
+
+    public Page<Post> getPostCommentsList(PageRequest pageRequest, String username) {
+        try {
+            return postRepository.findCommentsByAuthor(username, pageRequest);
         } catch (Exception e) {
             log.error("Cannot get post pagination.", e);
             List<Post> emptyList = Collections.emptyList();
@@ -117,7 +130,7 @@ public class PostService {
         throw new PostNotFoundException(id);
     }
 
-    public ThreadDTO mapPostToThreadDTO(Post post) {
+    public ThreadDTO mapBaseThreadToThreadDTO(Post post) {
         ThreadDTO threadDTO = new ThreadDTO();
         threadDTO.setId(post.getId().toString());
         if (post.getParentPost() != null) {
@@ -125,11 +138,6 @@ public class PostService {
         }
         if (post.getContent() != null) {
             threadDTO.setContent(post.getContent());
-        }
-        if (post.getComments() != null) {
-            List<ThreadDTO> commentsList = post.getComments().stream().map(this::mapPostToThreadDTO).toList();
-            ArrayList<ThreadDTO> arrayList = new ArrayList<>(commentsList);
-            threadDTO.setComments(arrayList);
         }
         if (post.getAuthor() != null) {
             threadDTO.setAuthor(post.getAuthor().getUsername());
@@ -140,7 +148,22 @@ public class PostService {
         if (post.getUpdatedAt() != null) {
             threadDTO.setUpdatedAt(post.getUpdatedAt().toString());
         }
+        if (post.getComments() != null) {
+            final int commentSize = new ArrayList<>(post.getComments()).size();
+            threadDTO.setCommentCount(commentSize);
+        }
         return threadDTO;
+    }
+
+    public ThreadDTO mapPostToThreadDTO(Post post) {
+        ThreadDTO dto = mapBaseThreadToThreadDTO(post);
+        if (post.getComments() != null) {
+            List<Post> commentsCopy = new ArrayList<>(post.getComments());
+            ArrayList<ThreadDTO> arrayList = commentsCopy.stream()
+                    .map(this::mapBaseThreadToThreadDTO).collect(Collectors.toCollection(ArrayList::new));
+            dto.setComments(arrayList);
+        }
+        return dto;
     }
 
     public static class PostNotFoundException extends RuntimeException {

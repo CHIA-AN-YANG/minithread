@@ -16,6 +16,7 @@ export interface ThreadData {
   updatedAt?: string;
   parentThread?: string;
   comments?: ThreadData[];
+  commentsCount?: number;
   likesUser?: string[];
   likesCount?: number;
 }

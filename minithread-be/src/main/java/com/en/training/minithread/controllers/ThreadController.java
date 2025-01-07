@@ -22,8 +22,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @Tag(name = "Threads", description = "Operations for threads")
@@ -57,11 +60,20 @@ public class ThreadController {
       @ApiResponse(responseCode = "404", description = "Threads not found", content = @Content)
   })
   @GetMapping("/latest")
-  public Page<Post> getLatestPosts(
+  public ResponseEntity<PageResponse<ThreadDTO>> getLatestPosts(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "5") int size) {
     Sort sort = Sort.by("createdAt").descending();
-    return postService.getPostList(PageRequest.of(page, size, sort));
+    Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort));
+    ArrayList<Post> postList = new ArrayList<>(pageResultPost.getContent());
+    List<ThreadDTO> threadDTOList = postList.stream().map(postService::mapPostToThreadDTO).toList();
+    PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
+            threadDTOList,
+            pageResultPost.getNumber(),
+            pageResultPost.getTotalPages(),
+            pageResultPost.getTotalElements());
+
+    return ResponseEntity.ok(pageResultThreadDTO);
   }
 
   @Operation(summary = "Get threads by author", description = "Fetch threads from a specific author with pagination")
@@ -130,4 +142,20 @@ public class ThreadController {
     ThreadDTO threadDTO = postService.mapPostToThreadDTO(updatedPost);
     return new ResponseEntity<>(threadDTO, HttpStatus.OK);
   }
+
+  @Operation(summary = "Delete a thread", description = "Delete an existing thread in the system")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Post deleted successfully"),
+      @ApiResponse(responseCode = "404", description = "Post not found")
+  })
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    try {
+      postService.deletePost(id);
+      return ResponseEntity.noContent().build();
+    } catch (Exception e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
 }
