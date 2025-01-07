@@ -31,7 +31,13 @@
 
 .main-profile {
   display: grid;
-  grid-template-rows: 128px 41px calc(100vh - 247px) 50px;
+  grid-template-rows: 128px 41px calc(100% - 225px) 50px;
+  height: calc(100vh - 2rem);
+}
+
+.main-home {
+  display: grid;
+  grid-template-rows: calc(100% - 50px) 50px;
   height: calc(100vh - 2rem);
 }
 

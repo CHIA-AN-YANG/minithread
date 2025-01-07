@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     if (status === EntityStatus.SUCCESS) {
-      router.push('/profile');
+      router.push('/me/threads');
     }
   }, [status, router]);
 

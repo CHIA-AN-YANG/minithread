@@ -1,8 +1,9 @@
-import { getVerifiedUser } from '@/app/api/authAdaptor';
+
 import { UserData } from '@/app/model/model';
 import { AppThunk } from '@/app/store/store';
 import { AxiosError, AxiosResponse } from 'axios';
 import { setStatusLoading, setUser, setStatusSuccess, clearUser, setError, setStatusError, setStatusIdle } from '../reducers/slices/authSliceReducer';
+import { getMyProfile } from '@/app/api/authAdaptor';
 
 const Cookies = require('js-cookie');
 const TOKEN_COOKIE = 'auth_token';
@@ -15,9 +16,8 @@ export const getUser = (): AppThunk => async (dispatch) => {
       dispatch(getUserFail('No token found'));
       return;
     }
-    getVerifiedUser(token).then((response) => {
+    getMyProfile().then((response) => {
       if (response.status === 200 || response.status === 201) {
-        console.log('response', JSON.stringify(response, null, 2));
         dispatch(getUserSuccess((<AxiosResponse<UserData>>response).data));
         return;
       } else {
