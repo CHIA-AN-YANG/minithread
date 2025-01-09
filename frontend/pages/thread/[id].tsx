@@ -4,11 +4,10 @@ import InputForm from '@/app/components/form/InputForm';
 import BottomNavbar from '@/app/components/navbar/BottomNavbar';
 import Thread from '@/app/components/Thread';
 import { ThreadData } from '@/app/model/model';
-import { store } from '@/app/store/store';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Provider } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
 
 export default function ThreadPage() {
   const [thread, setThread] = useState<ThreadData | null>(null);
@@ -52,6 +51,7 @@ export default function ThreadPage() {
         </div>
         <BottomNavbar />
         <InputForm />
+        <div><Toaster /></div>
       </main>
     </div>
   );

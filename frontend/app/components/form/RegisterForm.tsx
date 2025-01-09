@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { registerUser } from '../../api/authAdaptor';
 import { useSelector } from 'react-redux';
 import { selectError } from '../../store/features/user/selectors/authSelectors';
+import { useRouter } from 'next/router';
 
 interface FormData {
   username: string;
@@ -17,6 +17,7 @@ const RegisterForm: React.FC = () => {
     password: '',
   });
 
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
   const apiErrorMsg = useSelector(selectError) as string;
@@ -104,6 +105,11 @@ const RegisterForm: React.FC = () => {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
           Register
+        </button>
+        <button
+          className="w-full bg-blue-300 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          onClick={() => router.back()}>
+          No, not yet.
         </button>
       </form>
       {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}

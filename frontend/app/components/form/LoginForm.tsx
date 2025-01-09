@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getAuth } from '../../store/features/user/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectStatus, selectError } from '../../store/features/user/selectors/authSelectors';
@@ -112,6 +112,11 @@ const LoginForm: React.FC = () => {
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Login
+        </button>
+        <button
+          className="w-full bg-blue-300 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          onClick={() => router.back()}>
+          Go back
         </button>
       </form>
       {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}

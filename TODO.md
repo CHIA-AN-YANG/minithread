@@ -31,10 +31,10 @@ Bugfix
  - [x] single post page
 
 [] Other functionalities
- - [] Navigation: homepage, latest, edit profile(on profile page only), logout(on profile page only)
- - [] Comment functionality
+ - [x] Navigation: homepage, latest, edit profile(on profile page only), logout(on profile page only)
+ - [x] Comment functionality
   - [x] can create comment
-  - [] show comment number on posts
+  - [x] show comment number on posts
   - [x] show comments on single post
  - [] Follow functionality
  - [] Like functionality
@@ -46,3 +46,6 @@ Bugfix
  - [] follow a user / unfollow a user
 
 [] Notification
+
+### Appearance
+[] customize tailwindcss

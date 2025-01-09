@@ -6,13 +6,18 @@ import { AppDispatch } from '../../store/store';
 import { selectStatus } from '@/app/store/features/user/selectors/authSelectors';
 import { EntityStatus } from '@/app/model/model';
 import UserCheckedIcon from '../icon/UserCheckedIcon';
+import { useRouter } from 'next/router';
 
 const BottomNavbar: React.FC = () => {
   const status = useSelector(selectStatus);
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
 
   const startNewThread = () => {
+    if (!authorizedUser()) {
+      router.push('/login');
+    }
     dispatch(startInput());
   }
   const authorizedUser = () => {

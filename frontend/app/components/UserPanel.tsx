@@ -55,6 +55,9 @@ const UserPanel = () => {
                   <h3>{user.username}</h3>
                   <h3 className="font-bold">{user.name}</h3>
                 </div>
+                <div className="ctas px-2 ml-auto" role="button" onClick={() => router.push('/me/edit')}>
+                  <span className="secondary">edit</span>
+                </div>
                 <div className="ctas" role="button" onClick={() => handleLogout()}>
                   <span className="secondary">logout</span>
                 </div>

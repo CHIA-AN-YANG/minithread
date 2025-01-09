@@ -11,10 +11,6 @@ const InputForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const uiState = useSelector(selectInputFormOpen);
 
-  const handleCloseForm = () => {
-    dispatch(endInput());
-  };
-
   const handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void = (e) => {
     setInputValue(e.target.value);
     dispatch(updateContent(e.target.value));
@@ -33,6 +29,10 @@ const InputForm: React.FC = () => {
       dispatch(sendThread());
       dispatch(endInput());
     }
+  };
+
+  const handleCloseForm = () => {
+    dispatch(endInput());
   };
 
   return (

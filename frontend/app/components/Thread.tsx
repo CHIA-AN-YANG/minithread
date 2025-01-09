@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { ThreadData } from '../model/model';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/router';
 
 type ThreadProps = {
   id: string;
@@ -23,12 +24,16 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   const username = store.getState().auth.user?.username;
   const auth = author === username;
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const handleLike = () => {
     likes === 0 ? setLikes(1) : setLikes(0);
   };
 
   const handleReply = () => {
+    if (!username) {
+      router.push('/login');
+    }
     dispatch(startInput(id));
   };
 
@@ -67,7 +72,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
           </Link>
           <p className="text-xs text-gray-500"><time>{handleDate(createdAt)}</time></p>
         </header>
-        <Link href={`/thread/${id}`}>
+        <Link href={`/thread/${parentThread ? parentThread : id}`}>
           <p className="text-base mb-3">{content}</p>
         </Link>
         <footer className="flex space-x-2">

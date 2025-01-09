@@ -11,7 +11,6 @@ import { Provider, useSelector } from 'react-redux';
 
 export default function MeThreadsPage() {
 
-
   return (
     <div className="page">
       <Provider store={store}>
