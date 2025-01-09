@@ -11,6 +11,10 @@ const InputForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const uiState = useSelector(selectInputFormOpen);
 
+  const handleCloseForm = () => {
+    dispatch(endInput());
+  };
+
   const handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void = (e) => {
     setInputValue(e.target.value);
     dispatch(updateContent(e.target.value));
@@ -33,22 +37,25 @@ const InputForm: React.FC = () => {
 
   return (
 
-    (uiState === 'open') && <div className="absolute bottom-0 left-0 flex p-4 w-full items-start bg-white">
-      <textarea
-        className="flex-grow text-left text-top p-2 h-20 outline-none text-gray-700 border border-gray-300 rounded-md"
-        placeholder="What's new?"
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-      />
-      <button
-        className="ml-2 p-2 w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white"
-        onClick={handleSend}
-        aria-label="Send"
-      >
-        <i className="lni lni-location-arrow-right lni-lg"></i>
-      </button>
-    </div>
+    (uiState === 'open') && <>
+      <div className="absolute top-0 left-0 h-full w-full bg-black opacity-10" onClick={handleCloseForm}></div>
+      <div className="absolute bottom-0 left-0 flex p-4 w-full items-start bg-white">
+        <textarea
+          className="flex-grow text-left text-top p-2 h-20 outline-none text-gray-700 border border-gray-300 rounded-md"
+          placeholder="What's new?"
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+        />
+        <button
+          className="ml-2 p-2 w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white"
+          onClick={handleSend}
+          aria-label="Send"
+        >
+          <i className="lni lni-location-arrow-right lni-lg"></i>
+        </button>
+      </div>
+    </>
   );
 };
 

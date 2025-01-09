@@ -11,12 +11,13 @@ import { Provider, useSelector } from 'react-redux';
 
 export default function MeThreadsPage() {
 
+
   return (
     <div className="page">
       <Provider store={store}>
         <main className="main-profile">
           <UserPanel />
-          <MeNavbar page="me" />
+          <MeNavbar />
           <ThreadList isMePage={true} />
           <BottomNavbar />
           <InputForm />

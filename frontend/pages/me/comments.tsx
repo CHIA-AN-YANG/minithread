@@ -13,7 +13,7 @@ export default function MeCommentsPage() {
     <div className="page">
       <main className="main-profile">
         <UserPanel />
-        <MeNavbar page="me" />
+        <MeNavbar />
         <ThreadList isMePage={true} />
         <BottomNavbar />
         <InputForm />

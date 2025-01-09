@@ -136,7 +136,6 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   return (
 
     <div className={`h-full overflow-y-scroll ${isMePage ? 'author-threads' : ''}`}>
-      {router.pathname}
       {isLoading && <div className="m-4 mx-auto"><div className="loader"></div></div>}
       {threads.length ? threads.map((thread) => (
         <Thread key={thread.id}

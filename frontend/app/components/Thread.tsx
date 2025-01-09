@@ -52,7 +52,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   const copyPostLink = (id: string): void => {
     console.log('copying post link');
     const baseUrl = window.location.origin;
-    const postUrl = `${baseUrl}/threads/${id}`;
+    const postUrl = `${baseUrl}/thread/${id}`;
     navigator.clipboard.writeText(postUrl)
       .then(() => toast.success('Post link copied to clipboard!'))
       .catch(() => toast.error('Failed to copy post link.'));

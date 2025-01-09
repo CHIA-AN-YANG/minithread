@@ -4,7 +4,7 @@ import { authedGet, authedPost, get } from './baseAdaptor';
 
 
 export const getThread = async (postthreadId: string): Promise<AxiosResponse<ThreadData> | AxiosError> => {
-  return await authedGet<ThreadData>(`/threads/${postthreadId}`);
+  return await get<ThreadData>(`/threads/${postthreadId}`);
 }
 
 export const postThread = async (inputData: { content: string, parent?: string }): Promise<AxiosResponse<ThreadData> | AxiosError> => {
