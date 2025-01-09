@@ -27,21 +27,21 @@ Bugfix
 [] Page
  - [] Update Profile page
  - [] Other user's profile page
- - [] latest post page
- - [] single post page
+ - [x] latest post page
+ - [x] single post page
 
 [] Other functionalities
  - [] Navigation: homepage, latest, edit profile(on profile page only), logout(on profile page only)
  - [] Comment functionality
-  - [] can create comment
+  - [x] can create comment
   - [] show comment number on posts
-  - [] show comments on single post
+  - [x] show comments on single post
  - [] Follow functionality
  - [] Like functionality
 
 [] Apis
- - [] Some get api should be open to public 🔥🔥🔥
- - [] Set Comment
+ - [x] Some get api should be open to public 🔥🔥🔥
+ - [x] Set Comment
  - [] like a post / unlike a post
  - [] follow a user / unfollow a user
 
