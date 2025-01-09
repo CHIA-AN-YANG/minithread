@@ -12,13 +12,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("SELECT p FROM Post p WHERE p.parentPost IS NULL")
   Page<Post> findAllNotComments(Pageable pageable);
 
-  @Query("SELECT p FROM Post p WHERE p.author = :username AND p.parentPost IS NULL")
+  @Query("SELECT p FROM Post p WHERE p.author.username = :username AND p.parentPost IS NULL")
   Page<Post> findTopLevelPostsByAuthor(
           @Param("username") String username,
           Pageable pageable
   );
 
-  @Query("SELECT p FROM Post p WHERE p.author = :username AND p.parentPost IS NOT NULL")
+  @Query("SELECT p FROM Post p WHERE p.author.username = :username AND p.parentPost IS NOT NULL")
   Page<Post> findCommentsByAuthor(
           @Param("username") String username,
           Pageable pageable
