@@ -1,5 +1,7 @@
 "use client";
 import { getThread } from '@/app/api/threadAdaptor';
+import InputForm from '@/app/components/form/InputForm';
+import BottomNavbar from '@/app/components/navbar/BottomNavbar';
 import Thread from '@/app/components/Thread';
 import { ThreadData } from '@/app/model/model';
 import { store } from '@/app/store/store';
@@ -32,16 +34,24 @@ export default function ThreadPage() {
 
   return (
     <div className="page">
-      <main className="main">
-        {thread && <Thread
-          id={id}
-          author={thread.author}
-          content={thread.content}
-          createdAt={thread.createdAt || ""}
-          likesCount={thread.likesCount}
-          parentThread={thread.parentThread}
-          commentList={thread.comments}
-        />}
+      <main className="main-single-thread">
+        <header>
+          {thread?.author && <h1 className="text-md text-center">By {thread.author}</h1>}
+          {thread?.createdAt && <p className="text-sm text-gray-500 text-center"><time>Posted on {thread.createdAt}</time></p>}
+        </header>
+        <div>
+          {thread && <Thread
+            id={id}
+            author={thread.author}
+            content={thread.content}
+            createdAt={thread.createdAt || ""}
+            likesCount={thread.likesCount}
+            parentThread={thread.parentThread}
+            commentList={thread.comments}
+          />}
+        </div>
+        <BottomNavbar />
+        <InputForm />
       </main>
     </div>
   );

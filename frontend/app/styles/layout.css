@@ -41,6 +41,12 @@
   height: calc(100vh - 2rem);
 }
 
+.main-single-thread {
+  display: grid;
+  grid-template-rows: 100px calc(100% - 140px) 50px;
+  height: calc(100vh - 2rem);
+}
+
 .author-threads header>h3 {
   display: none;
 }
