@@ -5,12 +5,14 @@
 
   --button-primary-hover: #4f4a4a;
   --button-secondary-hover: #f2f2f2;
+  --bg-c: floralwhite;
 
   height: 100vh;
   padding: 1rem;
   max-width: Min(800px, 100vw);
   margin: 0 auto;
   font-family: var(--font-geist-sans);
+  background-color: var(--bg-c);
 }
 
 @media (prefers-color-scheme: dark) {

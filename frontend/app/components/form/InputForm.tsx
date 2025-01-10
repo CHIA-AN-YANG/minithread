@@ -41,7 +41,7 @@ const InputForm: React.FC = () => {
       <div className="absolute top-0 left-0 h-full w-full bg-black opacity-10" onClick={handleCloseForm}></div>
       <div className="absolute bottom-0 left-0 flex p-4 w-full items-start bg-white">
         <textarea
-          className="flex-grow text-left text-top p-2 h-20 outline-none text-gray-700 border border-gray-300 rounded-md"
+          className="flex-grow text-left text-top p-2 h-20 outline-none text-gray-700 border border-primary rounded-md"
           placeholder="What's new?"
           value={inputValue}
           onChange={handleInputChange}

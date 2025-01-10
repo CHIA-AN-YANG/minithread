@@ -25,7 +25,7 @@ const BottomNavbar: React.FC = () => {
   }
 
   return (
-    <div className="h-15 p-2 border-t-2 border-gray-300 flex justify-around items-center">
+    <div className="h-15 p-2 border-t-2 border-primary flex justify-around items-center">
       <Link href="/" className="flex flex-col items-center" aria-label="Home">
         <i className="lni lni-home-2 lni-32 text-slate-700 hover:text-blue-50"></i>
       </Link>

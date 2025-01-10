@@ -50,7 +50,7 @@ const UserPanel = () => {
         {user ?
           <>
             <section className="justify-start flex flex-col">
-              <div className="flex pb-2 justify-between w-full sm:border-b-2 border-gray-300 border-solid">
+              <div className="flex pb-2 justify-between w-full sm:border-b-2 border-primary border-solid">
                 <div className="flex flex-col ">
                   <h3>{user.username}</h3>
                   <h3 className="font-bold">{user.name}</h3>
@@ -69,16 +69,17 @@ const UserPanel = () => {
               </div>
             </section>
 
-            <section className="flex overflow-hidden sm:m-1 my-auto min-w-20 min-h-20 w-20 h-20 align-center right-panel">
-              <Image src="/images/default-profile-picture.jpg"
+            <section className="flex overflow-hidden sm:m-1 my-auto min-w-20 min-h-20 w-20 h-20 align-center border border-gray-500 rounded-lg">
+              <Image src="/images/avatar-presets/avatar-13.jpg"
                 alt={user.username + "\'s profilePicture"}
+                className='object-cover mx-auto'
                 width={100}
                 height={100}
               />
               {(user.profilePicture?.length) && imageLoaded &&
                 <Image
                   src={user.profilePicture!}
-                  alt={user.username + "\'s photo"}
+                  alt={user.username + "\'s picture"}
                   placeholder='empty'
                   width={200}
                   height={200}

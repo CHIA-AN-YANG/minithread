@@ -4,9 +4,14 @@ module.exports = {
     './**/page.tsx',
     './**/components/**/*.tsx',
   ],
-
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#4f68e4',
+        secondary: '#f9a8d4',
+        panelBg: '#fefcf5',
+      },
+    },
   },
   plugins: [],
 };

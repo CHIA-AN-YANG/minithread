@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { registerUser } from '../../api/authAdaptor';
+import { registerUser, updateMe } from '../../api/authAdaptor';
 import { useSelector } from 'react-redux';
 import { selectError } from '../../store/features/user/selectors/authSelectors';
 import { useRouter } from 'next/router';
 import RegisterForm from './RegisterForm';
+import { authedPost, authedPut } from '@/app/api/baseAdaptor';
 
 interface FormData {
   name: string;
@@ -57,8 +58,8 @@ const MeUpdateForm: React.FC = () => {
       data.append('name', formData.name);
       data.append('email', formData.email);
       data.append('bio', formData.bio);
-      data.append('profilePicture', formData.profilePicture);
-      const response = await registerUser(data);
+      //data.append('profilePicture', formData.profilePicture);
+      const response = await updateMe(data);
       if (response.status === 200 || response.status === 201) {
         setSuccessMessage('User update successful!');
         router.push('/me/threads');
@@ -79,7 +80,7 @@ const MeUpdateForm: React.FC = () => {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
         <label htmlFor="email" className="block text-sm font-medium text-gray-500">email</label>
         <input
@@ -88,7 +89,7 @@ const MeUpdateForm: React.FC = () => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
         <label htmlFor="bio" className="block text-sm font-medium text-gray-500">bio</label>
         <input
@@ -97,7 +98,7 @@ const MeUpdateForm: React.FC = () => {
           name="bio"
           value={formData.bio}
           onChange={handleChange}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
         <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-500">profilePicture</label>
         <input
@@ -106,7 +107,7 @@ const MeUpdateForm: React.FC = () => {
           name="profilePicture"
           value={formData.profilePicture}
           onChange={handleChange}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
         <button
           type="submit"
