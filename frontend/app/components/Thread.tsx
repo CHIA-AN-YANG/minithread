@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import 'lineicons/dist/lineicons.css';
 import { AppDispatch, store } from '../store/store';
 import { startInput } from '../store/features/user/actions/threadActions';
@@ -30,17 +30,29 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
+  useEffect(() => {
+    if (likedByMe && likedByCount) {
+      likedByCount = likedByCount - 1;
+    }
+    setLiked(likedByMe ? 1 : 0);
+  }, []);
+
   const handleLiked = () => {
     if (!username) {
       router.push('/login');
       return;
     }
     if (liked === 0) {
+      // set liked asap for better UX
       setLiked(1);
-      authedPost(`/threads/${id}/like`, {})
+      authedPost(`/threads/${id}/like`, {}).then(() => {
+        setLiked(1);
+      });
     } else if (liked === 1) {
       setLiked(0);
-      authedDelete(`/threads/${id}/like`, {})
+      authedDelete(`/threads/${id}/like`, {}).then(() => {
+        setLiked(0);
+      });
     }
   };
 
