@@ -55,10 +55,12 @@ const LoginForm: React.FC = () => {
   if (status === EntityStatus.LOADING || status === EntityStatus.SUCCESS) {
     return (
       <>
-        <div className="loader"></div>
-        <p className="loading-msg">{
-          (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "code authenticated..."
-        }</p>
+        <div className='absolute top-0 bottom-0 w-full h-full flex flex-col justify-center items-center'>
+          <div className='loader'></div>
+          <p className='loading-msg'>{
+            (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "code authenticated..."
+          }</p>
+        </div>
       </>);
   }
 
