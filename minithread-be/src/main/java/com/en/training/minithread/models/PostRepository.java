@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.UUID;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findByAuthor_Username(String username, Pageable pageable);
 
@@ -23,4 +25,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
           @Param("username") String username,
           Pageable pageable
   );
+
+  @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Post p " +
+          "JOIN p.likedBy l WHERE p.id = :postId AND l.id = :accountId")
+  boolean isPostLikedByAccount(@Param("postId") Long postId, @Param("accountId") UUID accountId);
+
 }

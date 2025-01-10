@@ -109,8 +109,7 @@ public class PostService {
         log.error("Cannot update post. Post not found with id: " + id);
         throw new PostNotFoundException(id);
     }
-
-    // set parent post for a post
+    
     public Post setParentPost(Long id, Long parentId) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
@@ -130,31 +129,12 @@ public class PostService {
         throw new PostNotFoundException(id);
     }
 
-    public ThreadDTO mapBaseThreadToThreadDTO(Post post) {
-        ThreadDTO threadDTO = new ThreadDTO();
-        threadDTO.setId(post.getId().toString());
-        if (post.getParentPost() != null) {
-            threadDTO.setParentPost(post.getParentPost().getId().toString());
+    public static class PostNotFoundException extends RuntimeException {
+        public PostNotFoundException(Long id) {
+            super(String.format("Post not found with id: %s", id));
         }
-        if (post.getContent() != null) {
-            threadDTO.setContent(post.getContent());
-        }
-        if (post.getAuthor() != null) {
-            threadDTO.setAuthor(post.getAuthor().getUsername());
-        }
-        if (post.getCreatedAt() != null) {
-            threadDTO.setCreatedAt(post.getCreatedAt().toString());
-        }
-        if (post.getUpdatedAt() != null) {
-            threadDTO.setUpdatedAt(post.getUpdatedAt().toString());
-        }
-        if (post.getComments() != null) {
-            final int commentSize = new ArrayList<>(post.getComments()).size();
-            threadDTO.setCommentCount(commentSize);
-        }
-        return threadDTO;
     }
-
+    
     public ThreadDTO mapPostToThreadDTO(Post post) {
         ThreadDTO dto = mapBaseThreadToThreadDTO(post);
         if (post.getComments() != null) {
@@ -166,12 +146,57 @@ public class PostService {
         return dto;
     }
 
-    public static class PostNotFoundException extends RuntimeException {
-        public PostNotFoundException(Long id) {
-            super(String.format("Post not found with id: %s", id));
+    public ThreadDTO mapPostToThreadDTO(Post post, final String myUsername) {
+        ThreadDTO threadDto = mapBaseThreadToThreadDTO(post);
+        if(!post.getLikedBy().isEmpty()) {
+            threadDto.setLikedByMe(post.getLikedBy().stream().anyMatch(user -> myUsername.equals(user.getUsername())));
         }
+        if (post.getComments() != null) {
+            List<Post> commentsCopy = new ArrayList<>(post.getComments());
+            ArrayList<ThreadDTO> arrayList = commentsCopy.stream()
+                    .map(p -> mapBaseThreadToThreadDTO(p, myUsername)).collect(Collectors.toCollection(ArrayList::new));
+            threadDto.setComments(arrayList);
+        }
+        return threadDto;
     }
 
+    public ThreadDTO mapBaseThreadToThreadDTO(Post post, final String myUsername) {
+        ThreadDTO threadDto = mapPostToThreadDTO(post);
+        if(!post.getLikedBy().isEmpty()) {
+            threadDto.setLikedByMe(post.getLikedBy().stream().anyMatch(user -> myUsername.equals(user.getUsername())));
+        }
+        return threadDto;
+    }
+
+    public ThreadDTO mapBaseThreadToThreadDTO(Post post) {
+        ThreadDTO threadDto = new ThreadDTO();
+        threadDto.setId(post.getId().toString());
+        if (post.getParentPost() != null) {
+            threadDto.setParentPost(post.getParentPost().getId().toString());
+        }
+        if (post.getContent() != null) {
+            threadDto.setContent(post.getContent());
+        }
+        if (post.getAuthor() != null) {
+            threadDto.setAuthor(post.getAuthor().getUsername());
+        }
+        if (post.getCreatedAt() != null) {
+            threadDto.setCreatedAt(post.getCreatedAt().toString());
+        }
+        if (post.getUpdatedAt() != null) {
+            threadDto.setUpdatedAt(post.getUpdatedAt().toString());
+        }
+        if (post.getComments() != null) {
+            final int commentSize = post.getComments().size();
+            threadDto.setCommentCount(commentSize);
+        }
+        if (!post.getLikedBy().isEmpty()) {
+            final ArrayList<String> likedByList = post.getLikedBy().stream().map(Account::getUsername)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            threadDto.setLikedByCount(likedByList.size());
+        }
+        return threadDto;
+    }
     private Post setRawPost(final String content, final String username) {
         Post newPost = new Post();
         newPost.setContent(content);

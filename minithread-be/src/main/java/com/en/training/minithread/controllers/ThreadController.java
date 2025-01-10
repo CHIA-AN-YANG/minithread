@@ -5,6 +5,7 @@ import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.services.PostService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,13 +64,22 @@ public class ThreadController {
   @GetMapping("/latest")
   public ResponseEntity<PageResponse<ThreadDTO>> getLatestPosts(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "5") int size) {
+      @RequestParam(defaultValue = "5") int size,
+      Authentication authentication ) {
     Sort sort = Sort.by("createdAt").descending();
+    final String myUsername = checkOptionalAuthentication(authentication);
     Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort));
     ArrayList<Post> postList = new ArrayList<>(pageResultPost.getContent());
-    List<ThreadDTO> threadDTOList = postList.stream().map(postService::mapPostToThreadDTO).toList();
+    List<ThreadDTO> threadDtoList;
+    if(StringUtils.isNotEmpty(myUsername)){
+      threadDtoList = pageResultPost.getContent().stream().map(p -> postService.mapPostToThreadDTO(p, myUsername))
+              .toList();
+    } else {
+      threadDtoList = pageResultPost.getContent().stream().map(postService::mapPostToThreadDTO)
+              .toList();
+    }
     PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
-            threadDTOList,
+            threadDtoList,
             pageResultPost.getNumber(),
             pageResultPost.getTotalPages(),
             pageResultPost.getTotalElements());
@@ -85,14 +96,24 @@ public class ThreadController {
   public ResponseEntity<PageResponse<ThreadDTO>> getUserPosts(
       @PathVariable String username,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "5") int size) {
+      @RequestParam(defaultValue = "5") int size,
+      Authentication authentication ) {
     Sort sort = Sort.by("createdAt").descending();
+    final String myUsername = checkOptionalAuthentication(authentication);
+
     try {
       Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort), username);
-      List<ThreadDTO> threadDTOList = pageResultPost.getContent().stream().map(postService::mapPostToThreadDTO)
-          .toList();
+      List<ThreadDTO> threadDtoList;
+      if(StringUtils.isNotEmpty(myUsername)){
+        threadDtoList = pageResultPost.getContent().stream().map(p -> postService.mapPostToThreadDTO(p, myUsername))
+                .toList();
+      } else {
+        threadDtoList = pageResultPost.getContent().stream().map(postService::mapPostToThreadDTO)
+                .toList();
+      }
+
       PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
-          threadDTOList,
+          threadDtoList,
           pageResultPost.getNumber(),
           pageResultPost.getTotalPages(),
           pageResultPost.getTotalElements());
@@ -158,4 +179,12 @@ public class ThreadController {
     }
   }
 
+
+  private String checkOptionalAuthentication(Authentication authentication) {
+    if (Objects.nonNull(authentication) && authentication.isAuthenticated()
+            && (authentication.getPrincipal() instanceof Jwt jwt)) {
+      return jwt.getClaim("sub");
+    }
+    return StringUtils.EMPTY;
+  }
 }

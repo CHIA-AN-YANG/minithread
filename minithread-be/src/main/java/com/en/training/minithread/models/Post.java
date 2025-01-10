@@ -48,18 +48,18 @@ public class Post {
 
     @ManyToMany
     @JoinTable(name = "likes", joinColumns = @JoinColumn(name = "postId"), inverseJoinColumns = @JoinColumn(name = "accountId"))
-    private Set<Account> accounts = new HashSet<>();
+    private Set<Account> likedBy = new HashSet<>();
 
     public Post() {
     }
 
     public Post(String content, Account author,
-            String keywords, Set<Account> accounts,
+            String keywords, Set<Account> likedBy,
             Post parentPost, Set<Post> comments) {
         this.content = content;
         this.author = author;
         this.keywords = keywords;
-        this.accounts = accounts;
+        this.likedBy = likedBy;
         this.parentPost = parentPost;
         this.comments = comments;
     }
