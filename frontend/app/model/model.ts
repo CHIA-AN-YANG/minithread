@@ -17,8 +17,9 @@ export interface ThreadData {
   parentThread?: string;
   comments?: ThreadData[];
   commentsCount?: number;
-  likesUser?: string[];
-  likesCount?: number;
+  likedBy?: string[];
+  likedByMe?: boolean;
+  likedByCount?: number;
 }
 
 export interface Pagination<T> {

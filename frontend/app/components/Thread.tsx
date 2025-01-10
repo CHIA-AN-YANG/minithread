@@ -8,6 +8,9 @@ import { ThreadData } from '../model/model';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
+import { displayDateWithDiff } from '../util/date';
+import FilledHeartIcon from './icon/FilledHeartIcon';
+import { authedDelete, authedPost } from '../api/baseAdaptor';
 
 type ThreadProps = {
   id: string;
@@ -16,18 +19,29 @@ type ThreadProps = {
   createdAt: string;
   parentThread?: string;
   commentList?: ThreadData[];
-  likesCount?: number;
+  likedByCount?: number;
+  likedByMe?: boolean;
 };
 
-const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, createdAt, likesCount }) => {
-  const [likes, setLikes] = useState(0);
+const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, createdAt, likedByCount, likedByMe }) => {
+  const [liked, setLiked] = useState(likedByMe ? 1 : 0);
   const username = store.getState().auth.user?.username;
   const auth = author === username;
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  const handleLike = () => {
-    likes === 0 ? setLikes(1) : setLikes(0);
+  const handleLiked = () => {
+    if (!username) {
+      router.push('/login');
+      return;
+    }
+    if (liked === 0) {
+      setLiked(1);
+      authedPost(`/threads/${id}/like`, {})
+    } else if (liked === 1) {
+      setLiked(0);
+      authedDelete(`/threads/${id}/like`, {})
+    }
   };
 
   const handleReply = () => {
@@ -38,20 +52,12 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   };
 
   const handleDelete = () => {
-    axios.delete(`/api/posts/${id}`).then(() => {
-      //onDelete(id);
+    axios.delete(`/api/threads/${id}`).then(() => {
+      toast.success('Post deleted successfully!');
     });
   };
   const handleDate = (isoDate: string): string => {
-    const now = new Date();
-    const date = new Date(isoDate);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return displayDateWithDiff(isoDate);
   };
 
   const copyPostLink = (id: string): void => {
@@ -65,7 +71,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
 
   return (
     <>
-      <article className={`border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50 ${parentThread ? 'ml-4 border-l-4 border-gray-400' : ''}`}>
+      <article className={`border border-primary rounded-lg p-4 mb-4 bg-panelBg ${parentThread ? 'ml-4 border-l-4 border-secondary' : ''}`}>
         <header className="mb-3">
           <Link href={`/user/${author}`}>
             <h3 className="text-sm font-semibold">{author}</h3>
@@ -77,12 +83,12 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
         </Link>
         <footer className="flex space-x-2">
           <button
-            onClick={handleLike}
+            onClick={handleLiked}
             className="flex items-center justify-center px-1 py-1 text-lg mr-2"
             aria-label="like"
           >
-            <i className="lni lni-heart lni-lg text-slate-500 hover:text-blue-600 mr-1"
-            ></i>{(likesCount || 0) + likes}
+            {liked > 0 ? <FilledHeartIcon className="w-6 h-6 text-red-500" /> : <i className="lni lni-heart lni-lg text-slate-500"></i>}
+            {(likedByCount || 0) + liked}
           </button>
           <button
             onClick={handleReply}
@@ -119,7 +125,8 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
               author={comment.author}
               content={comment.content}
               createdAt={comment.createdAt || ""}
-              likesCount={comment.likesCount}
+              likedByCount={comment.likedByCount}
+              likedByMe={comment.likedByMe}
               parentThread={id}
             />
           ))}
