@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { AuthData, UserData } from '../model/model';
-import { apiBaseUrl } from './util';
+import { apiBaseUrl, csrfToken } from './util';
 import { post, authedGet, authConfig, get } from './baseAdaptor';
 
 export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<AuthData> | AxiosError> => {
@@ -13,6 +13,8 @@ export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<A
     headers: {
       'Authorization': basicAuth,
       'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+      'X-XSRF-TOKEN': csrfToken,
+      'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     }
   }).catch((error) => {

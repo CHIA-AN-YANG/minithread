@@ -1,10 +1,11 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { token, apiBaseUrl } from './util';
+import { token, apiBaseUrl, csrfToken } from './util';
 
 export const authConfig = {
   headers: {
     'Authorization': `Bearer ${token}`,
     'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+    'X-XSRF-TOKEN': csrfToken,
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   }
@@ -12,6 +13,7 @@ export const authConfig = {
 export const noAuthConfig = {
   headers: {
     'Cache-Control': 'no-cache, must-revalidate',
+    'X-XSRF-TOKEN': csrfToken,
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   }
