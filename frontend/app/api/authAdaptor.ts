@@ -34,7 +34,7 @@ export const getMyProfile = async (): Promise<AxiosResponse<UserData> | AxiosErr
   return await authedGet<UserData>('/me/detail');
 }
 
-export const updateMe = async (formData: FormData, token: string): Promise<AxiosResponse<UserData> | AxiosError> => {
+export const updateMe = async (formData: FormData): Promise<AxiosResponse<UserData> | AxiosError> => {
   return await axios.put(apiBaseUrl + '/me/update', formData, authConfig).catch((error) => {
     return error
   });

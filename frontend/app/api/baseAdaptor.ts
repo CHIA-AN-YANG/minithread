@@ -20,7 +20,8 @@ export const noAuthConfig = {
 };
 
 export const get = async <T>(url: string): Promise<AxiosResponse<T> | AxiosError> => {
-  return await axios.get(apiBaseUrl + url, noAuthConfig).then((response) => {
+  const config = token ? authConfig : noAuthConfig;
+  return await axios.get(apiBaseUrl + url, config).then((response) => {
     return response;
   }
   ).catch((error) => {
@@ -48,6 +49,24 @@ export const authedGet = async <T>(url: string): Promise<AxiosResponse<T> | Axio
 
 export const authedPost = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
   return await axios.post(apiBaseUrl + url, inputData, authConfig).then((response) => {
+    return response;
+  }
+  ).catch((error) => {
+    return error;
+  });
+}
+
+export const authedPut = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
+  return await axios.put(apiBaseUrl + url, inputData, authConfig).then((response) => {
+    return response;
+  }
+  ).catch((error) => {
+    return error;
+  });
+}
+
+export const authedDelete = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
+  return await axios.delete(apiBaseUrl + url, authConfig).then((response) => {
     return response;
   }
   ).catch((error) => {
