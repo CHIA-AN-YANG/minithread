@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getAuth } from '../../store/features/user/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectStatus, selectError } from '../../store/features/user/selectors/authSelectors';
@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     if (status === EntityStatus.SUCCESS) {
-      router.push('/profile');
+      router.push('/me/threads');
     }
   }, [status, router]);
 
@@ -55,10 +55,12 @@ const LoginForm: React.FC = () => {
   if (status === EntityStatus.LOADING || status === EntityStatus.SUCCESS) {
     return (
       <>
-        <div className="loader"></div>
-        <p className="loading-msg">{
-          (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "code authenticated..."
-        }</p>
+        <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center'>
+          <div className='loader'></div>
+          <p className='loading-msg'>{
+            (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "code authenticated..."
+          }</p>
+        </div>
       </>);
   }
 
@@ -82,7 +84,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full p-6 bg-white sm:shadow-md rounded-lg">
+    <div className="w-full h-full p-6 bg-white sm:shadow-md sm:rounded-lg">
       <h2 className="text-xl font-bold my-4 text-center">Login with existing account</h2>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
         <div>
@@ -93,7 +95,7 @@ const LoginForm: React.FC = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div>
@@ -104,7 +106,7 @@ const LoginForm: React.FC = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <button
@@ -112,6 +114,11 @@ const LoginForm: React.FC = () => {
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Login
+        </button>
+        <button
+          className="w-full bg-blue-300 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          onClick={() => router.back()}>
+          Go back
         </button>
       </form>
       {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}

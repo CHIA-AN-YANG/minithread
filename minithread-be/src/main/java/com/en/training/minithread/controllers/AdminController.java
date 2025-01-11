@@ -44,22 +44,6 @@ public class AdminController {
         return accountService.createAccountIfNotExist(username, password, email);
     }
 
-    // @Operation(summary = "Update an account", description = "Update an existing
-    // account")
-    // @ApiResponse(responseCode = "200", description = "Account updated
-    // successfully")
-    // @ApiResponse(responseCode = "404", description = "Account not found")
-    // @PutMapping("/{username}")
-    // public ResponseEntity<Account> updateAccount(@PathVariable String username,
-    // @RequestBody Account account) {
-    // try {
-    // Account updatedAccount = accountService.updateAccount(username, account);
-    // return ResponseEntity.ok(updatedAccount);
-    // } catch (RuntimeException e) {
-    // return ResponseEntity.notFound().build();
-    // }
-    // }
-
     @Operation(summary = "Delete an account", description = "Delete an existing account")
     @ApiResponse(responseCode = "204", description = "Account deleted successfully")
     @ApiResponse(responseCode = "404", description = "Account not found")

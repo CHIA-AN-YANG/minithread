@@ -1,19 +1,18 @@
 import Link from "next/link";
+import { useRouter } from 'next/router';
 
-interface MeNavbarProps {
-  page: string;
-}
 
-const MeNavbar: React.FC<MeNavbarProps> = ({ page }) => {
-  const isMePage = page === 'me';
+
+const MeNavbar: React.FC = () => {
+  const router = useRouter();
 
 
   return (
     <div className="flex w-full justify-around mb-2">
-      <Link href="/me" className={"btn grow mr-1 py-2 text-center border-blue-500 " + (isMePage ? "border-b-4" : "border-b-2")}>
+      <Link href="/me/threads" className={"btn grow mr-1 py-2 text-center text-blue-500 line-h-1 border-blue-500 leading-none uppercase " + ((router.pathname.indexOf("threads") > 0) ? "border-b-4 font-bold" : "border-b-2")}>
         My Threads
       </Link>
-      <Link href="/me/comments" className={"btn grow ml-1 py-2 text-center border-blue-500 " + (isMePage ? "border-b-2" : "border-b-4")}>
+      <Link href="/me/comments" className={"btn grow ml-1 py-2 text-center text-blue-500 line-h-1 border-blue-500 leading-none uppercase " + ((router.pathname.indexOf("comments") > 0) ? "border-b-4 font-bold" : "border-b-2")}>
         Replies
       </Link>
     </div>

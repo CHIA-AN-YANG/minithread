@@ -38,8 +38,8 @@ public class Account {
     @Column(name = "updatedAt", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime updatedAt;
 
-    @Column(name = "profile_picture")
-    private UUID profilePicture; // Nullable field for profile picture
+    @Column(name = "profilePicture")
+    private String profilePicture; // Nullable field for profile picture
 
     @Column(columnDefinition = "TEXT")
     private String bio;
@@ -50,11 +50,12 @@ public class Account {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts;
 
-    // Default constructor
+    @ManyToMany(mappedBy = "likedBy")
+    private Set<Post> likedPosts = new HashSet<>();
+
     public Account() {
     }
 
-    // Parameterized constructor
     public Account(String username, String email) {
         this.username = username;
         this.email = email;

@@ -5,12 +5,14 @@
 
   --button-primary-hover: #4f4a4a;
   --button-secondary-hover: #f2f2f2;
+  --bg-c: floralwhite;
 
   height: 100vh;
   padding: 1rem;
   max-width: Min(800px, 100vw);
   margin: 0 auto;
   font-family: var(--font-geist-sans);
+  background-color: var(--bg-c);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,9 +31,27 @@
   flex-direction: column;
 }
 
-.main-profile {
+.main-my-profile {
   display: grid;
-  grid-template-rows: 128px 41px calc(100vh - 247px) 50px;
+  grid-template-rows: 128px 41px calc(100% - 225px) 50px;
+  height: calc(100vh - 2rem);
+}
+
+.main-user-profile {
+  display: grid;
+  grid-template-rows: 128px calc(100% - 184px) 50px;
+  height: calc(100vh - 2rem);
+}
+
+.main-home {
+  display: grid;
+  grid-template-rows: 50px calc(100% - 100px) 50px;
+  height: calc(100vh - 2rem);
+}
+
+.main-single-thread {
+  display: grid;
+  grid-template-rows: 100px calc(100% - 140px) 50px;
   height: calc(100vh - 2rem);
 }
 

@@ -5,18 +5,21 @@ import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.models.PostRepository;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class PostService {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
     private final PostRepository postRepository;
@@ -39,7 +42,7 @@ public class PostService {
 
     public Page<Post> getPostList(PageRequest pageRequest) {
         try {
-            return postRepository.findAll(pageRequest);
+            return postRepository.findAllNotComments(pageRequest);
         } catch (Exception e) {
             log.error("Cannot get post pagination.", e);
             List<Post> emptyList = Collections.emptyList();
@@ -50,6 +53,16 @@ public class PostService {
     public Page<Post> getPostList(PageRequest pageRequest, String username) {
         try {
             return postRepository.findTopLevelPostsByAuthor(username, pageRequest);
+        } catch (Exception e) {
+            log.error("Cannot get post pagination.", e);
+            List<Post> emptyList = Collections.emptyList();
+            return new PageImpl<>(emptyList, PageRequest.of(0, 5), 0);
+        }
+    }
+
+    public Page<Post> getPostCommentsList(PageRequest pageRequest, String username) {
+        try {
+            return postRepository.findCommentsByAuthor(username, pageRequest);
         } catch (Exception e) {
             log.error("Cannot get post pagination.", e);
             List<Post> emptyList = Collections.emptyList();
@@ -96,8 +109,7 @@ public class PostService {
         log.error("Cannot update post. Post not found with id: " + id);
         throw new PostNotFoundException(id);
     }
-
-    // set parent post for a post
+    
     public Post setParentPost(Long id, Long parentId) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
@@ -117,42 +129,78 @@ public class PostService {
         throw new PostNotFoundException(id);
     }
 
-    public ThreadDTO mapPostToThreadDTO(Post post) {
-        ThreadDTO threadDTO = new ThreadDTO();
-        threadDTO.setId(post.getId().toString());
-        if (post.getParentPost() != null) {
-            threadDTO.setParentPost(post.getParentPost().getId().toString());
-        }
-        if (post.getContent() != null) {
-            threadDTO.setContent(post.getContent());
-        }
-        if (post.getComments() != null) {
-            List<ThreadDTO> commentsList = post.getComments().stream().map(this::mapPostToThreadDTO).toList();
-            ArrayList<ThreadDTO> arrayList = new ArrayList<>(commentsList);
-            threadDTO.setComments(arrayList);
-        }
-        if (post.getAuthor() != null) {
-            threadDTO.setAuthor(post.getAuthor().getUsername());
-        }
-        if (post.getCreatedAt() != null) {
-            threadDTO.setCreatedAt(post.getCreatedAt().toString());
-        }
-        if (post.getUpdatedAt() != null) {
-            threadDTO.setUpdatedAt(post.getUpdatedAt().toString());
-        }
-        return threadDTO;
-    }
-
     public static class PostNotFoundException extends RuntimeException {
         public PostNotFoundException(Long id) {
             super(String.format("Post not found with id: %s", id));
         }
     }
 
+    public ThreadDTO mapPostToThreadDTO(Post post, final String myUsername) {
+        ThreadDTO threadDto = mapBaseThreadToThreadDTO(post);
+        if(!post.getLikedBy().isEmpty() && StringUtils.isNotEmpty(myUsername)) {
+            threadDto.setLikedByMe(post.getLikedBy().stream().anyMatch(user -> myUsername.equals(user.getUsername())));
+        }
+        if (post.getComments() != null) {
+            List<Post> commentsCopy = new ArrayList<>(post.getComments());
+            ArrayList<ThreadDTO> arrayList = commentsCopy.stream()
+                    .map(p -> mapBaseThreadToThreadDTO(p, myUsername)).collect(Collectors.toCollection(ArrayList::new));
+            threadDto.setComments(arrayList);
+        }
+        return threadDto;
+    }
+
+    public ThreadDTO mapBaseThreadToThreadDTO(Post post, final String myUsername) {
+        ThreadDTO threadDto = mapPostToThreadDTO(post);
+        if(!post.getLikedBy().isEmpty() && StringUtils.isNotEmpty(myUsername)) {
+            threadDto.setLikedByMe(post.getLikedBy().stream().anyMatch(user -> myUsername.equals(user.getUsername())));
+        }
+        return threadDto;
+    }
+
+    private ThreadDTO mapPostToThreadDTO(Post post) {
+        ThreadDTO dto = mapBaseThreadToThreadDTO(post);
+        if (post.getComments() != null) {
+            List<Post> commentsCopy = new ArrayList<>(post.getComments());
+            ArrayList<ThreadDTO> arrayList = commentsCopy.stream()
+                    .map(this::mapBaseThreadToThreadDTO).collect(Collectors.toCollection(ArrayList::new));
+            dto.setComments(arrayList);
+        }
+        return dto;
+    }
+
+    private ThreadDTO mapBaseThreadToThreadDTO(Post post) {
+        ThreadDTO threadDto = new ThreadDTO();
+        threadDto.setId(post.getId().toString());
+        if (post.getParentPost() != null) {
+            threadDto.setParentPost(post.getParentPost().getId().toString());
+        }
+        if (post.getContent() != null) {
+            threadDto.setContent(post.getContent());
+        }
+        if (post.getAuthor() != null) {
+            threadDto.setAuthor(post.getAuthor().getUsername());
+        }
+        if (post.getCreatedAt() != null) {
+            threadDto.setCreatedAt(post.getCreatedAt().toString());
+        }
+        if (post.getUpdatedAt() != null) {
+            threadDto.setUpdatedAt(post.getUpdatedAt().toString());
+        }
+        if (post.getComments() != null) {
+            final int commentSize = post.getComments().size();
+            threadDto.setCommentCount(commentSize);
+        }
+        if (!post.getLikedBy().isEmpty()) {
+            final ArrayList<String> likedByList = post.getLikedBy().stream().map(Account::getUsername)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            threadDto.setLikedByCount(likedByList.size());
+        }
+        return threadDto;
+    }
     private Post setRawPost(final String content, final String username) {
         Post newPost = new Post();
         newPost.setContent(content);
-        if (StringUtils.isBlank(newPost.getContent())) {
+        if (StringUtils.isEmpty(newPost.getContent())) {
             throw new IllegalArgumentException("content must not be null");
         }
         return setPostAuthor(newPost, username);

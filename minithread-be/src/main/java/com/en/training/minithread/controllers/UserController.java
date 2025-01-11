@@ -27,9 +27,7 @@ public class UserController {
 
     @Operation(summary = "Get user info", description = "Fetch info of user")
     @ApiResponse(responseCode = "200", description = "User details found")
-    @ApiResponse(responseCode = "401", description = "Unauthorized")
-    @ApiResponse(responseCode = "404", description = "User not found")
-    @GetMapping("")
+    @GetMapping("/{username}")
     public ResponseEntity<AccountDTO> getCurrentUser(@PathVariable String username) {
         final Account currentUser = accountService.getAccount(username);
         if (currentUser == null) {

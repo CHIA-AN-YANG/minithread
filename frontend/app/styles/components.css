@@ -10,16 +10,6 @@
   text-align-last: left;
 }
 
-.right-panel img {
-  object-fit: cover;
-  margin: auto;
-}
-
-.right-panel {
-  border: 1px solid black;
-  border-radius: 50%;
-}
-
 .ctas {
   height: 2rem;
   margin: 0.5rem;
