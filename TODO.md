@@ -6,7 +6,7 @@ Feature
   - [x] add authenticated request
 
 [x] Add Readme with steps to start app
-[] create Restful documentation
+[x] create Restful documentation
   - [x] test basic function (PostController without auth) ok
   - [x] --use interface to map out method for a service or controller-- user swagger instead.
   - [x] add cors checking
@@ -24,9 +24,9 @@ Bugfix
 [] Redux
  - [] centralized myPost store. When create or delete post it should instantly update /profile page🔥
 
-[] Page
- - [] Update Profile page
- - [] Other user's profile page
+[x] Page
+ - [x] Update Profile page
+ - [x] Other user's profile page
  - [x] latest post page
  - [x] single post page
 
@@ -37,15 +37,15 @@ Bugfix
   - [x] show comment number on posts
   - [x] show comments on single post
  - [] Follow functionality
- - [] Like functionality
+ - [x] Like functionality
 
 [] Apis
  - [x] Some get api should be open to public 🔥🔥🔥
  - [x] Set Comment
- - [] like a post / unlike a post
+ - [x] like a post / unlike a post
  - [] follow a user / unfollow a user
 
 [] Notification
 
 ### Appearance
-[] customize tailwindcss
+[x] customize tailwindcss
