@@ -20,7 +20,7 @@ public class AccountDTO {
     private Boolean verified;
 
     public AccountDTO(String name, String username) {
-        this.name = name == null ? "" : name; // Default empty string for null name
+        this.name = name == null ? "" : name;
         this.username = username;
     }
 }

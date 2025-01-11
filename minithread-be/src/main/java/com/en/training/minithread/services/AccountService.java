@@ -1,11 +1,9 @@
 package com.en.training.minithread.services;
 
 import com.en.training.minithread.controllers.dtos.AccountDTO;
-import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -22,20 +19,22 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AccountService(
-            AccountRepository accountRepository,
-            PasswordEncoder passwordEncoder) {
+    public AccountService( AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Account getAccount(String username) {
         try {
-            LOG.info("Account found: " + accountRepository.findByUsername(username));
-            return accountRepository.findByUsername(username).get();
-        } catch (Exception e) {
-            LOG.error("Account not found with username: " + username, e);
+            final Optional<Account> account = accountRepository.findByUsername(username);
+            if(account.isPresent()){
+                return account.get();
+            }
+            LOG.warn("Account not found with username: {}", username);
             throw new AccountNotFoundException(username);
+        } catch (Exception e) {
+            LOG.error("Error finding account: {}", username);
+            throw new AccountNotFoundException("cannot find account");
         }
     }
 
@@ -48,22 +47,13 @@ public class AccountService {
                 Account newAccount = new Account();
                 newAccount.setUsername(username);
                 Account createdAccount = createAccount(newAccount, rawPassword, email);
-                LOG.info("Account created: " + createdAccount);
+                LOG.info("Account created: {}", createdAccount);
                 return createdAccount;
             }
         } catch (Exception e) {
             LOG.error("error creating account" + username, e);
             throw new RuntimeException("error creating account" + username);
         }
-    }
-
-    public Account findOrCreateOauthAccount(String name, String email) {
-        String username = name + email.hashCode();
-        if (accountRepository.findByUsername(username).isPresent()) {
-            return accountRepository.findByUsername(username).get();
-        }
-        Account newAccount = new Account(username, email);
-        return accountRepository.save(newAccount);
     }
 
     public Account createAccount(Account account, String rawPassword, String email) {
@@ -110,12 +100,11 @@ public class AccountService {
 
             return accountRepository.save(existingAccount);
         }
-        LOG.error("Account not found with username: " + username);
+        LOG.error("Account not found with username: {}", username);
         throw new AccountNotFoundException(username);
     }
 
-    // add delete account
-    public String deleteAccount(String username) {
+    public void deleteAccount(String username) {
         if (accountRepository.findByUsername(username).isPresent()) {
             accountRepository.deleteByUsername(username);
         }

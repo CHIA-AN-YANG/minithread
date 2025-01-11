@@ -1,7 +1,6 @@
 package com.en.training.minithread.controllers;
 
 import com.en.training.minithread.controllers.dtos.AccountDTO;
-import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.services.AccountService;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
@@ -19,7 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RequestMapping("api/user")
 public class UserController {
 
-    private AccountService accountService;
+    private final AccountService accountService;
 
     UserController(AccountService accountService) {
         this.accountService = accountService;
@@ -33,11 +32,11 @@ public class UserController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        final AccountDTO account = new AccountDTO(currentUser.getName(), currentUser.getUsername());
-        account.setName(StringUtils.isNotBlank(currentUser.getName()) ? currentUser.getName() : "");
-        account.setBio(StringUtils.isNotBlank(currentUser.getBio()) ? currentUser.getBio() : "");
+        final AccountDTO accountDto = new AccountDTO(currentUser.getName(), currentUser.getUsername());
+        accountDto.setName(StringUtils.isNotBlank(currentUser.getName()) ? currentUser.getName() : "");
+        accountDto.setBio(StringUtils.isNotBlank(currentUser.getBio()) ? currentUser.getBio() : "");
 
-        return ResponseEntity.ok(account);
+        return ResponseEntity.ok(accountDto);
     }
 
 }

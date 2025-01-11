@@ -1,27 +1,22 @@
 package com.en.training.minithread.controllers;
 
-import com.en.training.minithread.controllers.dtos.AccountDTO;
-import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.TokenService;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +28,13 @@ public class AuthController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
+    private final AccountService accountService;
 
-    @Autowired
-    private AccountService accountService;
+    public AuthController(TokenService tokenService, AccountService accountService) {
+        this.tokenService = tokenService;
+        this.accountService = accountService;
+    }
 
     @Operation(summary = "Register a new account", description = "Register a new account to the system")
     @ApiResponses(value = {
@@ -81,19 +78,4 @@ public class AuthController {
                     .body(response);
         }
     }
-
-//    public ResponseEntity<?> handleAuth(
-//            Authentication authentication) {
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//        if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        final String username = jwt.getClaim("sub");
-//        if (StringUtils.isBlank(username)) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        }
-//        return username;
-//    }
 }
