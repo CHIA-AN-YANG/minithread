@@ -161,4 +161,22 @@ public class MeController {
         return ResponseEntity.ok(accountDTO);
 
     }
+
+    // Add following
+    @PostMapping("{followId}/follow")
+    public void addFollowing(
+            Authentication authentication,
+            @PathVariable String followId
+    ) {
+        accountService.addFollowing(username, followId);
+    }
+
+    // Delete following
+    @DeleteMapping("{followId}/unfollow")
+    public void deleteFollowing(
+            Authentication authentication,
+            @PathVariable String followId
+    ) {
+        accountService.deleteFollowing(username, followId);
+    }
 }
