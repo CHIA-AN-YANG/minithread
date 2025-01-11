@@ -91,7 +91,7 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account updateAccount(String username, String email, String name, String bio) {
+    public Account updateAccount(String username, String email, String name, String bio, String profilePicture) {
 
         Optional<Account> account = accountRepository.findByUsername(username);
         if (account.isPresent()) {
@@ -103,8 +103,8 @@ public class AccountService {
                 existingAccount.setEmail(email);
             if (name != null)
                 existingAccount.setName(name);
-            // if (request.getProfilePicture() != null)
-            // existingAccount.setProfilePicture(UUID.fromString(request.getProfilePicture()));
+             if (profilePicture != null)
+                 existingAccount.setProfilePicture(profilePicture);
 
             return accountRepository.save(existingAccount);
         }

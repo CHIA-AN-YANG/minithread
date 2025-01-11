@@ -80,11 +80,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/threads/***").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                        // Protected endpoints
-//                        .requestMatchers(HttpMethod.POST, "/api/threads").authenticated()
-//                        .requestMatchers(HttpMethod.DELETE, "/api/threads/*").authenticated()
-//                        .requestMatchers("/api/me/*").authenticated()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));

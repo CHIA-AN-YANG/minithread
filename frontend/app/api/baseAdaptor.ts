@@ -1,9 +1,11 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { token, apiBaseUrl, csrfToken } from './util';
+import { apiBaseUrl, csrfToken, token } from './util';
+const Cookies = require('js-cookie');
+const TOKEN_COOKIE = 'auth_token';
 
 export const authConfig = {
   headers: {
-    'Authorization': `Bearer ${token}`,
+    'Authorization': `Bearer ${Cookies.get(TOKEN_COOKIE)}`,
     'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
     'X-XSRF-TOKEN': csrfToken,
     'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ export const authedPost = async <T>(url: string, inputData: Object): Promise<Axi
 }
 
 export const authedPut = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
-  return await axios.put(apiBaseUrl + url, inputData, authConfig).then((response) => {
+  return await axios.putForm(apiBaseUrl + url, inputData, authConfig).then((response) => {
     return response;
   }
   ).catch((error) => {
@@ -65,7 +67,7 @@ export const authedPut = async <T>(url: string, inputData: Object): Promise<Axio
   });
 }
 
-export const authedDelete = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
+export const authedDelete = async <T>(url: string, inputData?: Object): Promise<AxiosResponse<T> | AxiosError> => {
   return await axios.delete(apiBaseUrl + url, authConfig).then((response) => {
     return response;
   }

@@ -33,7 +33,7 @@ public class MeController {
     private AccountService accountService;
     private PostService postService;
 
-    MeController(AccountService accountService,PostService postService) {
+    MeController(AccountService accountService, PostService postService) {
         this.accountService = accountService;
         this.postService = postService;
     }
@@ -76,7 +76,8 @@ public class MeController {
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        Sort sort = Sort.by("createdAt").descending();;
+        Sort sort = Sort.by("createdAt").descending();
+        ;
         try {
             if (authentication == null || !authentication.isAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -89,10 +90,11 @@ public class MeController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
             Page<Post> pageResultPost = postService.getPostCommentsList(PageRequest.of(page, size, sort), username);
-            List<ThreadDTO> threadDTOList = pageResultPost.getContent().stream().map(postService::mapPostToThreadDTO)
+            List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
+                    .map(p -> postService.mapPostToThreadDTO(p, username))
                     .toList();
             PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
-                    threadDTOList,
+                    threadDtoList,
                     pageResultPost.getNumber(),
                     pageResultPost.getTotalPages(),
                     pageResultPost.getTotalElements());
@@ -103,12 +105,47 @@ public class MeController {
         }
     }
 
-    @PutMapping(value = "/update")
+    @GetMapping(value = "/threads")
+    public ResponseEntity<PageResponse<ThreadDTO>> getMyThreads(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Sort sort = Sort.by("createdAt").descending();
+        ;
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            final String username = jwt.getClaim("sub");
+            if (StringUtils.isBlank(username)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort), username);
+            List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
+                    .map(p -> postService.mapPostToThreadDTO(p, username))
+                    .toList();
+            PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
+                    threadDtoList,
+                    pageResultPost.getNumber(),
+                    pageResultPost.getTotalPages(),
+                    pageResultPost.getTotalElements());
+
+            return ResponseEntity.ok(pageResultThreadDTO);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping(value = "/update")
     public ResponseEntity<AccountDTO> updateCurrentUser(
             Authentication authentication,
             @RequestParam String bio,
             @RequestParam String name,
-            @RequestParam String email) {
+            @RequestParam String email,
+            @RequestParam String profilePicture) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -119,7 +156,7 @@ public class MeController {
         if (StringUtils.isBlank(username)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        final Account account = this.accountService.updateAccount(username, email, name, bio);
+        final Account account = this.accountService.updateAccount(username, email, name, bio, profilePicture);
         final AccountDTO accountDTO = this.accountService.mapAccountToAccountDTO(account);
         return ResponseEntity.ok(accountDTO);
 

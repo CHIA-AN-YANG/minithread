@@ -1,6 +1,7 @@
 "use client";
 
 import InputForm from '@/app/components/form/InputForm';
+import MePanel from '@/app/components/MePanel';
 import BottomNavbar from '@/app/components/navbar/BottomNavbar';
 import MeNavbar from '@/app/components/navbar/MeNavbar';
 import ThreadList from '@/app/components/ThreadList';
@@ -12,7 +13,7 @@ export default function MeCommentsPage() {
   return (
     <div className="page">
       <main className="main-profile">
-        <UserPanel />
+        <MePanel />
         <MeNavbar />
         <ThreadList isMePage={true} />
         <BottomNavbar />

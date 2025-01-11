@@ -25,6 +25,7 @@ type ThreadProps = {
 
 const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, createdAt, likedByCount, likedByMe }) => {
   const [liked, setLiked] = useState(likedByMe ? 1 : 0);
+  const [likeLoading, setLikeLoading] = useState(false);
   const username = store.getState().auth.user?.username;
   const auth = author === username;
   const dispatch = useDispatch<AppDispatch>();
@@ -44,21 +45,21 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
     }
     if (liked === 0) {
       // set liked asap for better UX
-      setLiked(1);
-      authedPost(`/threads/${id}/like`, {}).then(() => {
-        setLiked(1);
-      });
+      setLikeLoading(true);
+      authedPost(`/threads/${id}/like`, {})
+        .then(() => setLiked(1))
+        .finally(() => setLikeLoading(false));
     } else if (liked === 1) {
-      setLiked(0);
-      authedDelete(`/threads/${id}/like`, {}).then(() => {
-        setLiked(0);
-      });
+      setLikeLoading(true);
+      authedDelete(`/threads/${id}/like`, {})
+        .then(() => setLiked(0))
+        .finally(() => setLikeLoading(false));
     }
   };
 
   const handleReply = () => {
     if (!username) {
-      router.push('/login');
+      router.push('/login?redirect=/thread/${id}&mode=reply');
     }
     dispatch(startInput(id));
   };
@@ -86,7 +87,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
       <article className={`border border-primary rounded-lg p-4 mb-4 bg-panelBg ${parentThread ? 'ml-4 border-l-4 border-secondary' : ''}`}>
         <header className="mb-3">
           <Link href={`/user/${author}`}>
-            <h3 className="text-sm font-semibold">{author}</h3>
+            <h3 className={`text-sm font-semibold ${parentThread ? 'text-secondaryDark' : 'text-primaryDark'}`}>{author}</h3>
           </Link>
           <p className="text-xs text-gray-500"><time>{handleDate(createdAt)}</time></p>
         </header>
@@ -95,35 +96,35 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
         </Link>
         <footer className="flex space-x-2">
           <button
-            onClick={handleLiked}
-            className="flex items-center justify-center px-1 py-1 text-lg mr-2"
+            onClick={handleLiked} disabled={likeLoading}
+            className="flex items-center justify-center px-1 py-1 text-lg mr-2 text-stone-500 hover:text-blue-600"
             aria-label="like"
           >
-            {liked > 0 ? <FilledHeartIcon className="w-6 h-6 text-red-500" /> : <i className="lni lni-heart lni-lg text-slate-500"></i>}
+            {liked > 0 ? <FilledHeartIcon className="w-6 h-6 text-red-500" /> : <i className="lni lni-heart lni-lg"></i>}
             {(likedByCount || 0) + liked}
           </button>
           <button
             onClick={handleReply}
-            className="flex items-center justify-center px-1 py-1 text-lg"
+            className="flex items-center justify-center px-1 py-1 text-lg text-stone-500 hover:text-blue-600"
             aria-label="reply"
           >
-            <i className="lni lni-message-2  lni-lg text-slate-500 hover:text-blue-600"
+            <i className="lni lni-message-2  lni-lg"
             ></i>{(commentList || []).length}
           </button>
           <button
             onClick={() => copyPostLink(id)}
-            className="flex items-center justify-center px-1 py-1 text-lg"
+            className="flex items-center justify-center px-1 py-1 text-lg text-stone-500 hover:text-blue-600"
             aria-label="copy post link"
           >
-            <i className="lni lni-link-2-angular-right lni-lg text-slate-500 hover:text-blue-600"></i>
+            <i className="lni lni-link-2-angular-right lni-lg"></i>
           </button>
           {auth && (
             <button
               onClick={handleDelete}
-              className="flex items-center justify-center px-1 py-1 text-lg"
+              className="flex items-center justify-center px-1 py-1 text-lg text-stone-500 hover:text-blue-600"
               aria-label="delete"
             >
-              <i className="lni lni-trash-3 lni-lg text-slate-500 hover:text-blue-600"></i>
+              <i className="lni lni-trash-3 lni-lg"></i>
             </button>
           )}
         </footer>

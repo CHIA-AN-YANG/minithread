@@ -39,7 +39,7 @@ public class Account {
     private LocalDateTime updatedAt;
 
     @Column(name = "profilePicture")
-    private UUID profilePicture; // Nullable field for profile picture
+    private String profilePicture; // Nullable field for profile picture
 
     @Column(columnDefinition = "TEXT")
     private String bio;

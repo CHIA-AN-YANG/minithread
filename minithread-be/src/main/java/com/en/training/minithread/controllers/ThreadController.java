@@ -47,11 +47,12 @@ public class ThreadController {
       @ApiResponse(responseCode = "404", description = "thread not found", content = @Content)
   })
   @GetMapping("/{id}")
-  public ResponseEntity<ThreadDTO> getPostById(@PathVariable Long id) {
+  public ResponseEntity<ThreadDTO> getPostById(@PathVariable Long id, Authentication authentication) {
     Optional<Post> post = postService.getPost(id);
+    final String myUsername = checkOptionalAuthentication(authentication);
     if (post.isPresent()) {
-      ThreadDTO threadDTO = postService.mapPostToThreadDTO(post.get());
-      return ResponseEntity.ok(threadDTO);
+      ThreadDTO threadDto = postService.mapPostToThreadDTO(post.get(), myUsername);
+      return ResponseEntity.ok(threadDto);
     }
     return ResponseEntity.notFound().build();
   }
@@ -69,15 +70,9 @@ public class ThreadController {
     Sort sort = Sort.by("createdAt").descending();
     final String myUsername = checkOptionalAuthentication(authentication);
     Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort));
-    ArrayList<Post> postList = new ArrayList<>(pageResultPost.getContent());
-    List<ThreadDTO> threadDtoList;
-    if(StringUtils.isNotEmpty(myUsername)){
-      threadDtoList = pageResultPost.getContent().stream().map(p -> postService.mapPostToThreadDTO(p, myUsername))
-              .toList();
-    } else {
-      threadDtoList = pageResultPost.getContent().stream().map(postService::mapPostToThreadDTO)
-              .toList();
-    }
+    List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
+            .map(p -> postService.mapPostToThreadDTO(p, myUsername))
+            .toList();
     PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
             threadDtoList,
             pageResultPost.getNumber(),
@@ -103,15 +98,9 @@ public class ThreadController {
 
     try {
       Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort), username);
-      List<ThreadDTO> threadDtoList;
-      if(StringUtils.isNotEmpty(myUsername)){
-        threadDtoList = pageResultPost.getContent().stream().map(p -> postService.mapPostToThreadDTO(p, myUsername))
-                .toList();
-      } else {
-        threadDtoList = pageResultPost.getContent().stream().map(postService::mapPostToThreadDTO)
-                .toList();
-      }
-
+      List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
+              .map(p -> postService.mapPostToThreadDTO(p, myUsername))
+              .toList();
       PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
           threadDtoList,
           pageResultPost.getNumber(),
@@ -146,7 +135,7 @@ public class ThreadController {
     } else {
       post = postService.createPost(postContent, username);
     }
-    ThreadDTO threadDTO = postService.mapPostToThreadDTO(post);
+    ThreadDTO threadDTO = postService.mapPostToThreadDTO(post, username);
     return ResponseEntity.status(HttpStatus.CREATED).body(threadDTO);
   }
 
@@ -157,10 +146,21 @@ public class ThreadController {
       @ApiResponse(responseCode = "404", description = "Post not found")
   })
   @PutMapping("/{id}")
-  public ResponseEntity<ThreadDTO> updatePost(@PathVariable Long id, @RequestBody CreatePostRequest request) {
+  public ResponseEntity<ThreadDTO> updatePost(
+          Authentication authentication,
+          @PathVariable Long id,
+          @RequestBody CreatePostRequest request
+  ) {
+    if (authentication == null || !authentication.isAuthenticated()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    final String username = jwt.getClaim("sub");
     final String postContent = request.getContent();
     Post updatedPost = postService.updatePost(id, postContent);
-    ThreadDTO threadDTO = postService.mapPostToThreadDTO(updatedPost);
+    ThreadDTO threadDTO = postService.mapPostToThreadDTO(updatedPost, username);
     return new ResponseEntity<>(threadDTO, HttpStatus.OK);
   }
 
@@ -170,7 +170,14 @@ public class ThreadController {
       @ApiResponse(responseCode = "404", description = "Post not found")
   })
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+  public ResponseEntity<Void> deletePost(Authentication authentication, @PathVariable Long id) {
+    if (authentication == null || !authentication.isAuthenticated()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    final String username = jwt.getClaim("sub");
     try {
       postService.deletePost(id);
       return ResponseEntity.noContent().build();

@@ -2,12 +2,12 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { getAuthorCommentsList, getAuthorThreadList, getLatestThreadList } from '../api/threadAdaptor';
+import { getAuthorCommentsList, getAuthorThreadList, getLatestThreadList, getUserThreadList } from '../api/threadAdaptor';
 import { ThreadData, Pagination } from '../model/model';
 import { selectUser } from '../store/features/user/selectors/authSelectors';
 import Thread from './Thread';
 import { useRouter } from 'next/router';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 interface ThreadListProps {
@@ -26,50 +26,46 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   useEffect(() => {
     setIsLoading(true);
     getThreadsFunction();
-  }, [user]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    getThreadsFunction();
-  }, [page]);
+  }, []);
 
   const loadMore = () => {
     if (hasMore && !isLoading) {
-      if (user?.username) {
-        setIsLoading(true);
-        const newPage = page + 1;
-        setPage(newPage);
-      };
+      setIsLoading(true);
+      const newPage = page + 1;
+      setPage(newPage);
+      getThreadsFunction(newPage);
     }
   };
 
 
-  const getThreadsFunction = () => {
-    console.log("router.pathname:", router.pathname);
+  const getThreadsFunction = (newPage?: number) => {
+
+    const p = newPage ?? page;
+    console.log("getThreadsFunction:", { route: router.pathname, page: p });
     switch (router.pathname) {
       case '/me/threads':
-        user?.username && fetchData(
-          () => getAuthorThreadList(user.username, page),
-          "Error fetching author threads:"
+        fetchData(
+          () => getAuthorThreadList(p),
+          "Error fetching your threads"
         );
         break;
       case '/me/comments':
         fetchData(
-          (() => getAuthorCommentsList(page)),
-          "Error fetching author comments:"
+          (() => getAuthorCommentsList(p)),
+          "Error fetching your comments"
         );
         break;
       case '/':
         fetchData(
-          (() => getLatestThreadList(page)),
-          "Error fetching latest threads:"
+          (() => getLatestThreadList(p)),
+          "Error fetching latest threads"
         );
         break;
       default:
         if (router.pathname.includes('/user') && id?.length) {
           fetchData(
-            () => getAuthorThreadList(id as string, page),
-            "Error fetching author threads:"
+            () => getUserThreadList(id as string, p),
+            `Error fetching threads from ${id}`
           );
         }
         break;
@@ -77,11 +73,10 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   }
 
   const fetchData = (
-    fetchFunction: (page: number) => Promise<any>,
+    fetchFunction: () => Promise<AxiosResponse<Pagination<ThreadData>> | AxiosError>,
     errorMessage: string
   ) => {
-    const p = page;
-    fetchFunction(p)
+    fetchFunction()
       .then((response) => {
         if (response instanceof AxiosError) {
           setIsLoading(false);
@@ -97,7 +92,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
         }
       })
       .catch((error) => {
-        console.error(errorMessage, error);
+        toast.error(errorMessage);
       })
       .finally(() => {
         setIsLoading(false);
@@ -109,7 +104,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   return (
 
     <div className={`h-full overflow-y-scroll ${isMePage ? 'author-threads' : ''}`}>
-      {isLoading && <div className='absolute top-0 bottom-0 w-full h-full flex flex-col justify-center items-center'>
+      {isLoading && <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center'>
         <div className='loader'></div>
       </div>}
       {threads.length ? threads.map((thread) => (
@@ -126,7 +121,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
       )) : <p className="text-center my-4 w-full px-4">No post yet. Say something?</p>}
       {hasMore && (
         <button
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-primary"
+          className="mt-4 my-2 uppercase underline rounded-md text-blue hover:bg-gray-300 disabled:text-gray-500"
           onClick={loadMore}
           disabled={isLoading}
         >

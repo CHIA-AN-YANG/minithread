@@ -5,8 +5,8 @@ import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.models.PostRepository;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -134,21 +134,10 @@ public class PostService {
             super(String.format("Post not found with id: %s", id));
         }
     }
-    
-    public ThreadDTO mapPostToThreadDTO(Post post) {
-        ThreadDTO dto = mapBaseThreadToThreadDTO(post);
-        if (post.getComments() != null) {
-            List<Post> commentsCopy = new ArrayList<>(post.getComments());
-            ArrayList<ThreadDTO> arrayList = commentsCopy.stream()
-                    .map(this::mapBaseThreadToThreadDTO).collect(Collectors.toCollection(ArrayList::new));
-            dto.setComments(arrayList);
-        }
-        return dto;
-    }
 
     public ThreadDTO mapPostToThreadDTO(Post post, final String myUsername) {
         ThreadDTO threadDto = mapBaseThreadToThreadDTO(post);
-        if(!post.getLikedBy().isEmpty()) {
+        if(!post.getLikedBy().isEmpty() && StringUtils.isNotEmpty(myUsername)) {
             threadDto.setLikedByMe(post.getLikedBy().stream().anyMatch(user -> myUsername.equals(user.getUsername())));
         }
         if (post.getComments() != null) {
@@ -162,13 +151,24 @@ public class PostService {
 
     public ThreadDTO mapBaseThreadToThreadDTO(Post post, final String myUsername) {
         ThreadDTO threadDto = mapPostToThreadDTO(post);
-        if(!post.getLikedBy().isEmpty()) {
+        if(!post.getLikedBy().isEmpty() && StringUtils.isNotEmpty(myUsername)) {
             threadDto.setLikedByMe(post.getLikedBy().stream().anyMatch(user -> myUsername.equals(user.getUsername())));
         }
         return threadDto;
     }
 
-    public ThreadDTO mapBaseThreadToThreadDTO(Post post) {
+    private ThreadDTO mapPostToThreadDTO(Post post) {
+        ThreadDTO dto = mapBaseThreadToThreadDTO(post);
+        if (post.getComments() != null) {
+            List<Post> commentsCopy = new ArrayList<>(post.getComments());
+            ArrayList<ThreadDTO> arrayList = commentsCopy.stream()
+                    .map(this::mapBaseThreadToThreadDTO).collect(Collectors.toCollection(ArrayList::new));
+            dto.setComments(arrayList);
+        }
+        return dto;
+    }
+
+    private ThreadDTO mapBaseThreadToThreadDTO(Post post) {
         ThreadDTO threadDto = new ThreadDTO();
         threadDto.setId(post.getId().toString());
         if (post.getParentPost() != null) {
@@ -200,7 +200,7 @@ public class PostService {
     private Post setRawPost(final String content, final String username) {
         Post newPost = new Post();
         newPost.setContent(content);
-        if (StringUtils.isBlank(newPost.getContent())) {
+        if (StringUtils.isEmpty(newPost.getContent())) {
             throw new IllegalArgumentException("content must not be null");
         }
         return setPostAuthor(newPost, username);

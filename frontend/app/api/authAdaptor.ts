@@ -34,8 +34,12 @@ export const getMyProfile = async (): Promise<AxiosResponse<UserData> | AxiosErr
   return await authedGet<UserData>('/me/detail');
 }
 
+export const getUserProfile = async (id: string): Promise<AxiosResponse<UserData> | AxiosError> => {
+  return await get<UserData>(`/user/${id}`);
+}
+
 export const updateMe = async (formData: FormData): Promise<AxiosResponse<UserData> | AxiosError> => {
-  return await axios.put(apiBaseUrl + '/me/update', formData, authConfig).catch((error) => {
+  return await axios.postForm(apiBaseUrl + '/me/update', formData, authConfig).catch((error) => {
     return error
   });
 }

@@ -1,17 +1,20 @@
 import axios from 'axios';
+import { get } from 'http';
 const Cookies = require('js-cookie');
 const AUTH_COOKIE = 'auth_token';
 const CSRF_COOKIE = 'csrf_token';
 
-
-let apiUrl: string;
-if (process.env.NEXT_PUBLIC_API_PORT == undefined || process.env.NEXT_PUBLIC_API_PORT == 'undefined') {
-  apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
-} else {
-  apiUrl = process.env.NEXT_PUBLIC_API_URL + ":" + process.env.NEXT_PUBLIC_API_PORT;
+const getApiUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_PORT == undefined || process.env.NEXT_PUBLIC_API_PORT == 'undefined') {
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
+  } else {
+    return process.env.NEXT_PUBLIC_API_URL + ":" + process.env.NEXT_PUBLIC_API_PORT;
+  }
 }
 
-function getCsrfTokenFromCookie() {
+export const apiBaseUrl = getApiUrl() + "/api";
+
+const getCsrfTokenFromCookie = () => {
   if (Cookies.get(CSRF_COOKIE)) {
     return;
   }
@@ -25,6 +28,5 @@ function getCsrfTokenFromCookie() {
 
 getCsrfTokenFromCookie();
 
-export const apiBaseUrl = apiUrl + "/api";
 export const csrfToken = Cookies.get(CSRF_COOKIE);
 export const token = Cookies.get(AUTH_COOKIE);
