@@ -103,8 +103,8 @@ public class AccountService {
                 existingAccount.setEmail(email);
             if (name != null)
                 existingAccount.setName(name);
-             if (profilePicture != null)
-                 existingAccount.setProfilePicture(profilePicture);
+            if (profilePicture != null)
+                existingAccount.setProfilePicture(profilePicture);
 
             return accountRepository.save(existingAccount);
         }
@@ -118,6 +118,30 @@ public class AccountService {
             accountRepository.deleteByUsername(username);
         }
         throw new AccountNotFoundException(username);
+    }
+
+    public void addFollowing(String username, String followUsername) {
+        Optional<Account> accountOpt = accountRepository.findByUsername(username);
+        Optional<Account> followOpt = accountRepository.findByUsername(followUsername);
+
+        if (accountOpt.isPresent() && followOpt.isPresent()) {
+            Account account = accountOpt.get();
+            Account follow = followOpt.get();
+            account.getFollowing().add(follow);
+            accountRepository.save(account);
+        }
+    }
+
+    public void deleteFollowing(String username, String followUsername) {
+        Optional<Account> accountOpt = accountRepository.findByUsername(username);
+        Optional<Account> followOpt = accountRepository.findByUsername(followUsername);
+
+        if (accountOpt.isPresent() && followOpt.isPresent()) {
+            Account account = accountOpt.get();
+            Account follow = followOpt.get();
+            account.getFollowing().remove(follow);
+            accountRepository.save(account);
+        }
     }
 
     public AccountDTO mapAccountToAccountDTO(Account account) {
@@ -152,7 +176,6 @@ public class AccountService {
         }
     }
 
-    // create PasswordMismatchException
     public class PasswordMismatchException extends RuntimeException {
         public PasswordMismatchException(String message) {
             super(message);
