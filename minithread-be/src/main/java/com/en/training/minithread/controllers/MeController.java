@@ -162,21 +162,25 @@ public class MeController {
 
     }
 
-    // Add following
+    @RequiresAuthenticatedUser
     @PostMapping("{followId}/follow")
-    public void addFollowing(
-            Authentication authentication,
-            @PathVariable String followId
-    ) {
-        accountService.addFollowing(username, followId);
+    public ResponseEntity<AccountDTO> addFollowing(
+            Account authenticatedUser,
+            @PathVariable String followId) {
+        final String username = authenticatedUser.getUsername();
+        final Account updatedAccount = accountService.addFollowing(username, followId);
+        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
+        return ResponseEntity.ok(accountDto);
     }
 
-    // Delete following
-    @DeleteMapping("{followId}/unfollow")
-    public void deleteFollowing(
-            Authentication authentication,
-            @PathVariable String followId
-    ) {
-        accountService.deleteFollowing(username, followId);
+    @RequiresAuthenticatedUser
+    @PostMapping("{followId}/unfollow")
+    public ResponseEntity<AccountDTO> deleteFollowing(
+            Account authenticatedUser,
+            @PathVariable String followId) {
+        final String username = authenticatedUser.getUsername();
+        final Account updatedAccount = accountService.deleteFollowing(username, followId);
+        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
+        return ResponseEntity.ok(accountDto);
     }
 }
