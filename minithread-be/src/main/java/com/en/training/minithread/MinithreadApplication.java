@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @EnableConfigurationProperties(RsaKeyProperties.class)
-@EnableJpaAuditing
-@EnableSpringDataWebSupport
 @SpringBootApplication
 public class MinithreadApplication {
 
