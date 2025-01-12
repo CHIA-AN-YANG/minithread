@@ -30,11 +30,11 @@ public class AccountService {
     }
 
     public Account getAccount(String username) {
-        try {
-            LOG.info("Account found: " + accountRepository.findByUsername(username));
-            return accountRepository.findByUsername(username).get();
-        } catch (Exception e) {
-            LOG.error("Account not found with username: " + username, e);
+        Optional<Account> accountOpt = accountRepository.findByUsername(username);
+        if (accountOpt.isPresent()) {
+            return accountOpt.get();
+        } else {
+            LOG.error("Account not found with username: {}", username);
             throw new AccountNotFoundException(username);
         }
     }
