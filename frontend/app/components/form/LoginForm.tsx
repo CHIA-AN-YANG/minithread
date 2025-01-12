@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth } from '../../store/features/user/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectStatus, selectError } from '../../store/features/user/selectors/authSelectors';
+import { selectStatus, selectError, selectUser } from '../../store/features/user/selectors/authSelectors';
 import { AppDispatch } from '../../store/store';
 import { useRouter } from 'next/navigation';
 import { EntityStatus } from '../../model/model';
@@ -25,6 +25,7 @@ const LoginForm: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [isClient, setIsClient] = useState(false);
+  const user = useSelector(selectUser);
 
   useEffect(() => {
     setIsClient(true);
@@ -34,7 +35,7 @@ const LoginForm: React.FC = () => {
     if (status === EntityStatus.SUCCESS) {
       router.push('/me/threads');
     }
-  }, [status, router]);
+  }, [status]);
 
   useEffect(() => {
     if (apiErrorMsg && apiErrorMsg.includes('401')) {
@@ -58,7 +59,7 @@ const LoginForm: React.FC = () => {
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center'>
           <div className='loader'></div>
           <p className='loading-msg'>{
-            (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "code authenticated..."
+            (status === EntityStatus.LOADING) ? `${EntityStatus.LOADING}...` : "verifying..."
           }</p>
         </div>
       </>);

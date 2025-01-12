@@ -1,5 +1,6 @@
 package com.en.training.minithread.controllers;
 
+import com.en.training.minithread.annotation.RequiresAuthenticatedUser;
 import com.en.training.minithread.controllers.dtos.AccountDTO;
 import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;
@@ -59,10 +60,7 @@ public class MeController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        final AccountDTO account = new AccountDTO(currentUser.getName(), currentUser.getUsername());
-        account.setName(StringUtils.isNotBlank(currentUser.getName()) ? currentUser.getName() : "");
-        account.setBio(StringUtils.isNotBlank(currentUser.getBio()) ? currentUser.getBio() : "");
-
+        final AccountDTO account = accountService.mapAccountToAccountDTO(currentUser);
         return ResponseEntity.ok(account);
     }
 
@@ -160,5 +158,27 @@ public class MeController {
         final AccountDTO accountDTO = this.accountService.mapAccountToAccountDTO(account);
         return ResponseEntity.ok(accountDTO);
 
+    }
+
+    @RequiresAuthenticatedUser
+    @PostMapping("{followId}/follow")
+    public ResponseEntity<AccountDTO> addFollowing(
+            Account authenticatedUser,
+            @PathVariable String followId) {
+        final String username = authenticatedUser.getUsername();
+        final Account updatedAccount = accountService.addFollowing(username, followId);
+        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
+        return ResponseEntity.ok(accountDto);
+    }
+
+    @RequiresAuthenticatedUser
+    @PostMapping("{followId}/unfollow")
+    public ResponseEntity<AccountDTO> deleteFollowing(
+            Account authenticatedUser,
+            @PathVariable String followId) {
+        final String username = authenticatedUser.getUsername();
+        final Account updatedAccount = accountService.deleteFollowing(username, followId);
+        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
+        return ResponseEntity.ok(accountDto);
     }
 }

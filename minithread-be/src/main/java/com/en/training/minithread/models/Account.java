@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Data
 public class Account {
     @Id
@@ -52,6 +54,17 @@ public class Account {
 
     @ManyToMany(mappedBy = "likedBy")
     private Set<Post> likedPosts = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "follow",
+            joinColumns = @JoinColumn(name = "followerId"),
+            inverseJoinColumns = @JoinColumn(name = "followingId")
+    )
+    private Set<Account> following;
+
+    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
+    private Set<Account> followers;
 
     public Account() {
     }

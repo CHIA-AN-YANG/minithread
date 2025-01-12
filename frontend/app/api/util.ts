@@ -30,3 +30,4 @@ getCsrfTokenFromCookie();
 
 export const csrfToken = Cookies.get(CSRF_COOKIE);
 export const token = Cookies.get(AUTH_COOKIE);
+export const getToken = () => Cookies.get(AUTH_COOKIE);

@@ -6,8 +6,10 @@ import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.elasticsearch.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,7 @@ import java.util.UUID;
 
 @Service
 public class AccountService {
-    private static final Logger log = LoggerFactory.getLogger(AccountService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -28,11 +30,11 @@ public class AccountService {
     }
 
     public Account getAccount(String username) {
-        try {
-            log.info("Account found: " + accountRepository.findByUsername(username));
-            return accountRepository.findByUsername(username).get();
-        } catch (Exception e) {
-            log.error("Account not found with username: " + username, e);
+        Optional<Account> accountOpt = accountRepository.findByUsername(username);
+        if (accountOpt.isPresent()) {
+            return accountOpt.get();
+        } else {
+            LOG.error("Account not found with username: {}", username);
             throw new AccountNotFoundException(username);
         }
     }
@@ -46,11 +48,11 @@ public class AccountService {
                 Account newAccount = new Account();
                 newAccount.setUsername(username);
                 Account createdAccount = createAccount(newAccount, rawPassword, email);
-                log.info("Account created: " + createdAccount);
+                LOG.info("Account created: " + createdAccount);
                 return createdAccount;
             }
         } catch (Exception e) {
-            log.error("error creating account" + username, e);
+            LOG.error("error creating account" + username, e);
             throw new RuntimeException("error creating account" + username);
         }
     }
@@ -103,12 +105,12 @@ public class AccountService {
                 existingAccount.setEmail(email);
             if (name != null)
                 existingAccount.setName(name);
-             if (profilePicture != null)
-                 existingAccount.setProfilePicture(profilePicture);
+            if (profilePicture != null)
+                existingAccount.setProfilePicture(profilePicture);
 
             return accountRepository.save(existingAccount);
         }
-        log.error("Account not found with username: " + username);
+        LOG.error("Account not found with username: " + username);
         throw new AccountNotFoundException(username);
     }
 
@@ -120,11 +122,54 @@ public class AccountService {
         throw new AccountNotFoundException(username);
     }
 
+    public Account addFollowing(String username, String followUsername) {
+        Optional<Account> accountOpt = accountRepository.findByUsername(username);
+        Optional<Account> followOpt = accountRepository.findByUsername(followUsername);
+        try {
+            if (accountOpt.isPresent() && followOpt.isPresent()) {
+                Account account = accountOpt.get();
+                Account follow = followOpt.get();
+                account.getFollowing().add(follow);
+                accountRepository.save(account);
+                return accountOpt.get();
+            }
+            throw new ResourceNotFoundException(String.format("cannot find user %s or user %s", username, followUsername));
+        } catch (Exception e) {
+            LOG.warn("user {} fail to follow user {}", username, followUsername);
+            ExceptionUtils.wrapAndThrow(e);
+        }
+        return null;
+    }
+
+    public Account deleteFollowing(String username, String followUsername) {
+        Optional<Account> accountOpt = accountRepository.findByUsername(username);
+        Optional<Account> followOpt = accountRepository.findByUsername(followUsername);
+        try {
+            if (accountOpt.isPresent() && followOpt.isPresent()) {
+                Account account = accountOpt.get();
+                Account follow = followOpt.get();
+                account.getFollowing().remove(follow);
+                accountRepository.save(account);
+            }
+            throw new ResourceNotFoundException(String.format("cannot find user %s or user %s", username, followUsername));
+        } catch (Exception e) {
+            LOG.warn("user {} fail to unfollow user {}", username, followUsername);
+            ExceptionUtils.wrapAndThrow(e);
+        }
+        return null;
+    }
+
     public AccountDTO mapAccountToAccountDTO(Account account) {
         AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
         accountDTO.setEmail(account.getEmail());
         if (StringUtils.isNotBlank(account.getBio())) {
             accountDTO.setBio(account.getBio());
+        }
+        if (StringUtils.isNotBlank(account.getEmail())) {
+            accountDTO.setEmail(account.getEmail());
+        }
+        if (StringUtils.isNotBlank(account.getProfilePicture())) {
+            accountDTO.setProfilePicture(account.getProfilePicture());
         }
         if (account.getCreatedAt() != null) {
             accountDTO.setCreatedAt(account.getCreatedAt().toString());
@@ -152,7 +197,6 @@ public class AccountService {
         }
     }
 
-    // create PasswordMismatchException
     public class PasswordMismatchException extends RuntimeException {
         public PasswordMismatchException(String message) {
             super(message);

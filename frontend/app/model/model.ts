@@ -32,6 +32,7 @@ export interface UiState {
   inputForm: string;
   parent: string | null;
   content: string;
+  status: ContentStatus;
 }
 export interface AuthState {
   user: UserData | null;
@@ -56,6 +57,14 @@ export type EntityState<T> = {
 export enum EntityStatus {
   LOADING = 'loading',
   SUCCESS = 'success',
+  ERROR = 'error',
+  IDLE = 'idle'
+}
+
+export enum ContentStatus {
+  LOADING = 'loading',
+  SENT = 'sent',
+  DELETED = 'deleted',
   ERROR = 'error',
   IDLE = 'idle'
 }

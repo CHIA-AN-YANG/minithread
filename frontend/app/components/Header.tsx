@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 const Header: React.FC = () => {
@@ -14,7 +13,7 @@ const Header: React.FC = () => {
   }, [router.pathname]);
 
   return (
-    <div className="flex items-center justify-between px-2 border-b border-gray-300 shadow-sm">
+    <div className="flex items-center justify-between px-2 border-b border-gray-300">
       <button onClick={() => router.back()} className="mb-4 text-stone-500 hover:text-stone-600">
         <i className="lni lni-chevron-left lni-32"></i>
       </button>

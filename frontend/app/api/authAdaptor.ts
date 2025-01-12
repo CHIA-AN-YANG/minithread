@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { AuthData, UserData } from '../model/model';
 import { apiBaseUrl, csrfToken } from './util';
-import { post, authedGet, authConfig, get } from './baseAdaptor';
+import { post, authedGet, get, authConfig, } from './baseAdaptor';
 
 export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<AuthData> | AxiosError> => {
 
@@ -39,7 +39,7 @@ export const getUserProfile = async (id: string): Promise<AxiosResponse<UserData
 }
 
 export const updateMe = async (formData: FormData): Promise<AxiosResponse<UserData> | AxiosError> => {
-  return await axios.postForm(apiBaseUrl + '/me/update', formData, authConfig).catch((error) => {
+  return await axios.postForm(apiBaseUrl + '/me/update', formData, authConfig()).catch((error) => {
     return error
   });
 }
