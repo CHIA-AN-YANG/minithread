@@ -1,25 +1,34 @@
 "use client";
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getAuthorCommentsList, getAuthorThreadList, getLatestThreadList, getUserThreadList } from '../api/threadAdaptor';
-import { ThreadData, Pagination } from '../model/model';
+import { ThreadData, Pagination, ContentStatus } from '../model/model';
 import { selectUser } from '../store/features/user/selectors/authSelectors';
 import Thread from './Thread';
 import { useRouter } from 'next/router';
 import toast, { Toaster } from 'react-hot-toast';
+import { selectUiStatus } from '../store/features/user/selectors/uiSelectors';
+import { AppDispatch } from '../store/store';
+import { setUiStatusIdle } from '../store/features/user/reducers/slices/uiSliceReducer';
 
 
 interface ThreadListProps {
   isMePage: boolean;
 }
 
+enum UpdateType {
+  REPLACE = 'replace',
+  APPEND = 'append'
+}
+
 const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   const [threads, setThreads] = useState<ThreadData[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
   const [page, setPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(false);
-  const user = useSelector(selectUser);
+  const contentStatus = useSelector(selectUiStatus);
   const router = useRouter();
   const { id } = router.query;
 
@@ -27,6 +36,16 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
     setIsLoading(true);
     getThreadsFunction();
   }, []);
+
+  useEffect(() => {
+    console.log("contentStatus:", contentStatus);
+    if (contentStatus === ContentStatus.SENT || contentStatus === ContentStatus.DELETED) {
+      setIsLoading(true);
+      setPage(0);
+      getThreadsFunction(0, UpdateType.REPLACE);
+      dispatch(setUiStatusIdle());
+    }
+  }, [contentStatus]);
 
   const loadMore = () => {
     if (hasMore && !isLoading) {
@@ -38,7 +57,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   };
 
 
-  const getThreadsFunction = (newPage?: number) => {
+  const getThreadsFunction = (newPage?: number, type?: UpdateType) => {
 
     const p = newPage ?? page;
     console.log("getThreadsFunction:", { route: router.pathname, page: p });
@@ -46,26 +65,30 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
       case '/me/threads':
         fetchData(
           () => getAuthorThreadList(p),
-          "Error fetching your threads"
+          "Error fetching your threads",
+          type
         );
         break;
       case '/me/comments':
         fetchData(
           (() => getAuthorCommentsList(p)),
-          "Error fetching your comments"
+          "Error fetching your comments",
+          type
         );
         break;
       case '/':
         fetchData(
           (() => getLatestThreadList(p)),
-          "Error fetching latest threads"
+          "Error fetching latest threads",
+          type
         );
         break;
       default:
         if (router.pathname.includes('/user') && id?.length) {
           fetchData(
             () => getUserThreadList(id as string, p),
-            `Error fetching threads from ${id}`
+            `Error fetching threads from ${id}`,
+            type
           );
         }
         break;
@@ -74,7 +97,8 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
 
   const fetchData = (
     fetchFunction: () => Promise<AxiosResponse<Pagination<ThreadData>> | AxiosError>,
-    errorMessage: string
+    errorMessage: string,
+    type?: UpdateType
   ) => {
     fetchFunction()
       .then((response) => {
@@ -85,9 +109,13 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
         const newThreads = (response as AxiosResponse<Pagination<ThreadData>>).data;
         if (newThreads.content && newThreads.content.length) {
           console.log("newThreads:", newThreads);
-          const oldThreads = [...threads];
-          const updatedThreads = [...oldThreads, ...newThreads.content];
-          setThreads(updatedThreads);
+          if (type === UpdateType.REPLACE) {
+            setThreads(newThreads.content);
+          } else if (!type || type === UpdateType.APPEND) {
+            const oldThreads = [...threads];
+            const updatedThreads = [...oldThreads, ...newThreads.content];
+            setThreads(updatedThreads);
+          }
           (newThreads.totalPages > (page + 1)) ? setHasMore(true) : setHasMore(false);
         }
       })

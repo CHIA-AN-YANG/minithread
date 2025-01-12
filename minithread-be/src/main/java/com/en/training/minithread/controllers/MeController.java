@@ -1,5 +1,6 @@
 package com.en.training.minithread.controllers;
 
+import com.en.training.minithread.annotation.RequiresAuthenticatedUser;
 import com.en.training.minithread.controllers.dtos.AccountDTO;
 import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;

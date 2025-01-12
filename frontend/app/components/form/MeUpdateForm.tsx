@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { registerUser, updateMe } from '../../api/authAdaptor';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectError, selectUser } from '../../store/features/user/selectors/authSelectors';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { getUserSuccess } from '@/app/store/features/user/actions/userActions';
+import { AppDispatch } from '@/app/store/store';
+import { UserData } from '@/app/model/model';
+import { AxiosResponse } from 'axios';
 
 interface FormData {
   name: string;
@@ -26,6 +30,7 @@ const MeUpdateForm: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
   const apiErrorMsg = useSelector(selectError) as string;
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (user) {
@@ -89,6 +94,7 @@ const MeUpdateForm: React.FC = () => {
       data.append('profilePicture', formData.profilePicture);
       const response = await updateMe(data);
       if (response.status === 200 || response.status === 201) {
+        dispatch(getUserSuccess((response as AxiosResponse<UserData>).data));
         toast.success('You have updated your profile.');
         router.push('/me/threads');
       }

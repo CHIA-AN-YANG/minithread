@@ -1,33 +1,37 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { endInput, sendThread, updateContent } from '../../store/features/user/actions/threadActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectInputFormOpen } from '../../store/features/user/selectors/uiSelectors';
 import { AppDispatch } from '../../store/store';
-
-
 
 const InputForm: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const dispatch = useDispatch<AppDispatch>();
   const uiState = useSelector(selectInputFormOpen);
 
+  useEffect(() => {
+    if (uiState === 'open') {
+      setInputValue('');
+    }
+  }
+    , [uiState]);
+
   const handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void = (e) => {
     setInputValue(e.target.value);
     dispatch(updateContent(e.target.value));
   };
 
-  const handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  // const handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void = (e) => {
+  //   if (e.key === 'Enter' && !e.shiftKey) { // bug: 中文在選字時也會觸發
+  //     e.preventDefault();
+  //     handleSend();
+  //   }
+  // };
 
   const handleSend = () => {
     if (uiState === 'open' && inputValue.trim()) {
       dispatch(updateContent(inputValue));
       dispatch(sendThread());
-      dispatch(endInput());
     }
   };
 
@@ -45,7 +49,7 @@ const InputForm: React.FC = () => {
           placeholder="What's new?"
           value={inputValue}
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
+        //onKeyDown={handleKeyDown}
         />
         <button
           className="ml-2 p-2 w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white"

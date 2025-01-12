@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { displayDateWithDiff } from '../util/date';
 import FilledHeartIcon from './icon/FilledHeartIcon';
 import { authedDelete, authedPost } from '../api/baseAdaptor';
+import { setUiStatusDeleted } from '../store/features/user/reducers/slices/uiSliceReducer';
 
 type ThreadProps = {
   id: string;
@@ -65,7 +66,8 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   };
 
   const handleDelete = () => {
-    axios.delete(`/api/threads/${id}`).then(() => {
+    authedDelete(`/threads/${id}`).then(() => {
+      dispatch(setUiStatusDeleted());
       toast.success('Post deleted successfully!');
     });
   };
