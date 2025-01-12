@@ -85,7 +85,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full p-6 bg-white sm:shadow-md sm:rounded-lg">
+    <div className="w-full h-full p-6 bg-white/75 sm:shadow-md sm:rounded-lg">
       <h2 className="text-xl font-bold my-4 text-center">Login with existing account</h2>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
         <div>

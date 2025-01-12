@@ -136,9 +136,11 @@ const MeUpdateForm: React.FC = () => {
           <textarea
             id="bio"
             name="bio"
+            rows={5}
+            cols={30}
             value={formData.bio}
             onChange={handleBioChange}
-            className="mt-1 flex grow h-15 px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 flex grow px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </label>
         <br />
