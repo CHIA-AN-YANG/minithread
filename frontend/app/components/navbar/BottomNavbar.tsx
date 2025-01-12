@@ -3,16 +3,22 @@ import Link from 'next/link';
 import { startInput } from '../../store/features/user/actions/threadActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store/store';
-import { selectStatus } from '@/app/store/features/user/selectors/authSelectors';
+import { selectStatus, selectUser } from '@/app/store/features/user/selectors/authSelectors';
 import { EntityStatus } from '@/app/model/model';
 import UserCheckedIcon from '../icon/UserCheckedIcon';
 import { useRouter } from 'next/router';
+import { use, useEffect, useState } from 'react';
 
 const BottomNavbar: React.FC = () => {
-  const status = useSelector(selectStatus);
+  const user = useSelector(selectUser);
+  const [isClient, setIsClient] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
+  useEffect(() => { setIsClient(true); }, []);
+
+  useEffect(() => { setLoggedIn(Boolean(user?.username)); }, [user]);
 
   const startNewThread = () => {
     if (!authorizedUser()) {
@@ -21,15 +27,17 @@ const BottomNavbar: React.FC = () => {
     dispatch(startInput());
   }
   const authorizedUser = () => {
-    return status === EntityStatus.SUCCESS;
+    return Boolean(user?.username);
   }
 
+  if (!isClient) return null;
+
   return (
-    <div className="h-15 p-2 border-t-2 border-primary flex justify-around items-center text-stone-500 hover:text-blue-500">
+    <div className="h-15 p-2 border-t border-gray-300 flex justify-around items-center text-stone-500 hover:text-blue-500">
       <Link href="/" className="flex flex-col items-center" aria-label="Home">
         <i className="lni lni-home-2 lni-32"></i>
       </Link>
-      {authorizedUser() ?
+      {loggedIn ?
         <Link href="/me/threads" className="flex flex-col items-center" aria-label="Profile">
           <UserCheckedIcon className="h-9 w-9 mt-1"></UserCheckedIcon>
         </Link>
