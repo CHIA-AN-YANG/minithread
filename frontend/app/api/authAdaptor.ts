@@ -1,7 +1,10 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { AuthData, UserData } from '../model/model';
-import { apiBaseUrl, csrfToken } from './util';
-import { post, authedGet, get, authConfig, } from './baseAdaptor';
+import { apiBaseUrl } from './util';
+import { post, authedGet, get, authedPost } from './baseAdaptor';
+const Cookies = require('js-cookie');
+const AUTH_COOKIE = 'auth_token';
+export const CSRF_COOKIE = 'csrf_token';
 
 export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<AuthData> | AxiosError> => {
 
@@ -13,7 +16,7 @@ export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<A
     headers: {
       'Authorization': basicAuth,
       'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-      'X-XSRF-TOKEN': csrfToken,
+      'X-XSRF-TOKEN': Cookies.get(CSRF_COOKIE),
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     }
@@ -39,9 +42,7 @@ export const getUserProfile = async (id: string): Promise<AxiosResponse<UserData
 }
 
 export const updateMe = async (formData: FormData): Promise<AxiosResponse<UserData> | AxiosError> => {
-  return await axios.postForm(apiBaseUrl + '/me/update', formData, authConfig()).catch((error) => {
-    return error
-  });
+  return await authedPost('/me/update', formData);
 }
 
 
