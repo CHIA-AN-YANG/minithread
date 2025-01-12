@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 export default function MeCommentsPage() {
   return (
     <div className="page">
-      <main className="main-profile">
+      <main className="main-my-profile">
         <MePanel />
         <MeNavbar />
         <ThreadList isMePage={true} />

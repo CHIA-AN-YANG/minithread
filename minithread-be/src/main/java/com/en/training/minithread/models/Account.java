@@ -63,7 +63,7 @@ public class Account {
     )
     private Set<Account> following;
 
-    @ManyToMany(mappedBy = "following")
+    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
     private Set<Account> followers;
 
     public Account() {

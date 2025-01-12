@@ -64,7 +64,7 @@ const UserPanel = () => {
           <section className="justify-start flex flex-col">
             <div className="flex pb-2 justify-between w-full sm:border-b-2 border-primary border-solid">
               <div className="flex flex-col ">
-                <h1 className="font-bold text-md">{user.username}</h1>
+                <h1 className="font-bold text-md">{user.username} {user.email}</h1>
                 <h3>{user.name}</h3>
               </div>
               {isMe ? <>
@@ -84,13 +84,7 @@ const UserPanel = () => {
           </section>
 
           <section className="flex overflow-hidden sm:m-1 my-auto min-w-20 min-h-20 w-20 h-20 align-center border border-gray-500 rounded-lg">
-            <Image src="/images/avatar-presets/avatar-13.jpg"
-              alt={user.username + "\'s profilePicture"}
-              className='object-cover mx-auto'
-              width={100}
-              height={100}
-            />
-            {(user.profilePicture?.length) && imageLoaded &&
+            {(user.profilePicture?.length) ?
               <Image
                 src={user.profilePicture!}
                 alt={user.username + "\'s picture"}
@@ -99,6 +93,11 @@ const UserPanel = () => {
                 height={200}
                 onLoad={() => setImageLoaded(true)}
                 priority
+              /> : <Image src="/images/avatar-presets/avatar-13.jpg"
+                alt={user.username + "\'s profilePicture"}
+                className='object-cover mx-auto'
+                width={100}
+                height={100}
               />
             }
           </section>

@@ -38,6 +38,17 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
+    if (router.pathname.includes('/user') && id?.length) {
+      fetchData(
+        () => getUserThreadList(id as string, 0),
+        `Error fetching threads from ${id}`,
+        UpdateType.REPLACE
+      );
+    }
+  }, [id]);
+
+  useEffect(() => {
     console.log("contentStatus:", contentStatus);
     if (contentStatus === ContentStatus.SENT || contentStatus === ContentStatus.DELETED) {
       setIsLoading(true);
@@ -60,7 +71,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
   const getThreadsFunction = (newPage?: number, type?: UpdateType) => {
 
     const p = newPage ?? page;
-    console.log("getThreadsFunction:", { route: router.pathname, page: p });
+    console.log("getThreadsFunction:", { route: router.pathname, page: p, id });
     switch (router.pathname) {
       case '/me/threads':
         fetchData(

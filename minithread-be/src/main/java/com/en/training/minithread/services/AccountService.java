@@ -165,6 +165,12 @@ public class AccountService {
         if (StringUtils.isNotBlank(account.getBio())) {
             accountDTO.setBio(account.getBio());
         }
+        if (StringUtils.isNotBlank(account.getEmail())) {
+            accountDTO.setEmail(account.getEmail());
+        }
+        if (StringUtils.isNotBlank(account.getProfilePicture())) {
+            accountDTO.setProfilePicture(account.getProfilePicture());
+        }
         if (account.getCreatedAt() != null) {
             accountDTO.setCreatedAt(account.getCreatedAt().toString());
         }
