@@ -101,7 +101,7 @@ const UserPanel = () => {
               />
             }
           </section>
-        </> : <div className="w-full h-full flex justify-center items-center">
+        </> : <div className="w-full col-span-2 h-full flex justify-center items-center">
           <div className="loader"></div>
         </div>}
     </div >

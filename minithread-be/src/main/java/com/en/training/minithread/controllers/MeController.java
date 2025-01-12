@@ -60,10 +60,7 @@ public class MeController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        final AccountDTO account = new AccountDTO(currentUser.getName(), currentUser.getUsername());
-        account.setName(StringUtils.isNotBlank(currentUser.getName()) ? currentUser.getName() : "");
-        account.setBio(StringUtils.isNotBlank(currentUser.getBio()) ? currentUser.getBio() : "");
-
+        final AccountDTO account = accountService.mapAccountToAccountDTO(currentUser);
         return ResponseEntity.ok(account);
     }
 
