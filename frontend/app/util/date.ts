@@ -33,3 +33,14 @@ export const displayDateWithDiff = (isoDate: string) => {
     minute: '2-digit',
   });
 };
+
+export const displayDate = (isoDate: string) => {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
