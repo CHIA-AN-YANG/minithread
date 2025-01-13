@@ -1,6 +1,6 @@
-import React, { use, useEffect, useState } from 'react';
-import { endInput, sendThread, updateContent } from '../../store/features/user/actions/threadActions';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { endInput, sendThread, updateContent } from '../../store/features/user/actions/threadActions';
 import { selectInputFormOpen } from '../../store/features/user/selectors/uiSelectors';
 import { AppDispatch } from '../../store/store';
 
@@ -43,7 +43,7 @@ const InputForm: React.FC = () => {
 
     (uiState === 'open') && <>
       <div className="absolute top-0 left-0 h-full w-full bg-black opacity-10" onClick={handleCloseForm}></div>
-      <div className="absolute bottom-0 left-0 flex p-4 w-full items-start bg-white">
+      <div className="absolute bottom-0 left-0 flex p-4 w-full items-start bg-white input-form input-form__container">
         <textarea
           className="flex-grow text-left text-top p-2 h-20 outline-none text-gray-700 border border-primary rounded-md"
           placeholder="What's new?"

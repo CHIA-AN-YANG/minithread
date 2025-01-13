@@ -21,6 +21,25 @@
   line-height: 1;
 }
 
+@media (min-width: 800px) {
+  .input-form.input-form__container {
+    width: 600px;
+    left: 50%;
+    bottom: 30%;
+    border: 1px solid gray;
+    transform: translateX(-300px);
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input-form__container textarea {
+    width: 100%;
+    height: 180px;
+  }
+}
+
 @media (max-width: 600px) {
   .left-panel img {
     height: Min(40vh, 500px);
