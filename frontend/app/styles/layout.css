@@ -5,14 +5,13 @@
 
   --button-primary-hover: #4f4a4a;
   --button-secondary-hover: #f2f2f2;
-  --bg-c: floralwhite;
 
   height: 100vh;
   padding: 1rem;
   max-width: Min(800px, 100vw);
   margin: 0 auto;
   font-family: var(--font-geist-sans);
-  background-color: var(--bg-c);
+  background-color: var(--background-c);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,6 +23,20 @@
     --button-primary-hover: #ccc;
     --button-secondary-hover: #3b3939;
   }
+}
+
+.page.page-me {
+  background-color: var(--bg-me-c);
+}
+
+.page.page-form {
+  background: #aa4b6b;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 
 .main {

@@ -4,6 +4,7 @@ import InputForm from '@/app/components/form/InputForm';
 import BottomNavbar from '@/app/components/navbar/BottomNavbar';
 import Thread from '@/app/components/Thread';
 import { ThreadData } from '@/app/model/model';
+import { displayDate } from '@/app/util/date';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -36,7 +37,7 @@ export default function ThreadPage() {
       <main className="main-single-thread">
         <header>
           {thread?.author && <h1 className="text-md text-center">By {thread.author}</h1>}
-          {thread?.createdAt && <p className="text-sm text-gray-500 text-center"><time>Posted on {thread.createdAt}</time></p>}
+          {thread?.createdAt && <p className="text-sm text-gray-500 text-center"><time>Posted on {displayDate(thread.createdAt)}</time></p>}
         </header>
         <div>
           {thread && <Thread
@@ -44,7 +45,7 @@ export default function ThreadPage() {
             author={thread.author}
             content={thread.content}
             createdAt={thread.createdAt || ""}
-            likesCount={thread.likesCount}
+            likedByCount={thread.likedByCount}
             parentThread={thread.parentThread}
             commentList={thread.comments}
           />}

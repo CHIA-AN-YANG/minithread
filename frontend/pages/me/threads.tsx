@@ -13,7 +13,7 @@ import { Provider, useSelector } from 'react-redux';
 export default function MeThreadsPage() {
 
   return (
-    <div className="page">
+    <div className="page page-me">
       <Provider store={store}>
         <main className="main-my-profile">
           <MePanel />

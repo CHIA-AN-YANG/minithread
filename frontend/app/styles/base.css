@@ -1,7 +1,9 @@
 :root {
-  --background-c: #ffffff;
+  --background-c: floralwhite;
   --foreground-c: #171717;
   --error-c: crimson;
+
+  --bg-me-c: #f4f9f9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -9,6 +11,8 @@
     --background-c: #0a0a0a;
     --foreground-c: #ededed;
     --error-c: #e0788d;
+
+    --bg-me-c: #344e48;
   }
 }
 

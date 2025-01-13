@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios, { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { get } from 'http';
 const Cookies = require('js-cookie');
 const AUTH_COOKIE = 'auth_token';
-const CSRF_COOKIE = 'csrf_token';
+export const CSRF_COOKIE = 'csrf_token';
 
 const getApiUrl = () => {
   if (process.env.NEXT_PUBLIC_API_PORT == undefined || process.env.NEXT_PUBLIC_API_PORT == 'undefined') {
@@ -14,20 +14,40 @@ const getApiUrl = () => {
 
 export const apiBaseUrl = getApiUrl() + "/api";
 
-const getCsrfTokenFromCookie = () => {
-  if (Cookies.get(CSRF_COOKIE)) {
-    return;
-  }
-  return axios.get(apiBaseUrl + '/csrf-token').then((response) => {
-    const csrfToken = response.data.token;
-    Cookies.set('csrf_token', csrfToken);
-  }).catch((error) => {
-    console.error('Error getting CSRF token:', error);
-  });
+type CsrfResponse = {
+  token: string;
+  parametername: string;
+  header: string;
 }
 
-getCsrfTokenFromCookie();
+async function initCsrfToken() {
+  return axios.get<CsrfResponse>(apiBaseUrl + '/csrf-token');
+}
 
-export const csrfToken = Cookies.get(CSRF_COOKIE);
-export const token = Cookies.get(AUTH_COOKIE);
-export const getToken = () => Cookies.get(AUTH_COOKIE);
+export async function getConfig(auth: boolean): Promise<AxiosRequestConfig> {
+  let csrfToken = Cookies.get(CSRF_COOKIE);
+
+  if (!csrfToken) {
+    const csrfResponse = await initCsrfToken();
+    csrfToken = csrfResponse.data.token;
+    Cookies.set(CSRF_COOKIE, csrfToken);
+  }
+  if (auth) {
+    return {
+      headers: {
+        'Authorization': `Bearer ${Cookies.get(AUTH_COOKIE)}`,
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+        'X-XSRF-TOKEN': csrfToken,
+        'Content-Type': 'application/json'
+      }
+    }
+  } else {
+    return {
+      headers: {
+        'Cache-Control': 'no-cache, must-revalidate',
+        'X-XSRF-TOKEN': csrfToken,
+        'Content-Type': 'application/json'
+      }
+    }
+  }
+}

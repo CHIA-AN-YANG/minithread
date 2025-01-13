@@ -1,11 +1,10 @@
 package com.en.training.minithread.services;
 
 import com.en.training.minithread.controllers.dtos.AccountDTO;
-import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -93,19 +91,20 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account updateAccount(String username, String email, String name, String bio, String profilePicture) {
+    public Account updateAccount(final String username, final String email, final String name,
+            final String bio, final String profilePicture) {
 
         Optional<Account> account = accountRepository.findByUsername(username);
         if (account.isPresent()) {
             Account existingAccount = account.get();
 
-            if (bio != null)
+            if (StringUtils.isNotEmpty(bio))
                 existingAccount.setBio(bio);
-            if (email != null)
+            if (StringUtils.isNotEmpty(email))
                 existingAccount.setEmail(email);
-            if (name != null)
+            if (StringUtils.isNotEmpty(name))
                 existingAccount.setName(name);
-            if (profilePicture != null)
+            if (StringUtils.isNotEmpty(profilePicture))
                 existingAccount.setProfilePicture(profilePicture);
 
             return accountRepository.save(existingAccount);
@@ -133,7 +132,8 @@ public class AccountService {
                 accountRepository.save(account);
                 return accountOpt.get();
             }
-            throw new ResourceNotFoundException(String.format("cannot find user %s or user %s", username, followUsername));
+            throw new ResourceNotFoundException(
+                    String.format("cannot find user %s or user %s", username, followUsername));
         } catch (Exception e) {
             LOG.warn("user {} fail to follow user {}", username, followUsername);
             ExceptionUtils.wrapAndThrow(e);
@@ -151,7 +151,8 @@ public class AccountService {
                 account.getFollowing().remove(follow);
                 accountRepository.save(account);
             }
-            throw new ResourceNotFoundException(String.format("cannot find user %s or user %s", username, followUsername));
+            throw new ResourceNotFoundException(
+                    String.format("cannot find user %s or user %s", username, followUsername));
         } catch (Exception e) {
             LOG.warn("user {} fail to unfollow user {}", username, followUsername);
             ExceptionUtils.wrapAndThrow(e);
@@ -162,13 +163,13 @@ public class AccountService {
     public AccountDTO mapAccountToAccountDTO(Account account) {
         AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
         accountDTO.setEmail(account.getEmail());
-        if (StringUtils.isNotBlank(account.getBio())) {
+        if (StringUtils.isNotEmpty(account.getBio())) {
             accountDTO.setBio(account.getBio());
         }
-        if (StringUtils.isNotBlank(account.getEmail())) {
+        if (StringUtils.isNotEmpty(account.getEmail())) {
             accountDTO.setEmail(account.getEmail());
         }
-        if (StringUtils.isNotBlank(account.getProfilePicture())) {
+        if (StringUtils.isNotEmpty(account.getProfilePicture())) {
             accountDTO.setProfilePicture(account.getProfilePicture());
         }
         if (account.getCreatedAt() != null) {

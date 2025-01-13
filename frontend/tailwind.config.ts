@@ -11,7 +11,7 @@ module.exports = {
         primaryDark: '#816f4f',
         secondary: '#9aba8c',
         secondaryDark: '#678d57',
-        panelBg: '#fefcf5',
+        mePage: '#ebf2f4',
       },
     },
   },

@@ -3,12 +3,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 1. add .env file
 2. use node v20.18
+
 ```bash
 nvm use v20.18.0
 ```
 3. install next (I develop this project with 15.0.2)
 ```bash
 npm install -g next@15.0.2
+npm install -g cross-env
 ```
 4. install dependencies
 ```bash

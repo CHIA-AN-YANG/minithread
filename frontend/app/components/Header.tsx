@@ -1,6 +1,12 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-const Header: React.FC = () => {
+
+type HeaderProps = {
+  style?: string;
+};
+
+
+const Header: React.FC<HeaderProps> = ({ style }) => {
   const [disableBack, setDisableBack] = React.useState(false);
   const router = useRouter();
 
@@ -12,9 +18,20 @@ const Header: React.FC = () => {
     }
   }, [router.pathname]);
 
+  const getClassName = (): string => {
+    switch (style) {
+      case 'form':
+        return 'invert';
+      case 'no-border':
+        return '';
+      default:
+        return 'border-b border-gray-300';
+    }
+  };
+
   return (
-    <div className="flex items-center justify-between px-2 border-b border-gray-300">
-      <button onClick={() => router.back()} className="mb-4 text-stone-500 hover:text-stone-600">
+    <div className={`flex items-center justify-between px-2 ${getClassName()}`}>
+      <button onClick={() => router.back()} className="mb-4 text-stone-700 hover:text-slate-100">
         <i className="lni lni-chevron-left lni-32"></i>
       </button>
       <div className="flex-1 text-center">

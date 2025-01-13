@@ -7,9 +7,9 @@ import { Toaster } from 'react-hot-toast';
 export default function MeEditPage() {
 
   return (
-    <div className="page">
+    <div className="page page-me">
       <main className="main-home">
-        <Header />
+        <Header style={"no-border"} />
         <MeUpdateForm />
         <BottomNavbar />
       </main>
