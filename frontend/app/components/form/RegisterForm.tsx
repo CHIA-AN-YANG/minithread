@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { registerUser } from '../../api/authAdaptor';
-import { useSelector } from 'react-redux';
-import { selectError } from '../../store/features/user/selectors/authSelectors';
 import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { registerUser } from '../../api/authAdaptor';
+import { selectError } from '../../store/features/user/selectors/authSelectors';
 
 interface FormData {
   username: string;
@@ -51,12 +52,14 @@ const RegisterForm: React.FC = () => {
 
     try {
       const data = new FormData();
+      const username = formData.username;
       data.append('username', formData.username);
       data.append('email', formData.email);
       data.append('password', formData.password);
       const response = await registerUser(data);
       if (response.status === 200 || response.status === 201) {
-        setSuccessMessage('Registration successful!');
+        toast.success(`Congrats, ${username}! You have successfully registered!`);
+        setSuccessMessage('Registration succeeded');
         setFormData({ username: '', email: '', password: '' });
       }
     } catch (error: any) {
@@ -96,11 +99,15 @@ const RegisterForm: React.FC = () => {
             type="password"
             id="password"
             name="password"
+            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+            title="Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character."
             value={formData.password}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
+        <p className="mt-4 text-sm text-bold text-red-500">{errorMessage && errorMessage || apiErrorMsg}</p>
+        <p className="mt-4 text-sm text-bold text-green-500">{successMessage && successMessage}</p>
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -112,8 +119,6 @@ const RegisterForm: React.FC = () => {
           No, not yet.
         </button>
       </form>
-      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}
-      {successMessage && <p className="mt-4 text-sm text-green-500">{successMessage}</p>}
     </div>
   );
 };

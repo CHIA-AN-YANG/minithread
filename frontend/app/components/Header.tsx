@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ style }) => {
       <button onClick={() => router.back()} className="mb-4 text-stone-700 hover:text-slate-100">
         <i className="lni lni-chevron-left lni-32"></i>
       </button>
-      <div className="flex-1 text-center">
+      <div onClick={() => router.push("/")} className="flex-1 text-center">
         <img src="/images/logos/minithread-md.png" alt="Logo" className="mb-4 h-10 inline-block" />
       </div>
       <div className="w-6"></div> {/* Placeholder for right alignment */}

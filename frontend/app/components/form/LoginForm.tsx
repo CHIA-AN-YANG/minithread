@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { getAuth } from '../../store/features/user/actions/authActions';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectStatus, selectError, selectUser } from '../../store/features/user/selectors/authSelectors';
-import { AppDispatch } from '../../store/store';
 import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { EntityStatus } from '../../model/model';
+import { getAuth } from '../../store/features/user/actions/authActions';
+import { selectError, selectStatus, selectUser } from '../../store/features/user/selectors/authSelectors';
+import { AppDispatch } from '../../store/store';
 
 interface LoginFormData {
   username: string;
@@ -97,6 +97,7 @@ const LoginForm: React.FC = () => {
             value={formData.username}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            required
           />
         </div>
         <div>
@@ -108,6 +109,7 @@ const LoginForm: React.FC = () => {
             value={formData.password}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            required
           />
         </div>
         <button

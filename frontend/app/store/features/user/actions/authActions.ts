@@ -1,8 +1,8 @@
-import { AxiosError, AxiosResponse } from 'axios';
-import { setError, setStatusLoading, setStatusError, setStatusSuccess } from '../reducers/slices/authSliceReducer';
-import { AppThunk } from '../../../store';
 import { postAuthToken } from '@/app/api/authAdaptor';
 import { AuthData } from '@/app/model/model';
+import { AxiosError, AxiosResponse } from 'axios';
+import { AppThunk } from '../../../store';
+import { setError, setStatusError, setStatusLoading, setStatusSuccess } from '../reducers/slices/authSliceReducer';
 const Cookies = require('js-cookie');
 const TOKEN_COOKIE = 'auth_token';
 
@@ -12,7 +12,6 @@ export const getAuth = (formData: FormData): AppThunk => (dispatch) => {
     postAuthToken(formData).then((response) => {
 
       if (response.status === 200) {
-        console.log('response', JSON.stringify(response, null, 2));
         dispatch(getAuthSuccess((<AxiosResponse<AuthData>>response).data));
         return;
       } else {
