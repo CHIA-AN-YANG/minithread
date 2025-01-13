@@ -1,5 +1,4 @@
-import axios, { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { get } from 'http';
+import axios, { AxiosRequestConfig } from 'axios';
 const Cookies = require('js-cookie');
 const AUTH_COOKIE = 'auth_token';
 export const CSRF_COOKIE = 'csrf_token';
@@ -16,37 +15,38 @@ export const apiBaseUrl = getApiUrl() + "/api";
 
 type CsrfResponse = {
   token: string;
-  parametername: string;
-  header: string;
+  parameterName: string;
+  headerName: string;
 }
 
 async function initCsrfToken() {
-  return axios.get<CsrfResponse>(apiBaseUrl + '/csrf-token');
+  return await axios.get<CsrfResponse>(apiBaseUrl + '/csrf-token');
 }
 
-export async function getConfig(auth: boolean): Promise<AxiosRequestConfig> {
-  let csrfToken = Cookies.get(CSRF_COOKIE);
+export function getConfig(auth: boolean): AxiosRequestConfig {
+  // let csrfToken = Cookies.get(CSRF_COOKIE);
+  // console.log('csrfToken', csrfToken);
 
-  if (!csrfToken) {
-    const csrfResponse = await initCsrfToken();
-    csrfToken = csrfResponse.data.token;
-    Cookies.set(CSRF_COOKIE, csrfToken);
-  }
+  // if (!csrfToken || csrfToken == 'undefined') {
+  //   const csrfResponse = await initCsrfToken();
+  //   csrfToken = csrfResponse.data.token;
+  //   Cookies.set(CSRF_COOKIE, csrfToken);
+  // }
   if (auth) {
     return {
       headers: {
         'Authorization': `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-        'X-XSRF-TOKEN': csrfToken,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       }
     }
   } else {
     return {
       headers: {
         'Cache-Control': 'no-cache, must-revalidate',
-        'X-XSRF-TOKEN': csrfToken,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       }
     }
   }

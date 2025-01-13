@@ -18,7 +18,11 @@ import java.util.Optional;
 @Component
 public class AuthenticationAspect {
 
-    private AuthenticationUtils authenticationUtils;
+    private final AuthenticationUtils authenticationUtils;
+
+    AuthenticationAspect(AuthenticationUtils authenticationUtils) {
+        this.authenticationUtils = authenticationUtils;
+    }
 
     @Around("@annotation(com.en.training.minithread.annotation.RequiresAuthenticatedUser)")
     public Object checkAuthentication(ProceedingJoinPoint joinPoint) throws Throwable {

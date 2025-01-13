@@ -30,5 +30,6 @@ public class ThreadDTO {
     this.updatedAt = "";
     this.likedByCount = 0;
     this.likedByMe = false;
+    this.commentCount = 0;
   }
 }

@@ -161,10 +161,16 @@ public class AccountService {
     }
 
     public AccountDTO mapAccountToAccountDTO(Account account) {
-        AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
-        accountDTO.setEmail(account.getEmail());
+        AccountDTO accountDTO = new AccountDTO(account.getUsername());
+
+        if(StringUtils.isNotEmpty(account.getEmail())) {
+            accountDTO.setEmail(account.getEmail());
+        }
         if (StringUtils.isNotEmpty(account.getBio())) {
             accountDTO.setBio(account.getBio());
+        }
+        if (StringUtils.isNotEmpty(account.getName())) {
+            accountDTO.setName(account.getName());
         }
         if (StringUtils.isNotEmpty(account.getEmail())) {
             accountDTO.setEmail(account.getEmail());

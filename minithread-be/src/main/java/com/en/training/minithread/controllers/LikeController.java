@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.*;
 public class LikeController {
 
     private final LikeService likeService;
-    private final PostService postService;
 
-    public LikeController(LikeService likeService, PostService postService) {
+    public LikeController(LikeService likeService) {
         this.likeService = likeService;
-        this.postService = postService;
     }
 
     @PostMapping("/{postId}/like")

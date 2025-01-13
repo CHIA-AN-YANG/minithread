@@ -1,9 +1,12 @@
 package com.en.training.minithread.controllers;
 
+import com.en.training.minithread.annotation.RequiresAuthenticatedUser;
 import com.en.training.minithread.controllers.dtos.CreatePostRequest;
 import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;
+import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
+import com.en.training.minithread.services.LikeService;
 import com.en.training.minithread.services.PostService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -118,17 +121,13 @@ public class ThreadController {
       @ApiResponse(responseCode = "201", description = "Thread created successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid input provided")
   })
+  @RequiresAuthenticatedUser
   @PostMapping()
-  public ResponseEntity<ThreadDTO> createPost(@RequestBody CreatePostRequest request, Authentication authentication) {
+  public ResponseEntity<ThreadDTO> createPost(@RequestBody CreatePostRequest request, Account currentUser) {
     final String postContent = request.getContent();
     final String parentPostId = request.getParent();
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-    if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-    final String username = jwt.getClaim("sub");
+
+    final String username = currentUser.getUsername();
     final Post post;
     if (StringUtils.isNotBlank(parentPostId)) {
       post = postService.createComment(postContent, username, Long.valueOf(parentPostId));
@@ -145,22 +144,16 @@ public class ThreadController {
       @ApiResponse(responseCode = "400", description = "Invalid input provided"),
       @ApiResponse(responseCode = "404", description = "Post not found")
   })
+  @RequiresAuthenticatedUser
   @PutMapping("/{id}")
   public ResponseEntity<ThreadDTO> updatePost(
-          Authentication authentication,
+          Account currentUser,
           @PathVariable Long id,
           @RequestBody CreatePostRequest request
   ) {
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-    if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-    final String username = jwt.getClaim("sub");
     final String postContent = request.getContent();
     Post updatedPost = postService.updatePost(id, postContent);
-    ThreadDTO threadDTO = postService.mapPostToThreadDTO(updatedPost, username);
+    ThreadDTO threadDTO = postService.mapPostToThreadDTO(updatedPost, currentUser.getUsername());
     return new ResponseEntity<>(threadDTO, HttpStatus.OK);
   }
 

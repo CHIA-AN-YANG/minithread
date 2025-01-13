@@ -1,26 +1,27 @@
 package com.en.training.minithread.controllers.dtos;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
 
 @Getter
 @Setter
 public class AccountDTO {
     private String username;
     private String email;
-    private String password;
     private String profilePicture;
     private String bio ="";
     private String name ="";
     private String createdAt;
     private String updatedAt;
-    private Boolean verified;
+    private String[] followers;
+    private String[] followed;
 
-    public AccountDTO(String name, String username) {
-        this.name = name == null ? "" : name; // Default empty string for null name
+    public AccountDTO(String username) {
         this.username = username;
+        this.email = "";
+        this.bio ="";
+        this.name ="";
+        this.profilePicture="";
     }
 }
