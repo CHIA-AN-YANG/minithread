@@ -2,6 +2,7 @@ package com.en.training.minithread.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@EqualsAndHashCode(of = "username")
 @Data
 public class Account {
     @Id
@@ -63,7 +65,7 @@ public class Account {
     )
     private Set<Account> following;
 
-    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private Set<Account> followers;
 
     public Account() {

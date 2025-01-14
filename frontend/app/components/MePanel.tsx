@@ -1,40 +1,31 @@
 "use client";
 /* eslint-disable @next/next/no-img-element*/
-import Image from "next/image";
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../store/store';
-import { selectUser, selectStatus } from '../store/features/user/selectors/authSelectors';
-import { EntityStatus } from '../model/model';
 import { useRouter } from 'next/navigation';
-import { loadUser, logoutUser } from '../store/features/user/actions/userActions';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { EntityStatus } from '../model/model';
+import { loadUser } from '../store/features/user/actions/userActions';
+import { selectStatus, selectUser } from '../store/features/user/selectors/authSelectors';
+import { AppDispatch } from '../store/store';
+import BaseUserPanel from './BaseUserPanel';
 
 const MePanel = () => {
-  const [isClient, setIsClient] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector(selectUser);
   const status = useSelector(selectStatus);
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
     dispatch(loadUser());
   }, [dispatch]);
 
   useEffect(() => {
-    if (status === EntityStatus.ERROR) { router.push('/') };
+    if (status === EntityStatus.ERROR) {
+      router.push('/')
+      toast.error("Your session has expired. Please login again.");
+    };
   }, [status, router]);
-
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    router.push('/login');
-  };
-
-  if (!isClient) return null;
 
   if (status === EntityStatus.LOADING || status === EntityStatus.IDLE) return (
     <>
@@ -46,51 +37,7 @@ const MePanel = () => {
   if (status === EntityStatus.SUCCESS) {
     if (!user) { router.push('/404'); };
     return (
-      <div className="grid sm:grid-cols-[1fr_8rem] grid-cols-[1fr_5rem] sm:gap-4 gap-2 h-32 w-full overflow-hidden">
-        {user ?
-          <>
-            <section className="justify-start flex flex-col">
-              <div className="flex pb-2 justify-between w-full sm:border-b-2 border-primary border-solid">
-                <div className="flex flex-col ">
-                  <h3>{user.username}</h3>
-                  <h3 className="font-bold">{user.name}</h3>
-                </div>
-                <div className="ctas px-2 ml-auto" role="button" onClick={() => router.push('/me/edit')}>
-                  <span className="secondary">edit</span>
-                </div>
-                <div className="ctas" role="button" onClick={() => handleLogout()}>
-                  <span className="secondary">logout</span>
-                </div>
-              </div>
-              <hr className="border-secondary" />
-
-              <div className="h-15 flex overflow-y-scroll">
-                <p>{user.bio}</p>
-              </div>
-            </section>
-
-            <section className="flex overflow-hidden sm:m-1 my-auto min-w-20 min-h-20 w-20 h-20 align-center border border-gray-500 rounded-lg">
-              {(user.profilePicture?.length) ?
-                <Image
-                  src={user.profilePicture!}
-                  alt={user.username + "\'s picture"}
-                  placeholder='empty'
-                  width={200}
-                  height={200}
-                  onLoad={() => setImageLoaded(true)}
-                  priority
-                /> : <Image src="/images/avatar-presets/avatar-13.jpg"
-                  alt={user.username + "\'s profilePicture"}
-                  className='object-cover mx-auto'
-                  width={100}
-                  height={100}
-                />
-              }
-            </section>
-          </> : <div className="w-full h-full flex justify-center items-center">
-            <div className="loader"></div>
-          </div>}
-      </div >
+      <BaseUserPanel user={user!} isMe={true} isLoading={false} />
     );
   }
 };
