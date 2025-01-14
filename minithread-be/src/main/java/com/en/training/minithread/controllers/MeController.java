@@ -159,26 +159,4 @@ public class MeController {
         return ResponseEntity.ok(accountDTO);
 
     }
-
-    @RequiresAuthenticatedUser
-    @PostMapping("{followId}/follow")
-    public ResponseEntity<AccountDTO> addFollowing(
-            Account authenticatedUser,
-            @PathVariable String followId) {
-        final String username = authenticatedUser.getUsername();
-        final Account updatedAccount = accountService.addFollowing(username, followId);
-        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
-        return ResponseEntity.ok(accountDto);
-    }
-
-    @RequiresAuthenticatedUser
-    @PostMapping("{followId}/unfollow")
-    public ResponseEntity<AccountDTO> deleteFollowing(
-            Account authenticatedUser,
-            @PathVariable String followId) {
-        final String username = authenticatedUser.getUsername();
-        final Account updatedAccount = accountService.deleteFollowing(username, followId);
-        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
-        return ResponseEntity.ok(accountDto);
-    }
 }

@@ -1,11 +1,9 @@
 package com.en.training.minithread.controllers;
 
+import com.en.training.minithread.annotation.RequiresAuthenticatedUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.en.training.minithread.controllers.dtos.AccountDTO;
 import com.en.training.minithread.models.Account;
@@ -43,4 +41,25 @@ public class UserController {
         return ResponseEntity.ok(account);
     }
 
+    @RequiresAuthenticatedUser
+    @PostMapping("{followId}/follow")
+    public ResponseEntity<AccountDTO> addFollowing(
+            Account authenticatedUser,
+            @PathVariable String followId) {
+        final String currentUsername = authenticatedUser.getUsername();
+        final Account updatedAccount = accountService.addFollowing(currentUsername, followId);
+        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
+        return ResponseEntity.ok(accountDto);
+    }
+
+    @RequiresAuthenticatedUser
+    @DeleteMapping("{followId}/unfollow")
+    public ResponseEntity<AccountDTO> deleteFollowing(
+            Account authenticatedUser,
+            @PathVariable String followId) {
+        final String currentUsername = authenticatedUser.getUsername();
+        final Account updatedAccount = accountService.deleteFollowing(currentUsername, followId);
+        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
+        return ResponseEntity.ok(accountDto);
+    }
 }

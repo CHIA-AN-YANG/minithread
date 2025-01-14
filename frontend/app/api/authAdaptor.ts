@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { AuthData, UserData } from '../model/model';
-import { authedGet, get } from './baseAdaptor';
+import { authedDelete, authedGet, authedPost, get } from './baseAdaptor';
 import { apiBaseUrl, getConfig } from './util';
 const Cookies = require('js-cookie');
 const AUTH_COOKIE = 'auth_token';
@@ -42,6 +42,14 @@ export const getUserProfile = async (id: string): Promise<AxiosResponse<UserData
 
 export const updateMe = async (formData: FormData): Promise<AxiosResponse<UserData> | AxiosError> => {
   return await axios.postForm(apiBaseUrl + '/me/update', formData, getConfig(true));
+}
+
+export const followUser = async (id: string): Promise<AxiosResponse<UserData> | AxiosError> => {
+  return await authedPost<UserData>(`/user/${id}/follow`, {});
+}
+
+export const unfollowUser = async (id: string): Promise<AxiosResponse<UserData> | AxiosError> => {
+  return await authedDelete<UserData>(`/user/${id}/unfollow`, {});
 }
 
 

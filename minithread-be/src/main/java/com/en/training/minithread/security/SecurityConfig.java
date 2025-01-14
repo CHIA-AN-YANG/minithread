@@ -70,6 +70,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/{username}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/user/{followId}/follow").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/user/{followId}/unfollow").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/threads/latest").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/threads/by-author/{username}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/threads/**").permitAll()
@@ -78,7 +80,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/me/comments", "/api/me/threads").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/me/update").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/me/{followId}/follow", "/api/me/{followId}/unfollow").authenticated()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
