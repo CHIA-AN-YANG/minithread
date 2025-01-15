@@ -1,4 +1,4 @@
-### frontend 
+### Frontend 
 for frontend development, please see the readme in `./frontend`.
 
 ### Set up rsa keys
@@ -30,6 +30,51 @@ sdk use java 23.0.1-amzn
 cd minithread/minithread-be
 mvn spring-boot:run
 ```
+
+### VS code 環境問題 新手上路 - Debug for set up
+後端
+---
+**1.**
+- 檢查Java版本是不是23
+- 檢查方法是在執行的cli打上 `java -version` 應該會顯示 23... 的版本
+
+範例：
+```bash
+java -version
+openjdk version "23.0.1" 2024-10-15
+OpenJDK Runtime Environment Corretto-23.0.1.8.1 (build 23.0.1+8-FR)
+OpenJDK 64-Bit Server VM Corretto-23.0.1.8.1 (build 23.0.1+8-FR, mixed mode, sharing)
+```
+
+**2.**
+- 如果一直出現問題 可能是Cache的關係
+- Lombok是簡化code的工具 但在build的時候不會跑 所以如果出現找不到@annotation的錯誤的話可以試著清掉cache
+- 用cli `mvn clean`就可以清掉。如果跑起來有問題請參考以下做法。
+
+**2-1**
+- 按 `Ctrl+Shift+P` 打開上面的指令面板
+- 輸入以下指令，然後按Enter
+`Java: Clean Java Language Server Workspace`
+
+**2-2**
+- 在`pom.xml`
+```xml
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<!--加入這兩行-->
+			<version>1.18.28</version>
+			<scope>provided</scope>
+			<!--加入這兩行-->
+		</dependency>
+```
+前端
+---
+1. 檢查command line有沒有進到 `./frontend` 再執行
+2. dependency有問題的話 -> `npm install --force`
+3. install有問題的話可以清掉dependency再安裝: `rm -r node_modules`
+4. run的時候有問題的話檢查有沒有裝 next, cross-env
+
 
 ### Check Swagger
 - Navigate to `http://localhost:8080/swagger-ui/index.html`
