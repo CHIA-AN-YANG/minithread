@@ -35,9 +35,9 @@ const MePanel = () => {
   );
 
   if (status === EntityStatus.SUCCESS) {
-    if (!user) { router.push('/404'); };
-    return (
-      <BaseUserPanel user={user!} isMe={true} isLoading={false} />
+    return (<>
+      {user ? <BaseUserPanel user={user!} isMe={true} isLoading={false} /> : ""}
+    </>
     );
   }
 };

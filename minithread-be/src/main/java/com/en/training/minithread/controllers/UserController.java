@@ -29,16 +29,12 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User details found")
     @GetMapping("/{username}")
     public ResponseEntity<AccountDTO> getCurrentUser(@PathVariable String username) {
-        final Account currentUser = accountService.getAccount(username);
-        if (currentUser == null) {
+        final Account account = accountService.getAccount(username);
+        if (account == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        final AccountDTO account = new AccountDTO(currentUser.getUsername());
-        account.setName(StringUtils.isNotBlank(currentUser.getName()) ? currentUser.getName() : "");
-        account.setBio(StringUtils.isNotBlank(currentUser.getBio()) ? currentUser.getBio() : "");
-        account.setProfilePicture(
-                StringUtils.isNotBlank(currentUser.getProfilePicture()) ? currentUser.getProfilePicture() : "");
-        return ResponseEntity.ok(account);
+        final AccountDTO dto = accountService.mapAccountToAccountDTO(account);
+        return ResponseEntity.ok(dto);
     }
 
     @RequiresAuthenticatedUser

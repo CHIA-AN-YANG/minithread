@@ -78,7 +78,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/threads").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/me/comments", "/api/me/threads").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/me/comments", "/api/me/threads","/api/me/threads").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/me/update").authenticated()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll()

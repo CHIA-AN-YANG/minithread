@@ -10,7 +10,7 @@
   text-align-last: left;
 }
 
-.ctas {
+/* .ctas {
   height: 2rem;
   margin: 0.5rem;
   margin-inline-start: auto;
@@ -19,7 +19,7 @@
   padding: 0.5rem 1rem;
   border-radius: 1rem;
   line-height: 1;
-}
+} */
 
 @media (min-width: 800px) {
   .input-form.input-form__container {

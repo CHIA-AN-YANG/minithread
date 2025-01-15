@@ -1,5 +1,6 @@
 package com.en.training.minithread.services;
 
+import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
@@ -133,6 +134,17 @@ public class PostService {
         public PostNotFoundException(Long id) {
             super(String.format("Post not found with id: %s", id));
         }
+    }
+
+    public PageResponse<ThreadDTO> mapPostPageToPageDTO (Page<Post> pageResultPost, String username) {
+        List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
+                .map(p -> mapPostToThreadDTO(p, username))
+                .toList();
+        return new PageResponse<>(
+                threadDtoList,
+                pageResultPost.getNumber(),
+                pageResultPost.getTotalPages(),
+                pageResultPost.getTotalElements());
     }
 
     public ThreadDTO mapPostToThreadDTO(Post post, final String myUsername) {

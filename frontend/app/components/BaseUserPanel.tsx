@@ -33,43 +33,27 @@ const BaseUserPanel: React.FC<BaseUserPanelProps> = ({ user, isMe, isLoading }) 
     router.push('/login');
   };
 
+  const getFollowed = (list: String[]) => {
+    if (list.length === 0) return "0 followers";
+    if (list.length === 1) return `Followed by ${list[0]}`;
+    if (list.length > 1) return `Followed by ${list[0]} and ${list.length - 1} others`;
+  }
+
   const toastBio = () => {
-    toast.custom((t) => (
-      <div
-        className={`${t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-      >
-        <div className="flex-1 w-0 p-4">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 pt-0.5">
-              <img
-                className="h-10 w-10 rounded-full"
-                src={user?.profilePicture || "/images/avatar-presets/avatar-13.jpg"}
-                alt=""
-              />
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900">
-                {user?.username}
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                {user?.bio}
-              </p>
-            </div>
-          </div>
+    toast((t) => <>
+      <div className="pl-2 pb-2 pt-2 flex items-start">
+        <div className='flex flex-col'>
+          <h2 className="text-md text-bold text-primaryDark mb-2">{user?.username || ''} {user?.name}</h2>
+          <p className="text-lg text-gray-500">{user?.bio || ''}</p>
         </div>
-        <div className="flex border-l border-gray-200">
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Close
-          </button>
-        </div>
+        <button className='text-stone-700 text-lg leading-none bg-gray-300 rounded-full flex justify-center items-center'
+          onClick={() => toast.dismiss(t.id)}>
+          <i className="lni lni-xmark"></i>
+        </button>
       </div>
-    ), {
-      duration: 60000,
-    })
+    </>, {
+      duration: 60000
+    });
   };
 
 
@@ -83,23 +67,27 @@ const BaseUserPanel: React.FC<BaseUserPanelProps> = ({ user, isMe, isLoading }) 
 
   return (
     <div className="grid sm:grid-cols-[1fr_8rem] grid-cols-[1fr_5rem] sm:gap-8 gap-2 h-30 w-full overflow-hidden" >
-      < section className="justify-start flex flex-col" >
+      < section className="relative justify-start flex flex-col" >
         <div className="flex mx-2 justify-between w-full sm:border-b-2 border-primary border-solid" >
           <div className="flex flex-col" >
-            <h1 className="font-bold text-md" > {user.username} {user.email} </h1>
-            < h3 className="text-lg"> {user.name} </h3>
+            <h1 className="font-bold text-md text-primaryDark"> {user.username}</h1>
+            <div className='flex gap-4 items-end'>
+              <h3 className="text-lg text-primaryDark"> {user.name} </h3>
+              <span className="text-xs inline-block pb-1 text-gray-500"> {getFollowed(user.followed || [])} </span>
+            </div>
             < hr className="border-secondary" />
           </div>
           {
-            isMe ? <>
-              <div className="ctas px-2 ml-auto" role="button" onClick={() => router.push('/me/edit')
-              }>
-                <span className="secondary" > edit </span>
+            isMe ? <div className="absolute flex top-0 right-0 gap-5" >
+              <div className="inline leading-4 px-2 pb-1 rounded-lg bg-sky-200 text-blue-700"
+                role="button"
+                onClick={() => router.push('/me/edit')}>
+                edit
               </div>
-              < div className="ctas" role="button" onClick={() => handleLogout()}>
-                <span className="secondary" > logout </span>
+              < div className="inline leading-4 px-2 pb-1 rounded-lg bg-sky-200 text-blue-700" role="button" onClick={() => handleLogout()}>
+                logout
               </div>
-            </> : ""}
+            </div> : ""}
         </div>
 
         <TextDisplay maxHeight={80} text={user.bio || ""}

@@ -6,6 +6,8 @@ export interface UserData {
   bio?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  followers?: string[];
+  followed?: string[];
 }
 
 export interface ThreadData {
