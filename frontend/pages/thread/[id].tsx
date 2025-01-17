@@ -34,9 +34,9 @@ export default function ThreadPage() {
 
   return (
     <div className="page">
-      <main className="main-single-thread">
+      <main className="main-grid layout-single-thread">
         <header>
-          {thread?.author && <h1 className="text-md text-center">By {thread.author}</h1>}
+          {thread?.author && <h1 className="text-md text-center">By {thread.author.username}</h1>}
           {thread?.createdAt && <p className="text-sm text-gray-500 text-center"><time>Posted on {displayDate(thread.createdAt)}</time></p>}
         </header>
         <div>

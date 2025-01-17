@@ -1,43 +1,37 @@
 package com.en.training.minithread.controllers;
 
 import com.en.training.minithread.controllers.dtos.AccountDTO;
-import com.en.training.minithread.controllers.dtos.UpdateUserRequest;
+import com.en.training.minithread.controllers.dtos.RegistrationDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.TokenService;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @Tag(name = "Authentication", description = "Operations for authentication")
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
-
     private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
+    private final TokenService tokenService;
+    private final AccountService accountService;
 
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private AccountService accountService;
+    AuthController(TokenService tokenService, AccountService accountService) {
+        this.tokenService = tokenService;
+        this.accountService = accountService;
+    }
 
     @Operation(summary = "Register a new account", description = "Register a new account to the system")
     @ApiResponses(value = {
@@ -45,14 +39,14 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid input provided")
     })
     @PostMapping(value = "/register", consumes = "multipart/form-data")
-    public ResponseEntity<?> register(@RequestParam String username, @RequestParam String password, @RequestParam String email) {
+    public ResponseEntity<AccountDTO> register(@ModelAttribute RegistrationDTO dto) {
         try {
-            Account newAccount = accountService.createAccountIfNotExist(username, password, email);
-            return ResponseEntity.ok(newAccount);
+            Account newAccount = accountService.createAccountIfNotExist(dto.getUsername(),dto.getPassword(),dto.getEmail());
+            AccountDTO accountDto = accountService.mapAccountToAccountDTO(newAccount);
+            return ResponseEntity.ok(accountDto);
         } catch (Exception e) {
             LOG.warn("Registration failed", e);
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
@@ -81,19 +75,4 @@ public class AuthController {
                     .body(response);
         }
     }
-
-//    public ResponseEntity<?> handleAuth(
-//            Authentication authentication) {
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//        if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        final String username = jwt.getClaim("sub");
-//        if (StringUtils.isBlank(username)) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        }
-//        return username;
-//    }
 }

@@ -1,6 +1,7 @@
 package com.en.training.minithread.services;
 
 import com.en.training.minithread.controllers.dtos.AccountDTO;
+import com.en.training.minithread.controllers.dtos.UpdateUserDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 
@@ -12,7 +13,11 @@ import org.springframework.data.elasticsearch.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -44,7 +49,7 @@ public class AccountService {
                 throw new RuntimeException("Account already exists" + username);
             } else {
                 Account newAccount = new Account();
-                newAccount.setUsername(username);
+                newAccount.setUsername(String.format("@%s",username));
                 Account createdAccount = createAccount(newAccount, rawPassword, email);
                 LOG.info("Account created: " + createdAccount);
                 return createdAccount;
@@ -91,21 +96,19 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account updateAccount(final String username, final String email, final String name,
-            final String bio, final String profilePicture) {
-
+    public Account updateAccount(String username, UpdateUserDTO dto) {
         Optional<Account> account = accountRepository.findByUsername(username);
         if (account.isPresent()) {
             Account existingAccount = account.get();
 
-            if (StringUtils.isNotEmpty(bio))
-                existingAccount.setBio(bio);
-            if (StringUtils.isNotEmpty(email))
-                existingAccount.setEmail(email);
-            if (StringUtils.isNotEmpty(name))
-                existingAccount.setName(name);
-            if (StringUtils.isNotEmpty(profilePicture))
-                existingAccount.setProfilePicture(profilePicture);
+            if (StringUtils.isNotEmpty(dto.getBio()))
+                existingAccount.setBio(dto.getBio());
+            if (StringUtils.isNotEmpty(dto.getEmail()))
+                existingAccount.setEmail(dto.getEmail());
+            if (StringUtils.isNotEmpty(dto.getName()))
+                existingAccount.setName(dto.getName());
+            if (StringUtils.isNotEmpty(dto.getProfilePicture()))
+                existingAccount.setProfilePicture(dto.getProfilePicture());
 
             return accountRepository.save(existingAccount);
         }
@@ -161,10 +164,16 @@ public class AccountService {
     }
 
     public AccountDTO mapAccountToAccountDTO(Account account) {
-        AccountDTO accountDTO = new AccountDTO(account.getName(), account.getUsername());
-        accountDTO.setEmail(account.getEmail());
+        AccountDTO accountDTO = new AccountDTO(account.getUsername());
+
+        if(StringUtils.isNotEmpty(account.getEmail())) {
+            accountDTO.setEmail(account.getEmail());
+        }
         if (StringUtils.isNotEmpty(account.getBio())) {
             accountDTO.setBio(account.getBio());
+        }
+        if (StringUtils.isNotEmpty(account.getName())) {
+            accountDTO.setName(account.getName());
         }
         if (StringUtils.isNotEmpty(account.getEmail())) {
             accountDTO.setEmail(account.getEmail());
@@ -177,6 +186,16 @@ public class AccountService {
         }
         if (account.getUpdatedAt() != null) {
             accountDTO.setUpdatedAt(account.getUpdatedAt().toString());
+        }
+        if(Objects.nonNull(account.getFollowing()) && !account.getFollowing().isEmpty()){
+            ArrayList<String> followedsList = account.getFollowing().stream().map(Account::getUsername)
+                    .collect(Collectors.toCollection(ArrayList::new ));
+            accountDTO.setFollowed(followedsList);
+        }
+        if(Objects.nonNull(account.getFollowers()) && !account.getFollowers().isEmpty()){
+            ArrayList<String> followersList = account.getFollowers().stream().map(Account::getUsername)
+                    .collect(Collectors.toCollection(ArrayList::new ));
+            accountDTO.setFollowers(followersList);
         }
         return accountDTO;
     }

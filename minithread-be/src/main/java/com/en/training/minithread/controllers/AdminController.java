@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@RestController
+//@RestController
 @RequestMapping("/api/admin")
 public class AdminController {
 

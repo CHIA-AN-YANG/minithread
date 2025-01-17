@@ -6,11 +6,13 @@ export interface UserData {
   bio?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  followers?: string[];
+  followed?: string[];
 }
 
 export interface ThreadData {
   id: string;
-  author: string;
+  author: UserData;
   content: string;
   createdAt?: string;
   updatedAt?: string;

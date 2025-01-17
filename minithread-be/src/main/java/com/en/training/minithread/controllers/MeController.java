@@ -4,6 +4,7 @@ import com.en.training.minithread.annotation.RequiresAuthenticatedUser;
 import com.en.training.minithread.controllers.dtos.AccountDTO;
 import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;
+import com.en.training.minithread.controllers.dtos.UpdateUserDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.services.AccountService;
@@ -28,11 +29,11 @@ import java.util.List;
 
 @RestController
 @Tag(name = "Me", description = "Operations for current login user")
-@RequestMapping("api/me")
+@RequestMapping("/api/me")
 public class MeController {
 
-    private AccountService accountService;
-    private PostService postService;
+    private final AccountService accountService;
+    private final PostService postService;
 
     MeController(AccountService accountService, PostService postService) {
         this.accountService = accountService;
@@ -43,20 +44,9 @@ public class MeController {
     @ApiResponse(responseCode = "200", description = "User details found")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @ApiResponse(responseCode = "404", description = "User not found")
+    @RequiresAuthenticatedUser
     @GetMapping("/detail")
-    public ResponseEntity<AccountDTO> getCurrentUser(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        final String username = jwt.getClaim("sub");
-        if (StringUtils.isBlank(username)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        final Account currentUser = accountService.getAccount(username);
+    public ResponseEntity<AccountDTO> getCurrentUser(Account currentUser) {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -69,116 +59,46 @@ public class MeController {
             @ApiResponse(responseCode = "200", description = "Threads found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
             @ApiResponse(responseCode = "404", description = "Threads not found", content = @Content)
     })
+    @RequiresAuthenticatedUser
     @GetMapping("/comments")
     public ResponseEntity<PageResponse<ThreadDTO>> getUserPosts(
-            Authentication authentication,
+            Account currentUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Sort sort = Sort.by("createdAt").descending();
-        ;
         try {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            final String username = jwt.getClaim("sub");
-            if (StringUtils.isBlank(username)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
+            final String username = currentUser.getUsername();
             Page<Post> pageResultPost = postService.getPostCommentsList(PageRequest.of(page, size, sort), username);
-            List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
-                    .map(p -> postService.mapPostToThreadDTO(p, username))
-                    .toList();
-            PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
-                    threadDtoList,
-                    pageResultPost.getNumber(),
-                    pageResultPost.getTotalPages(),
-                    pageResultPost.getTotalElements());
-
-            return ResponseEntity.ok(pageResultThreadDTO);
+            return ResponseEntity.ok(postService.mapPostPageToPageDTO(pageResultPost, username));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
+    @RequiresAuthenticatedUser
     @GetMapping(value = "/threads")
     public ResponseEntity<PageResponse<ThreadDTO>> getMyThreads(
-            Authentication authentication,
+            Account currentUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Sort sort = Sort.by("createdAt").descending();
-        ;
         try {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            final String username = jwt.getClaim("sub");
-            if (StringUtils.isBlank(username)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
+            final String username = currentUser.getUsername();
             Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort), username);
-            List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
-                    .map(p -> postService.mapPostToThreadDTO(p, username))
-                    .toList();
-            PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
-                    threadDtoList,
-                    pageResultPost.getNumber(),
-                    pageResultPost.getTotalPages(),
-                    pageResultPost.getTotalElements());
-
-            return ResponseEntity.ok(pageResultThreadDTO);
+            return ResponseEntity.ok(postService.mapPostPageToPageDTO(pageResultPost, username));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping(value = "/update")
+    @RequiresAuthenticatedUser
+    @PostMapping(value = "/update" , consumes = "multipart/form-data")
     public ResponseEntity<AccountDTO> updateCurrentUser(
-            Authentication authentication,
-            @RequestParam String bio,
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String profilePicture) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        if (!(authentication.getPrincipal() instanceof Jwt jwt)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        final String username = jwt.getClaim("sub");
-        if (StringUtils.isBlank(username)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        final Account account = this.accountService.updateAccount(username, email, name, bio, profilePicture);
+            Account currentUser,
+            @ModelAttribute UpdateUserDTO dto) {
+        final String username = currentUser.getUsername();
+        final Account account = this.accountService.updateAccount(username, dto);
         final AccountDTO accountDTO = this.accountService.mapAccountToAccountDTO(account);
         return ResponseEntity.ok(accountDTO);
-
-    }
-
-    @RequiresAuthenticatedUser
-    @PostMapping("{followId}/follow")
-    public ResponseEntity<AccountDTO> addFollowing(
-            Account authenticatedUser,
-            @PathVariable String followId) {
-        final String username = authenticatedUser.getUsername();
-        final Account updatedAccount = accountService.addFollowing(username, followId);
-        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
-        return ResponseEntity.ok(accountDto);
-    }
-
-    @RequiresAuthenticatedUser
-    @PostMapping("{followId}/unfollow")
-    public ResponseEntity<AccountDTO> deleteFollowing(
-            Account authenticatedUser,
-            @PathVariable String followId) {
-        final String username = authenticatedUser.getUsername();
-        final Account updatedAccount = accountService.deleteFollowing(username, followId);
-        final AccountDTO accountDto = accountService.mapAccountToAccountDTO(updatedAccount);
-        return ResponseEntity.ok(accountDto);
     }
 }

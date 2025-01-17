@@ -8,7 +8,7 @@ export default function MeEditPage() {
 
   return (
     <div className="page page-me">
-      <main className="main-home">
+      <main className="main-grid layout-home">
         <Header style={"no-border"} />
         <MeUpdateForm />
         <BottomNavbar />

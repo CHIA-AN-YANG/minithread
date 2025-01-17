@@ -21,7 +21,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -30,9 +29,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -56,28 +53,33 @@ public class SecurityConfig {
         this.jwtConfigProperties = jwtConfigProperties;
     }
 
+
+    @Order(0)
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(withDefaults()))
                 .authorizeHttpRequests(authorize -> authorize
-                        // swagger
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/csrf-token").permitAll()
-                        // Public endpoints
-                        .requestMatchers(HttpMethod.GET,"/api/user/**", "/api/threads/by-author/**", "/api/threads/latest").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/threads/***").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/{username}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/user/{followId}/follow").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/user/{followId}/unfollow").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/threads/latest").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/threads/by-author/{username}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/threads/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/threads").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/me/comments", "/api/me/threads","/api/me/threads").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/me/update").authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated());
 
         return http.build();
     }
@@ -136,7 +138,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

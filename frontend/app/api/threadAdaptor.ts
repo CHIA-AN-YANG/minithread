@@ -3,8 +3,8 @@ import { Pagination, ThreadData } from '../model/model';
 import { authedGet, authedPost, get } from './baseAdaptor';
 
 
-export const getThread = async (postthreadId: string): Promise<AxiosResponse<ThreadData> | AxiosError> => {
-  return await get<ThreadData>(`/threads/${postthreadId}`);
+export const getThread = async (threadId: string): Promise<AxiosResponse<ThreadData> | AxiosError> => {
+  return await get<ThreadData>(`/threads/${threadId}`);
 }
 
 export const postThread = async (inputData: { content: string, parent?: string }): Promise<AxiosResponse<ThreadData> | AxiosError> => {

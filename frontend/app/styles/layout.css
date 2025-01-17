@@ -30,11 +30,10 @@
 }
 
 .page.page-form {
-  background: #aa4b6b;
   /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b);
+  background: linear-gradient(to right, #96e7f4, #afafd2, #f195b4);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
 }
@@ -44,96 +43,25 @@
   flex-direction: column;
 }
 
-.main-my-profile {
+.main-grid {
   display: grid;
-  grid-template-rows: 128px 41px calc(100% - 225px) 50px;
+  gap: 8px;
   height: calc(100vh - 2rem);
 }
 
-.main-user-profile {
-  display: grid;
-  grid-template-rows: 128px calc(100% - 184px) 50px;
-  height: calc(100vh - 2rem);
+.layout-my-profile,
+.layout-user-profile {
+  grid-template-rows: 138px 41px calc(100% - 259px) 50px;
 }
 
-.main-home {
-  display: grid;
-  grid-template-rows: 50px calc(100% - 100px) 50px;
-  height: calc(100vh - 2rem);
+.layout-home {
+  grid-template-rows: 50px calc(100% - 116px) 50px;
 }
 
-.main-single-thread {
-  display: grid;
-  grid-template-rows: 100px calc(100% - 140px) 50px;
-  height: calc(100vh - 2rem);
+.layout-single-thread {
+  grid-template-rows: 100px calc(100% - 156px) 50px;
 }
 
 .author-threads header>h3 {
   display: none;
-}
-
-.ctas {
-  display: flex;
-  gap: 16px;
-}
-
-.ctas a {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  border: none;
-  border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
-}
-
-a.primary {
-  background: var(--foreground-c);
-  color: var(--background-c);
-  gap: 8px;
-}
-
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-}
-
-@media (max-width: 600px) {
-  .ctas {
-    flex-direction: column;
-  }
-
-  .ctas a {
-    font-size: 14px;
-    height: 40px;
-    padding: 0 16px;
-  }
-
-  a.secondary {
-    min-width: auto;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
 }

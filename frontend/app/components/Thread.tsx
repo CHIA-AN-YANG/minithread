@@ -1,34 +1,35 @@
-import axios from 'axios';
-import React, { use, useEffect, useState } from 'react';
 import 'lineicons/dist/lineicons.css';
-import { AppDispatch, store } from '../store/store';
-import { startInput } from '../store/features/user/actions/threadActions';
-import { useDispatch } from 'react-redux';
-import { ThreadData } from '../model/model';
+import Image from 'next/image';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { authedDelete, authedPost } from '../api/baseAdaptor';
+import { ThreadData, UserData } from '../model/model';
+import { startInput } from '../store/features/user/actions/threadActions';
+import { setUiStatusDeleted } from '../store/features/user/reducers/slices/uiSliceReducer';
+import { AppDispatch, store } from '../store/store';
 import { displayDateWithDiff } from '../util/date';
 import FilledHeartIcon from './icon/FilledHeartIcon';
-import { authedDelete, authedPost } from '../api/baseAdaptor';
-import { setUiStatusDeleted } from '../store/features/user/reducers/slices/uiSliceReducer';
 
 type ThreadProps = {
   id: string;
   content: string;
-  author: string;
+  author: UserData;
   createdAt: string;
   parentThread?: string;
   commentList?: ThreadData[];
+  commentCount?: number;
   likedByCount?: number;
   likedByMe?: boolean;
 };
 
-const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, createdAt, likedByCount, likedByMe }) => {
+const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, commentCount, createdAt, likedByCount, likedByMe }) => {
   const [liked, setLiked] = useState(likedByMe ? 1 : 0);
   const [likeLoading, setLikeLoading] = useState(false);
   const username = store.getState().auth.user?.username;
-  const auth = author === username;
+  const auth = author?.username && author.username === username;
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
@@ -60,7 +61,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
 
   const handleReply = () => {
     if (!username) {
-      router.push('/login?redirect=/thread/${id}&mode=reply');
+      router.push('/login?from=/thread/${id}&mode=reply');
     }
     dispatch(startInput(id));
   };
@@ -87,9 +88,14 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   return (
     <>
       <article className={`border border-primary rounded-lg p-4 mb-4 bg-panelBg ${parentThread ? 'ml-4 border-l-4 border-secondary' : ''}`}>
-        <header className="mb-3">
-          <Link href={`/user/${author}`}>
-            <h3 className={`text-sm font-semibold ${parentThread ? 'text-secondaryDark' : 'text-primaryDark'}`}>{author}</h3>
+        <header className="mb-3 flex items-center">
+          <Link className="flex items-center gap-2 mr-2" href={auth ? `me/threads` : `/user/${author.username}`}>
+            <Image src={author.profilePicture || "/images/avatar-presets/avatar-13.jpg"}
+              className='rounded-lg'
+              height={40}
+              width={40} alt="*"></Image>
+
+            <h3 className={`text-sm font-semibold ${parentThread ? 'text-secondaryDark' : 'text-primaryDark'}`}>{author.username}</h3>
           </Link>
           <p className="text-xs text-gray-500"><time>{handleDate(createdAt)}</time></p>
         </header>
@@ -111,7 +117,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
             aria-label="reply"
           >
             <i className="lni lni-message-2  lni-lg"
-            ></i>{(commentList || []).length}
+            ></i>{commentCount || (commentList || []).length}
           </button>
           <button
             onClick={() => copyPostLink(id)}
@@ -142,6 +148,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
               createdAt={comment.createdAt || ""}
               likedByCount={comment.likedByCount}
               likedByMe={comment.likedByMe}
+              commentCount={comment.commentsCount}
               parentThread={id}
             />
           ))}

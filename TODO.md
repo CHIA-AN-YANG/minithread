@@ -22,7 +22,7 @@ Bugfix
 
 ### Jan new TODOs
 [] Redux
- - [] centralized myPost store. When create or delete post it should instantly update /profile page🔥
+ -- [] centralized myPost store. When create or delete post it should instantly update /profile page🔥--
 
 [x] Page
  - [x] Update Profile page
@@ -43,9 +43,27 @@ Bugfix
  - [x] Some get api should be open to public 🔥🔥🔥
  - [x] Set Comment
  - [x] like a post / unlike a post
- - [] follow a user / unfollow a user
+ - [x] follow a user / unfollow a user
 
 [] Notification
 
 ### Appearance
 [x] customize tailwindcss
+
+### Jan 13 - debug phase and finish follow feature
+[x] fix ui layouts
+[x] fix security chain
+[x] environment on Windows
+
+### Jan 17 - more on follower
+[] follow functionality
+- [] add "followed" on home page
+- [] add follow indicator
+- [] a user can check his followers
+
+[] notification
+- [] when someone likes your post, receive notifications
+- [] when someone follows you, receive notification
+- [] design the notification to turn on or off
+
+[] upload image

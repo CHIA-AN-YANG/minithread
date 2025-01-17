@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { registerUser } from '../../api/authAdaptor';
-import { useSelector } from 'react-redux';
-import { selectError } from '../../store/features/user/selectors/authSelectors';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { registerUser } from '../../api/authAdaptor';
+import { selectError } from '../../store/features/user/selectors/authSelectors';
 
 interface FormData {
   username: string;
@@ -19,7 +21,7 @@ const RegisterForm: React.FC = () => {
 
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<boolean>(false);
   const apiErrorMsg = useSelector(selectError) as string;
 
   const handleChange = (
@@ -41,7 +43,7 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
+    setSuccessMessage(false);
 
     // Basic validation
     if (!formData.username || !formData.email || !formData.password) {
@@ -51,12 +53,14 @@ const RegisterForm: React.FC = () => {
 
     try {
       const data = new FormData();
+      const username = formData.username;
       data.append('username', formData.username);
       data.append('email', formData.email);
       data.append('password', formData.password);
       const response = await registerUser(data);
       if (response.status === 200 || response.status === 201) {
-        setSuccessMessage('Registration successful!');
+        toast.success(`Congrats, ${username}! You have successfully registered!`);
+        setSuccessMessage(true);
         setFormData({ username: '', email: '', password: '' });
       }
     } catch (error: any) {
@@ -66,7 +70,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className="w-full h-full p-6 bg-white/75 sm:shadow-md sm:rounded-lg">
-      <h2 className="text-xl font-bold my-4 text-center">Register for fascinating posts!</h2>
+      <h2 className="text-xl font-bold my-4 text-center text-primaryDark">Register for fascinating posts!</h2>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-gray-500">username</label>
@@ -75,6 +79,9 @@ const RegisterForm: React.FC = () => {
             id="username"
             name="username"
             value={formData.username}
+            pattern="[a-zA-Z0-9-_]+"
+            title="Only use letters, numbers, hyphens, and underscores"
+            maxLength={20}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
@@ -96,24 +103,30 @@ const RegisterForm: React.FC = () => {
             type="password"
             id="password"
             name="password"
+            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+            maxLength={20}
+            title="Password must be 8+ characters, including an uppercase, a lowercase, a number, and a special character (@$!%*?&)."
             value={formData.password}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
-          Register
-        </button>
-        <button
-          className="w-full bg-blue-300 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          onClick={() => router.back()}>
-          No, not yet.
-        </button>
+        <p className="mt-4 text-sm text-bold text-red-500">{errorMessage && errorMessage || apiErrorMsg}</p>
+        <p className="mt-4 text-sm text-bold text-green-500">{successMessage ? <span>
+          Registration succeeded. Go to <Link href="/login" className="text-blue-500">login</Link> page?</span> : ''}</p>
+        <div className='flex w-full gap-5 text-center'>
+          <button
+            type="submit"
+            className="grow col-6 bg-primaryDark text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Register
+          </button>
+          <button
+            className="grow col-6 bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => router.back()}>
+            No, not yet.
+          </button>
+        </div>
       </form>
-      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}
-      {successMessage && <p className="mt-4 text-sm text-green-500">{successMessage}</p>}
     </div>
   );
 };
