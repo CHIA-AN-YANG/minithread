@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosHeaders, AxiosRequestConfig } from 'axios';
 const Cookies = require('js-cookie');
 const AUTH_COOKIE = 'auth_token';
 export const CSRF_COOKIE = 'csrf_token';
@@ -13,41 +13,19 @@ const getApiUrl = () => {
 
 export const apiBaseUrl = getApiUrl() + "/api";
 
-type CsrfResponse = {
-  token: string;
-  parameterName: string;
-  headerName: string;
-}
-
-async function initCsrfToken() {
-  return await axios.get<CsrfResponse>(apiBaseUrl + '/csrf-token');
-}
-
 export function getConfig(auth: boolean): AxiosRequestConfig {
-  // let csrfToken = Cookies.get(CSRF_COOKIE);
-  // console.log('csrfToken', csrfToken);
-
-  // if (!csrfToken || csrfToken == 'undefined') {
-  //   const csrfResponse = await initCsrfToken();
-  //   csrfToken = csrfResponse.data.token;
-  //   Cookies.set(CSRF_COOKIE, csrfToken);
-  // }
+  const header = new AxiosHeaders({
+    'Cache-Control': 'no-cache, must-revalidate',
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  });
   if (auth) {
-    return {
-      headers: {
-        'Authorization': `Bearer ${Cookies.get(AUTH_COOKIE)}`,
-        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-    }
-  } else {
-    return {
-      headers: {
-        'Cache-Control': 'no-cache, must-revalidate',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-    }
+    header.setAuthorization(`Bearer ${Cookies.get(AUTH_COOKIE)}`);
+    header.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
   }
+
+  return { headers: header };
 }
+
+export const noAuthConfig = getConfig(false);
+export const authConfig = getConfig(true);

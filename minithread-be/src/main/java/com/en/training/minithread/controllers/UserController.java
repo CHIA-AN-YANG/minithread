@@ -29,12 +29,13 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User details found")
     @GetMapping("/{username}")
     public ResponseEntity<AccountDTO> getCurrentUser(@PathVariable String username) {
-        final Account account = accountService.getAccount(username);
-        if (account == null) {
+        try {
+            final Account account = accountService.getAccount(username);
+            final AccountDTO dto = accountService.mapAccountToAccountDTO(account);
+            return ResponseEntity.ok(dto);
+        } catch(AccountService.AccountNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        final AccountDTO dto = accountService.mapAccountToAccountDTO(account);
-        return ResponseEntity.ok(dto);
     }
 
     @RequiresAuthenticatedUser

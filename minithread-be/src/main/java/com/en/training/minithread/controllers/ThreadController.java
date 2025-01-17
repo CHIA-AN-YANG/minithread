@@ -73,16 +73,9 @@ public class ThreadController {
     Sort sort = Sort.by("createdAt").descending();
     final String myUsername = checkOptionalAuthentication(authentication);
     Page<Post> pageResultPost = postService.getPostList(PageRequest.of(page, size, sort));
-    List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
-            .map(p -> postService.mapPostToThreadDTO(p, myUsername))
-            .toList();
-    PageResponse<ThreadDTO> pageResultThreadDTO = new PageResponse<>(
-            threadDtoList,
-            pageResultPost.getNumber(),
-            pageResultPost.getTotalPages(),
-            pageResultPost.getTotalElements());
+    PageResponse<ThreadDTO> threadDtoList = postService.mapPostPageToPageDTO(pageResultPost, myUsername);
 
-    return ResponseEntity.ok(pageResultThreadDTO);
+    return ResponseEntity.ok(threadDtoList);
   }
 
   @Operation(summary = "Get threads by author", description = "Fetch threads from a specific author with pagination")
