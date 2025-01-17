@@ -86,7 +86,7 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="w-full h-full p-6 bg-white/75 sm:shadow-md sm:rounded-lg">
-      <h2 className="text-xl font-bold my-4 text-center">Login with existing account</h2>
+      <h2 className="text-xl font-bold my-4 text-center text-secondaryDark">Login with existing account</h2>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-gray-500">username</label>
@@ -112,20 +112,21 @@ const LoginForm: React.FC = () => {
             required
           />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          Login
-        </button>
-        <button
-          className="w-full bg-blue-300 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          onClick={() => router.back()}>
-          Go back
-        </button>
+        {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}
+        {successMessage && <p className="mt-4 text-sm text-green-500">{successMessage}</p>}
+        <div className='flex w-full gap-5 text-center'>
+          <button
+            type="submit"
+            className="grow col-6 bg-secondaryDark text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Login
+          </button>
+          <button
+            className="grow col-6 bg-secondary text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => router.back()}>
+            No, not yet.
+          </button>
+        </div>
       </form>
-      {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage || apiErrorMsg}</p>}
-      {successMessage && <p className="mt-4 text-sm text-green-500">{successMessage}</p>}
     </div>
   );
 };

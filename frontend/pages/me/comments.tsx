@@ -9,7 +9,7 @@ import ThreadList from '@/app/components/ThreadList';
 export default function MeCommentsPage() {
   return (
     <div className="page page-me">
-      <main className="main-my-profile">
+      <main className="main-grid layout-my-profile">
         <MePanel />
         <MeNavbar />
         <ThreadList isMePage={true} />

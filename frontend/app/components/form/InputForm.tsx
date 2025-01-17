@@ -6,27 +6,36 @@ import { AppDispatch } from '../../store/store';
 
 const InputForm: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
+  const [isComposing, setIsComposing] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const uiState = useSelector(selectInputFormOpen);
 
   useEffect(() => {
-    if (uiState === 'open') {
-      setInputValue('');
-    }
+    uiState === 'open' && setInputValue('');
   }
     , [uiState]);
+
+
+
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = () => {
+    setIsComposing(false);
+  };
 
   const handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void = (e) => {
     setInputValue(e.target.value);
     dispatch(updateContent(e.target.value));
   };
 
-  // const handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void = (e) => {
-  //   if (e.key === 'Enter' && !e.shiftKey) { // bug: 中文在選字時也會觸發
-  //     e.preventDefault();
-  //     handleSend();
-  //   }
-  // };
+  const handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   const handleSend = () => {
     if (uiState === 'open' && inputValue.trim()) {
@@ -46,10 +55,12 @@ const InputForm: React.FC = () => {
       <div className="absolute bottom-0 left-0 flex p-4 w-full items-start bg-white input-form input-form__container">
         <textarea
           className="flex-grow text-left text-top p-2 h-20 outline-none text-gray-700 border border-primary rounded-md"
-          placeholder="What's new?"
+          placeholder="Add a post"
           value={inputValue}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
           onChange={handleInputChange}
-        //onKeyDown={handleKeyDown}
+          onKeyDown={handleKeyDown}
         />
         <button
           className="ml-2 p-2 w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white"

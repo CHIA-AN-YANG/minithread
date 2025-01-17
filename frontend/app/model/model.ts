@@ -12,7 +12,7 @@ export interface UserData {
 
 export interface ThreadData {
   id: string;
-  author: string;
+  author: UserData;
   content: string;
   createdAt?: string;
   updatedAt?: string;

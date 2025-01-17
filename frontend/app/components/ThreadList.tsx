@@ -1,20 +1,20 @@
 "use client";
 import { AxiosError, AxiosResponse } from 'axios';
-import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAuthorCommentsList, getAuthorThreadList, getLatestThreadList, getUserThreadList } from '../api/threadAdaptor';
-import { ThreadData, Pagination, ContentStatus } from '../model/model';
-import { selectUser } from '../store/features/user/selectors/authSelectors';
-import Thread from './Thread';
-import { useRouter } from 'next/router';
-import toast, { Toaster } from 'react-hot-toast';
+import { ContentStatus, Pagination, ThreadData } from '../model/model';
+import { setUiStatusIdle } from '../store/features/user/reducers/slices/uiSliceReducer';
 import { selectUiStatus } from '../store/features/user/selectors/uiSelectors';
 import { AppDispatch } from '../store/store';
-import { setUiStatusIdle } from '../store/features/user/reducers/slices/uiSliceReducer';
+import Thread from './Thread';
 
 
 interface ThreadListProps {
   isMePage: boolean;
+  children?: React.ReactNode;
 }
 
 enum UpdateType {
@@ -22,7 +22,7 @@ enum UpdateType {
   APPEND = 'append'
 }
 
-const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
+const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
   const [threads, setThreads] = useState<ThreadData[]>([]);
   const dispatch = useDispatch<AppDispatch>();
   const [page, setPage] = useState<number>(0);
@@ -146,6 +146,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
       {isLoading && <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center'>
         <div className='loader'></div>
       </div>}
+      {children}
       {threads.length ? threads.map((thread) => (
         <Thread key={thread.id}
           id={thread.id}
@@ -156,6 +157,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage }) => {
           likedByMe={thread.likedByMe}
           parentThread={thread.parentThread}
           commentList={thread.comments}
+          commentCount={thread.commentsCount}
         />
       )) : <p className="text-center my-4 w-full px-4">No post yet. Say something?</p>}
       {hasMore && (

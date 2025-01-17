@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -20,7 +21,7 @@ const RegisterForm: React.FC = () => {
 
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<boolean>(false);
   const apiErrorMsg = useSelector(selectError) as string;
 
   const handleChange = (
@@ -42,7 +43,7 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
+    setSuccessMessage(false);
 
     // Basic validation
     if (!formData.username || !formData.email || !formData.password) {
@@ -59,7 +60,7 @@ const RegisterForm: React.FC = () => {
       const response = await registerUser(data);
       if (response.status === 200 || response.status === 201) {
         toast.success(`Congrats, ${username}! You have successfully registered!`);
-        setSuccessMessage('Registration succeeded');
+        setSuccessMessage(true);
         setFormData({ username: '', email: '', password: '' });
       }
     } catch (error: any) {
@@ -69,7 +70,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className="w-full h-full p-6 bg-white/75 sm:shadow-md sm:rounded-lg">
-      <h2 className="text-xl font-bold my-4 text-center">Register for fascinating posts!</h2>
+      <h2 className="text-xl font-bold my-4 text-center text-primaryDark">Register for fascinating posts!</h2>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-gray-500">username</label>
@@ -107,17 +108,20 @@ const RegisterForm: React.FC = () => {
           />
         </div>
         <p className="mt-4 text-sm text-bold text-red-500">{errorMessage && errorMessage || apiErrorMsg}</p>
-        <p className="mt-4 text-sm text-bold text-green-500">{successMessage && successMessage}</p>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
-          Register
-        </button>
-        <button
-          className="w-full bg-blue-300 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          onClick={() => router.back()}>
-          No, not yet.
-        </button>
+        <p className="mt-4 text-sm text-bold text-green-500">{successMessage ? <span>
+          Registration succeeded. Go to <Link href="/login" className="text-blue-500">login</Link> page?</span> : ''}</p>
+        <div className='flex w-full gap-5 text-center'>
+          <button
+            type="submit"
+            className="grow col-6 bg-primaryDark text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Register
+          </button>
+          <button
+            className="grow col-6 bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => router.back()}>
+            No, not yet.
+          </button>
+        </div>
       </form>
     </div>
   );

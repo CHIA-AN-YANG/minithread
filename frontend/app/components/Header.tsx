@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ style }) => {
   const getClassName = (): string => {
     switch (style) {
       case 'form':
-        return 'invert';
+        return 'invert brightness-75';
       case 'no-border':
         return '';
       default:
