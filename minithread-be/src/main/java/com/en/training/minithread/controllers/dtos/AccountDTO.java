@@ -21,6 +21,9 @@ public class AccountDTO {
     private ArrayList<String> followers;
     private ArrayList<String> followed;
 
+    public AccountDTO(){
+
+    }
     public AccountDTO(String username) {
         this.username = username;
         this.email = "";

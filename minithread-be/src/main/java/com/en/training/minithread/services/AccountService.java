@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public class AccountService {
                 throw new RuntimeException("Account already exists" + username);
             } else {
                 Account newAccount = new Account();
-                newAccount.setUsername(username);
+                newAccount.setUsername(String.format("@%s",username));
                 Account createdAccount = createAccount(newAccount, rawPassword, email);
                 LOG.info("Account created: " + createdAccount);
                 return createdAccount;
@@ -186,12 +187,12 @@ public class AccountService {
         if (account.getUpdatedAt() != null) {
             accountDTO.setUpdatedAt(account.getUpdatedAt().toString());
         }
-        if(!account.getFollowing().isEmpty()){
+        if(Objects.nonNull(account.getFollowing()) && !account.getFollowing().isEmpty()){
             ArrayList<String> followedsList = account.getFollowing().stream().map(Account::getUsername)
                     .collect(Collectors.toCollection(ArrayList::new ));
             accountDTO.setFollowed(followedsList);
         }
-        if(!account.getFollowers().isEmpty()){
+        if(Objects.nonNull(account.getFollowers()) && !account.getFollowers().isEmpty()){
             ArrayList<String> followersList = account.getFollowers().stream().map(Account::getUsername)
                     .collect(Collectors.toCollection(ArrayList::new ));
             accountDTO.setFollowers(followersList);

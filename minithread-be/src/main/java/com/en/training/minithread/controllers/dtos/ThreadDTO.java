@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Setter
 public class ThreadDTO {
   private String id;
-  private String author;
+  private AccountDTO author;
   private String content;
   private String parentPost;
   private String createdAt;
@@ -24,7 +24,7 @@ public class ThreadDTO {
   public ThreadDTO() {
     this.id = "";
     this.parentPost = "";
-    this.author = "";
+    this.author = new AccountDTO();
     this.content = "";
     this.createdAt = "";
     this.updatedAt = "";

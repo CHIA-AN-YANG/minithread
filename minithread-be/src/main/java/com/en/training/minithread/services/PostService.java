@@ -1,5 +1,6 @@
 package com.en.training.minithread.services;
 
+import com.en.training.minithread.controllers.dtos.AccountDTO;
 import com.en.training.minithread.controllers.dtos.PageResponse;
 import com.en.training.minithread.controllers.dtos.ThreadDTO;
 import com.en.training.minithread.models.Account;
@@ -136,6 +137,10 @@ public class PostService {
         }
     }
 
+    public PageResponse<ThreadDTO> mapPostPageToPageDTO (Page<Post> pageResultPost) {
+        return mapPostPageToPageDTO(pageResultPost, StringUtils.EMPTY);
+    }
+
     public PageResponse<ThreadDTO> mapPostPageToPageDTO (Page<Post> pageResultPost, String username) {
         List<ThreadDTO> threadDtoList = pageResultPost.getContent().stream()
                 .map(p -> mapPostToThreadDTO(p, username))
@@ -190,7 +195,12 @@ public class PostService {
             threadDto.setContent(post.getContent());
         }
         if (post.getAuthor() != null) {
-            threadDto.setAuthor(post.getAuthor().getUsername());
+            AccountDTO accountDto = new AccountDTO();
+            accountDto.setUsername(post.getAuthor().getUsername());
+            if(Objects.nonNull(post.getAuthor().getProfilePicture())) {
+                accountDto.setProfilePicture(post.getAuthor().getProfilePicture());
+            }
+            threadDto.setAuthor(accountDto);
         }
         if (post.getCreatedAt() != null) {
             threadDto.setCreatedAt(post.getCreatedAt().toString());
