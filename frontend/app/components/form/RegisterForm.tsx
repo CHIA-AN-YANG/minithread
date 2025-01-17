@@ -79,6 +79,9 @@ const RegisterForm: React.FC = () => {
             id="username"
             name="username"
             value={formData.username}
+            pattern="[a-zA-Z0-9-_]+"
+            title="Only use letters, numbers, hyphens, and underscores"
+            maxLength={20}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
@@ -101,7 +104,8 @@ const RegisterForm: React.FC = () => {
             id="password"
             name="password"
             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
-            title="Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+            maxLength={20}
+            title="Password must be 8+ characters, including an uppercase, a lowercase, a number, and a special character (@$!%*?&)."
             value={formData.password}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-primary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
