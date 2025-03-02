@@ -44,3 +44,6 @@ build/
 
 ### RSA keys
 certs/
+
+### Database
+/database/version/
