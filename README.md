@@ -14,7 +14,7 @@ openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in keypair.pem -out priv
 
 ### Run in Visual Studio Code
 1. Install Extension Pack for Java from Microsoft and Spring Boot Extension Pack
-2. Please check and make sure you have the correct Java version (23)
+2. Please check and make sure you have the correct Java version (17)
 3. start docker desktop app
 4. On the left tool bar, a hexgon Spring Boot icon will appear. Select Spring Boot Icon and Hit Play button
 
@@ -25,8 +25,8 @@ openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in keypair.pem -out priv
 3. start docker desktop app
 
 ```bash
-sdk install java 23.0.1-amzn
-sdk use java 23.0.1-amzn
+sdk install java 17.0.11-amzn
+sdk use java 17.0.11-amzn
 cd minithread/minithread-be
 mvn spring-boot:run
 ```
@@ -35,15 +35,15 @@ mvn spring-boot:run
 後端
 ---
 **1.**
-- 檢查Java版本是不是23
-- 檢查方法是在執行的cli打上 `java -version` 應該會顯示 23... 的版本
+- 檢查Java版本是不是17
+- 檢查方法是在執行的cli打上 `java -version` 應該會顯示 17... 的版本
 
 範例：
 ```bash
 java -version
-openjdk version "23.0.1" 2024-10-15
-OpenJDK Runtime Environment Corretto-23.0.1.8.1 (build 23.0.1+8-FR)
-OpenJDK 64-Bit Server VM Corretto-23.0.1.8.1 (build 23.0.1+8-FR, mixed mode, sharing)
+openjdk version "17.0.11" 2024-04-16 LTS
+OpenJDK Runtime Environment Corretto-17.0.11.9.1 (build 17.0.11+9-LTS)
+OpenJDK 64-Bit Server VM Corretto-17.0.11.9.1 (build 17.0.11+9-LTS, mixed mode, sharing)
 ```
 
 **2.**
@@ -56,18 +56,6 @@ OpenJDK 64-Bit Server VM Corretto-23.0.1.8.1 (build 23.0.1+8-FR, mixed mode, sha
 - 輸入以下指令，然後按Enter
 `Java: Clean Java Language Server Workspace`
 
-**2-2**
-- 在`pom.xml`
-```xml
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<!--加入這兩行-->
-			<version>1.18.28</version>
-			<scope>provided</scope>
-			<!--加入這兩行-->
-		</dependency>
-```
 前端
 ---
 1. 檢查command line有沒有進到 `./frontend` 再執行

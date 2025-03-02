@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(withDefaults()))
+                .securityMatcher(new AntPathRequestMatcher("/api/**"))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/{username}").permitAll()
@@ -73,12 +74,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/threads/by-author/{username}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/threads/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/threads").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/threads/{postId}/like", "/api/threads/{id}").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/me/comments", "/api/me/threads","/api/me/threads").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/threads/{postId}/like", "/api/threads/{id}")
+                        .authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/threads/{postId}/like", "/api/threads/{id}")
+                        .authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/me/comments", "/api/me/threads", "/api/me/threads")
+                        .authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/me/update").authenticated()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll());
+
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
