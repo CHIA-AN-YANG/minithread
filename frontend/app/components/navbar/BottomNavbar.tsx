@@ -8,13 +8,56 @@ import { EntityStatus } from '@/app/model/model';
 import UserCheckedIcon from '../icon/UserCheckedIcon';
 import { useRouter } from 'next/router';
 import { use, useEffect, useState } from 'react';
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import { authedPost } from '@/app/api/baseAdaptor';
 
 const BottomNavbar: React.FC = () => {
   const user = useSelector(selectUser);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [message, setMessage] = useState("");
   const [isClient, setIsClient] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+
+  const sendRabbitMessage = (msg: any) => {
+      authedPost(`/notification/sendRabbitMQMessage`, { message: "Text" })
+      .then(response => {
+        console.log("Message sent:", response);
+      })
+      .catch(error => {
+          console.error("Error sending message:", error);
+      });
+      setMessage(""); // Clear input after sending
+  }
+
+  useEffect(() => {
+    // Establish WebSocket connection
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000, // Auto-reconnect
+      debug: (str) => console.log(str), // Debugging logs
+    });
+
+    client.onConnect = (frame) => {
+      console.log("Connected: " + frame);
+      client.subscribe("/topic/messages", (message) => {
+        console.log("Received - " + message.body);
+        setMessages((prevMessages) => [...prevMessages, message.body]);
+      });
+    };
+
+    client.activate(); // Connect to the WebSocket
+
+    setStompClient(client);
+
+    return () => {
+      client.deactivate(); // Cleanup on unmount
+    };
+  }, []);
 
   useEffect(() => { setIsClient(true); }, []);
 
@@ -46,9 +89,9 @@ const BottomNavbar: React.FC = () => {
           <i className="lni lni-user-4 lni-32"></i>
         </Link>
       }
-      <Link href="/notifications" className="flex flex-col items-center" aria-label="Notifications">
+      <button onClick={sendRabbitMessage} className="flex flex-col items-center" aria-label="Notifications">
         <i className="lni lni-bell-1 lni-32"></i>
-      </Link>
+      </button>
       <button onClick={startNewThread} className="flex flex-col items-center" aria-label="New Message">
         <i className="lni lni-message-3-text lni-32"></i>
       </button>
