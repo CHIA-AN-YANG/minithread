@@ -7,6 +7,7 @@ import com.en.training.minithread.controllers.dtos.ThreadDTO;
 import com.en.training.minithread.controllers.dtos.UpdateUserDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
+import com.en.training.minithread.security.services.NotificationMessageConsumer;
 import com.en.training.minithread.security.services.NotificationMessageService;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.PostService;
@@ -39,7 +40,7 @@ public class MeController {
     private final PostService postService;
 
     @Autowired
-    private NotificationMessageService notificationMessageService;
+    private NotificationMessageConsumer notificationMessageConsumer;
 
     MeController(AccountService accountService, PostService postService) {
         this.accountService = accountService;
@@ -110,8 +111,14 @@ public class MeController {
 
     @GetMapping("/notification")
     public List<Object> getNotifications() {
-        List<Object> messages = notificationMessageService.getMessages();
-        System.out.println("Messages in Redis: " + messages);
+        List<Object> messages;
+        try {
+            messages = notificationMessageConsumer.waitQueue();
+            System.out.println("Messages in Redis: " + messages);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
         return messages;
     }
 }

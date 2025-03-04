@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import com.en.training.minithread.models.NotificationMessage;
+import com.en.training.minithread.security.services.NotificationMessageProducer;
 import com.en.training.minithread.security.services.NotificationMessageService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,14 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class NotificationController {
 
     @Autowired
-    private NotificationMessageService notificationMessageService;
+    private NotificationMessageProducer notificationMessageProducer;
     
     @MessageMapping("/sendNotification")
     public String sendNotification(String message) {
-        NotificationMessage notificationMessage = new NotificationMessage();
-        notificationMessage.setSender("System");
-        notificationMessage.setContent(message);
-        notificationMessageService.saveMessage(notificationMessage);
+        notificationMessageProducer.sendMessage(message);
         System.out.println("Received message:" + message);
         return "Message stored in Redis" + message;
     }    
