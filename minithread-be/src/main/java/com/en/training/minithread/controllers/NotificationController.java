@@ -16,11 +16,12 @@ public class NotificationController {
     private NotificationMessageService notificationMessageService;
     
     @MessageMapping("/sendNotification")
-    public void sendNotification(String message) {
+    public String sendNotification(String message) {
         NotificationMessage notificationMessage = new NotificationMessage();
         notificationMessage.setSender("System");
         notificationMessage.setContent(message);
         notificationMessageService.saveMessage(notificationMessage);
         System.out.println("Received message:" + message);
+        return "Message stored in Redis" + message;
     }    
 }

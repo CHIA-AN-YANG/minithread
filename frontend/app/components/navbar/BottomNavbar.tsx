@@ -8,21 +8,55 @@ import { EntityStatus } from '@/app/model/model';
 import UserCheckedIcon from '../icon/UserCheckedIcon';
 import { useRouter } from 'next/router';
 import { use, useEffect, useState } from 'react';
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import { authedGet } from '@/app/api/baseAdaptor';
 
 const BottomNavbar: React.FC = () => {
+  const [stompClient, setStompClient] = useState<Client | null>(null);
   const user = useSelector(selectUser);
   const [isClient, setIsClient] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
+  useEffect(() => {
+    // Establish WebSocket connection
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000, // Auto-reconnect
+      debug: (str) => console.log(str), // Debugging logs
+    });
+
+    client.onConnect = (frame) => {
+      console.log("Connected: " + frame);
+      client.publish({ destination: "/app/sendNotification", body: "Hello, STOMP" });
+    };
+
+    client.activate(); // Connect to the WebSocket
+
+    setStompClient(client);
+
+    return () => {
+      client.deactivate(); // Cleanup on unmount
+    };
+  }, []);
+
+
   useEffect(() => { setIsClient(true); }, []);
 
   useEffect(() => { setLoggedIn(Boolean(user?.username)); }, [user]);
 
-  const showNotification = () => {
-    console.log('show notification');
-  }
+  const showNotification = (msg: any) => {
+    authedGet(`/me/notification`)
+    .then(response => {
+      console.log("Notifications received:", response);
+    })
+    .catch(error => {
+        console.error("Error receiving notifications:", error);
+    });
+  } 
 
   const startNewThread = () => {
     if (!authorizedUser()) {
