@@ -7,6 +7,7 @@ import com.en.training.minithread.controllers.dtos.ThreadDTO;
 import com.en.training.minithread.controllers.dtos.UpdateUserDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
+import com.en.training.minithread.security.services.NotificationMessageService;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.PostService;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
@@ -16,6 +17,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,6 +37,9 @@ public class MeController {
 
     private final AccountService accountService;
     private final PostService postService;
+
+    @Autowired
+    private NotificationMessageService notificationMessageService;
 
     MeController(AccountService accountService, PostService postService) {
         this.accountService = accountService;
@@ -100,5 +106,12 @@ public class MeController {
         final Account account = this.accountService.updateAccount(username, dto);
         final AccountDTO accountDTO = this.accountService.mapAccountToAccountDTO(account);
         return ResponseEntity.ok(accountDTO);
+    }
+
+    @GetMapping("/notification")
+    public List<Object> getNotifications() {
+        List<Object> messages = notificationMessageService.getMessages();
+        System.out.println("Messages in Redis: " + messages);
+        return messages;
     }
 }

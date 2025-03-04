@@ -20,6 +20,10 @@ const BottomNavbar: React.FC = () => {
 
   useEffect(() => { setLoggedIn(Boolean(user?.username)); }, [user]);
 
+  const showNotification = () => {
+    console.log('show notification');
+  }
+
   const startNewThread = () => {
     if (!authorizedUser()) {
       router.push('/login');
@@ -46,9 +50,9 @@ const BottomNavbar: React.FC = () => {
           <i className="lni lni-user-4 lni-32"></i>
         </Link>
       }
-      <Link href="/notifications" className="flex flex-col items-center" aria-label="Notifications">
+      <button onClick={showNotification} className="flex flex-col items-center" aria-label="Notifications">
         <i className="lni lni-bell-1 lni-32"></i>
-      </Link>
+      </button>
       <button onClick={startNewThread} className="flex flex-col items-center" aria-label="New Message">
         <i className="lni lni-message-3-text lni-32"></i>
       </button>
