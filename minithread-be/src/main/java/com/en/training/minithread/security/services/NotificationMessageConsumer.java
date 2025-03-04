@@ -1,7 +1,11 @@
 package com.en.training.minithread.security.services;
 
-import com.en.training.minithread.models.NotificationMessage;
+import com.en.training.minithread.config.RabbitMQConfig;
+import com.en.training.minithread.controllers.dtos.NotificationMessageDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.util.List;
 
 import org.springframework.amqp.core.Message;
@@ -12,26 +16,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationMessageConsumer {
 
-    public static final String NOTIFICATION_QUEUE = "miniThreadQueue";
-
     @Autowired
-    private NotificationMessageService notificationMessageService;
+    private NotificationMessageRedisService notificationMessageRedisService;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
     public List<Object> waitQueue() throws Exception {
         // 監聽回應
-        Message responseMessage = rabbitTemplate.receive(NOTIFICATION_QUEUE, 5000); // 設定超時
+        Message responseMessage = rabbitTemplate.receive(RabbitMQConfig.NOTIFICATION_QUEUE, 5000); // 設定超時
         if (responseMessage != null) {
-            String message = new String(responseMessage.getBody());
-            System.out.println("Received message from RabbitMQ: " + message);
-            NotificationMessage notificationMessage = new NotificationMessage();
-            notificationMessage.setSender("System");
-            notificationMessage.setContent(message);
-            notificationMessageService.saveMessage(notificationMessage);
+            try {
+                ByteArrayInputStream bis = new ByteArrayInputStream(responseMessage.getBody());
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                NotificationMessageDTO messageDTO = (NotificationMessageDTO) ois.readObject();
+                
+                System.out.println("Received message from RabbitMQ: " + messageDTO.getContent());
+                notificationMessageRedisService.saveMessage(messageDTO);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Failed to deserialize message from RabbitMQ.");
+            }
         } 
 
-        return notificationMessageService.getMessages();
+        return notificationMessageRedisService.getMessages();
     }
 }

@@ -8,7 +8,6 @@ import com.en.training.minithread.controllers.dtos.UpdateUserDTO;
 import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.security.services.NotificationMessageConsumer;
-import com.en.training.minithread.security.services.NotificationMessageService;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.PostService;
 import com.nimbusds.oauth2.sdk.util.StringUtils;

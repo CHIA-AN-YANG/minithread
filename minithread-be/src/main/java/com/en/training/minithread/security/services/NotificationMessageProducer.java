@@ -5,13 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.en.training.minithread.config.RabbitMQConfig;
+import com.en.training.minithread.controllers.dtos.NotificationMessageDTO;
 
 @Service
 public class NotificationMessageProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessage(String message) {
+    public void sendMessage(NotificationMessageDTO message) {
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, message);
     }
 }

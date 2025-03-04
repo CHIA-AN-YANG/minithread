@@ -31,7 +31,13 @@ const BottomNavbar: React.FC = () => {
 
     client.onConnect = (frame) => {
       console.log("Connected: " + frame);
-      client.publish({ destination: "/app/sendNotification", body: "Hello, Notification " + new Date().toLocaleString() });
+      client.publish({ destination: "/app/sendNotification", body: 
+        JSON.stringify({
+          sender: user?.username,
+          receiver: user?.username,
+          content: "Hello, Login Notification " + new Date().toLocaleString()
+        })
+      });
     };
 
     client.activate(); // Connect to the WebSocket

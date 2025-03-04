@@ -4,19 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import com.en.training.minithread.models.NotificationMessage;
+import com.en.training.minithread.controllers.dtos.NotificationMessageDTO;
 import java.util.List;
 import java.time.Duration;
 
 @Service
-public class NotificationMessageService {
+public class NotificationMessageRedisService {
     private static final String MESSAGE_KEY = "chat_messages";
     private static final long EXPIRATION_TIME = 3600; // 1 小時（秒）
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public void saveMessage(NotificationMessage message) {
+    public void saveMessage(NotificationMessageDTO message) {
         ListOperations<String, Object> listOps = redisTemplate.opsForList();
         // 先確認 Redis 是否連線成功
         try {
