@@ -35,7 +35,7 @@ public class NotificationMessageConsumer {
                 System.out.println("Queue [" + queueName + "] doesn't exist. Stop waiting.");
             } else {
                 // 監聽回應
-                Message responseMessage = rabbitTemplate.receive(queueName, 5000); // 設定超時
+                Message responseMessage = rabbitTemplate.receive(queueName, 200); // 設定超時
                 if (responseMessage != null) {
                     try {
                         ByteArrayInputStream bis = new ByteArrayInputStream(responseMessage.getBody());
