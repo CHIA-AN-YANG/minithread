@@ -19,13 +19,16 @@ public class NotificationController {
     @MessageMapping("/sendNotification")
     public String sendNotification(NotificationMessageDTO request) {
         String content = request.getContent();
+        String receiver = request.getReceiver() != null ? request.getReceiver() : "System";
         // 記錄發送者與接收者信息
         System.out.println("Sender: " + request.getSender());
-        System.out.println("Receiver: " + request.getReceiver());
+        System.out.println("Receiver: " + receiver);
         System.out.println("Content: " + content);
 
-        notificationMessageProducer.sendMessage(request);
+        notificationMessageProducer.createQueueAndBind(receiver);
+
+        notificationMessageProducer.sendMessage(receiver, request);
         System.out.println("Received message:" + content);
-        return "Message from " + request.getSender() + " to " + request.getReceiver() + " stored in Redis: " + content;
+        return "Message from " + request.getSender() + " to " + receiver + " stored in Redis: " + content;
     }    
 }

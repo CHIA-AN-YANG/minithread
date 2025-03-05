@@ -4,6 +4,7 @@ import { startInput } from '../../store/features/user/actions/threadActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store/store';
 import { selectStatus, selectUser } from '@/app/store/features/user/selectors/authSelectors';
+import { loadUser } from '@/app/store/features/user/actions/userActions';
 import { EntityStatus } from '@/app/model/model';
 import UserCheckedIcon from '../icon/UserCheckedIcon';
 import { useRouter } from 'next/router';
@@ -21,6 +22,11 @@ const BottomNavbar: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!user || !user.username) return; // 等待 user 加載完成
     // Establish WebSocket connection
     const socket = new SockJS("http://localhost:8080/ws");
     const client = new Client({
@@ -47,8 +53,7 @@ const BottomNavbar: React.FC = () => {
     return () => {
       client.deactivate(); // Cleanup on unmount
     };
-  }, []);
-
+  }, [user]); // 依賴 user，確保只有在 user 存在時才執行
 
   useEffect(() => { setIsClient(true); }, []);
 

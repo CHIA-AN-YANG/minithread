@@ -10,6 +10,7 @@ import com.en.training.minithread.models.Post;
 import com.en.training.minithread.security.services.NotificationMessageConsumer;
 import com.en.training.minithread.services.AccountService;
 import com.en.training.minithread.services.PostService;
+import com.en.training.minithread.util.AuthenticationUtils;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,8 +28,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Tag(name = "Me", description = "Operations for current login user")
@@ -37,11 +40,13 @@ public class MeController {
 
     private final AccountService accountService;
     private final PostService postService;
+    private final AuthenticationUtils authenticationUtils;
 
     @Autowired
     private NotificationMessageConsumer notificationMessageConsumer;
 
-    MeController(AccountService accountService, PostService postService) {
+    MeController(AuthenticationUtils authenticationUtils, AccountService accountService, PostService postService) {
+        this.authenticationUtils = authenticationUtils;
         this.accountService = accountService;
         this.postService = postService;
     }
@@ -110,9 +115,16 @@ public class MeController {
 
     @GetMapping("/notification")
     public List<Object> getNotifications() {
+        Optional<Account> userOpt = authenticationUtils.getAuthenticatedUser();
         List<Object> messages;
+
+        if (userOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Account user = userOpt.get(); // 取出當前用戶
         try {
-            messages = notificationMessageConsumer.waitQueue();
+            messages = notificationMessageConsumer.waitQueue(user.getUsername());
             System.out.println("Messages in Redis: " + messages);
         } catch (Exception e) {
             e.printStackTrace();
