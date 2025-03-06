@@ -4,17 +4,13 @@ import { startInput } from '../../store/features/user/actions/threadActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store/store';
 import { selectStatus, selectUser } from '@/app/store/features/user/selectors/authSelectors';
-import { loadUser } from '@/app/store/features/user/actions/userActions';
 import { EntityStatus } from '@/app/model/model';
 import UserCheckedIcon from '../icon/UserCheckedIcon';
 import { useRouter } from 'next/router';
 import { use, useEffect, useState } from 'react';
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
 import { authedGet } from '@/app/api/baseAdaptor';
 
 const BottomNavbar: React.FC = () => {
-  const [stompClient, setStompClient] = useState<Client | null>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false); // 控制列表顯示
   const user = useSelector(selectUser);
@@ -22,40 +18,6 @@ const BottomNavbar: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-
-  useEffect(() => {
-    dispatch(loadUser());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!user || !user.username) return; // 等待 user 加載完成
-    // Establish WebSocket connection
-    const socket = new SockJS("http://localhost:8080/ws");
-    const client = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000, // Auto-reconnect
-      debug: (str) => console.log(str), // Debugging logs
-    });
-
-    client.onConnect = (frame) => {
-      console.log("Connected: " + frame);
-      client.publish({ destination: "/app/sendNotification", body: 
-        JSON.stringify({
-          sender: user?.username,
-          receiver: user?.username,
-          content: "Hello, Login Notification " + new Date().toLocaleString()
-        })
-      });
-    };
-
-    client.activate(); // Connect to the WebSocket
-
-    setStompClient(client);
-
-    return () => {
-      client.deactivate(); // Cleanup on unmount
-    };
-  }, [user]); // 依賴 user，確保只有在 user 存在時才執行
 
   useEffect(() => { setIsClient(true); }, []);
 
