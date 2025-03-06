@@ -29,7 +29,7 @@ public class NotificationController {
 
         notificationMessageProducer.createQueueAndBind(receiver);
 
-        notificationMessageProducer.sendMessage(receiver, request);
+        notificationMessageProducer.sendMessage(request);
         System.out.println("Received message:" + content);
         return "Message from " + request.getSender() + " to " + request.getReceiver() + " stored in Redis: " + content;
     }    

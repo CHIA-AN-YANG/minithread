@@ -48,8 +48,8 @@ public class NotificationMessageProducer {
         }
     }
 
-    public void sendMessage(String routingKey, NotificationMessageDTO message) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, routingKey, message);
-        System.out.println("Sent message [" + message.getContent() + "] to routing key: " + routingKey);
+    public void sendMessage(NotificationMessageDTO message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, message.getReceiver(), message);
+        System.out.println("Sent message [" + message.getContent() + "] to routing key: " + message.getReceiver());
     }
 }
