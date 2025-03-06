@@ -7,6 +7,8 @@ import { EntityStatus } from '../../model/model';
 import { getAuth } from '../../store/features/user/actions/authActions';
 import { selectError, selectStatus, selectUser } from '../../store/features/user/selectors/authSelectors';
 import { AppDispatch } from '../../store/store';
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 interface LoginFormData {
   username: string;
@@ -14,6 +16,7 @@ interface LoginFormData {
 }
 
 const LoginForm: React.FC = () => {
+  const [stompClient, setStompClient] = useState<Client | null>(null);
   const [formData, setFormData] = useState<LoginFormData>({
     username: '',
     password: '',
@@ -32,7 +35,35 @@ const LoginForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000, // Auto-reconnect
+      debug: (str) => console.log(str), // Debugging logs
+    });
+    
+    client.onConnect = (frame) => {
+      console.log("Connected: " + frame);
+    };
+
+    client.activate(); // Connect to the WebSocket
+
+    setStompClient(client);
+
+    return () => {
+      client.deactivate(); // Cleanup on unmount
+    };
+  }, []); // 依賴 user，確保只有在 user 存在時才執行
+
+  useEffect(() => {
     if (status === EntityStatus.SUCCESS) {
+      stompClient?.publish({ destination: "/app/sendNotification", body: 
+        JSON.stringify({
+          sender: formData.username,
+          receiver: formData.username,
+          content: "Hello, Login Notification " + new Date().toLocaleString()
+        })
+      });
       router.push('/me/threads');
     }
   }, [status]);

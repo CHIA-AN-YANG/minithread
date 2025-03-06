@@ -1,4 +1,4 @@
-package com.en.training.minithread.security.services;
+package com.en.training.minithread.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
@@ -10,7 +10,7 @@ import java.time.Duration;
 
 @Service
 public class NotificationMessageRedisService {
-    private static final String MESSAGE_KEY = "chat_messages";
+    //private static final String MESSAGE_KEY = "chat_messages";
     private static final long EXPIRATION_TIME = 3600; // 1 小時（秒）
 
     @Autowired
@@ -20,8 +20,8 @@ public class NotificationMessageRedisService {
         ListOperations<String, Object> listOps = redisTemplate.opsForList();
         // 先確認 Redis 是否連線成功
         try {
-            listOps.rightPush(MESSAGE_KEY, message);
-            redisTemplate.expire(MESSAGE_KEY, Duration.ofSeconds(EXPIRATION_TIME));
+            listOps.rightPush(message.getReceiver(), message);
+            redisTemplate.expire(message.getReceiver(), Duration.ofSeconds(EXPIRATION_TIME));
 
             // 測試是否成功存入
             System.out.println("Message saved to Redis: " + message);
@@ -30,7 +30,7 @@ public class NotificationMessageRedisService {
         }
     }
 
-    public List<Object> getMessages() {
-        return redisTemplate.opsForList().range(MESSAGE_KEY, 0, -1);
+    public List<Object> getMessages(String receiver) {
+        return redisTemplate.opsForList().range(receiver, 0, -1);
     }  
 }
