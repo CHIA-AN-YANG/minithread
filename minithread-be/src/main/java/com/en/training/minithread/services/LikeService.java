@@ -4,7 +4,6 @@ import com.en.training.minithread.models.Account;
 import com.en.training.minithread.models.AccountRepository;
 import com.en.training.minithread.models.Post;
 import com.en.training.minithread.models.PostRepository;
-import org.springframework.data.elasticsearch.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,4 +1,16 @@
 services:
+  app:
+    build: .
+    container_name: minithread-backend
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+      - "443:443"
+    environment:
+      SPRING_CONFIG_LOCATION: /app/application.properties
+      PRIVATE_PEM_PATH: classpath:certs/private.pem
+      PUBLIC_PEM_PATH: classpath:certs/public.pem
   elasticsearch:
     image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.10'
     environment:

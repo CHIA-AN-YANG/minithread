@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.elasticsearch.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -135,8 +134,8 @@ public class AccountService {
                 accountRepository.save(account);
                 return accountOpt.get();
             }
-            throw new ResourceNotFoundException(
-                    String.format("cannot find user %s or user %s", username, followUsername));
+            // throw new ResourceNotFoundException(
+            //         String.format("cannot find user %s or user %s", username, followUsername));
         } catch (Exception e) {
             LOG.warn("user {} fail to follow user {}", username, followUsername);
             ExceptionUtils.wrapAndThrow(e);
@@ -154,8 +153,8 @@ public class AccountService {
                 account.getFollowing().remove(follow);
                 accountRepository.save(account);
             }
-            throw new ResourceNotFoundException(
-                    String.format("cannot find user %s or user %s", username, followUsername));
+            // throw new ResourceNotFoundException(
+            //         String.format("cannot find user %s or user %s", username, followUsername));
         } catch (Exception e) {
             LOG.warn("user {} fail to unfollow user {}", username, followUsername);
             ExceptionUtils.wrapAndThrow(e);
