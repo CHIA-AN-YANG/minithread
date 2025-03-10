@@ -1,6 +1,7 @@
+"use client";
 import { followUser, unfollowUser } from '@/app/api/authAdaptor';
 import { selectUser } from '@/app/store/features/user/selectors/authSelectors';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
@@ -10,14 +11,14 @@ import { useSelector } from 'react-redux';
 const UserNavbar: React.FC = () => {
   const [isFollowing, setIsFollowing] = React.useState(false);
   const user = useSelector(selectUser);
-  const router = useRouter();
+  const params = useParams();
 
   useEffect(() => {
     if (user && user.followed) {
-      const isFollowing = user.followed.includes(router.query.id as string);
+      const isFollowing = user.followed.includes(params.id as string);
       setIsFollowing(isFollowing);
     }
-  }, [user]);
+  }, [user, params.id]);
 
   const handleClick = () => {
     if (!user) {
@@ -27,7 +28,7 @@ const UserNavbar: React.FC = () => {
     if (isFollowing) {
       toast.custom((t) => (
         <div className="bg-amber-50 text-black p-4 rounded-lg flex flex-col items-center border border-stone-500">
-          <div className="text-md p-4">Are you sure you would like to unfollow {router.query.id as string}? </div>
+          <div className="text-md p-4">Are you sure you would like to unfollow {params.id as string}? </div>
           <div className='flex gap-5 w-full'>
             <button className="btn col-6 bg-stone-500 px-2 py-1 rounded-lg text-white"
               onClick={() => {
@@ -44,7 +45,7 @@ const UserNavbar: React.FC = () => {
   }
 
   const handleFollow = () => {
-    followUser(router.query.id as string)
+    followUser(params.id as string)
       .then(() => {
         setIsFollowing(true);
       }).catch((e) => {
@@ -54,7 +55,7 @@ const UserNavbar: React.FC = () => {
   }
 
   const handleUnfollow = () => {
-    unfollowUser(router.query.id as string)
+    unfollowUser(params.id as string)
       .then(() => {
         setIsFollowing(false);
       }).catch((e) => {
@@ -74,4 +75,4 @@ const UserNavbar: React.FC = () => {
   );
 };
 
-export default UserNavbar;
+export { UserNavbar };

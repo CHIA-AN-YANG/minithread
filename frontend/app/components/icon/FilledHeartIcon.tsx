@@ -8,4 +8,4 @@ const FilledHeartIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-export default FilledHeartIcon;
+export { FilledHeartIcon };

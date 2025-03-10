@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { endInput, sendThread, updateContent } from '../../store/features/user/actions/threadActions';
@@ -74,4 +75,4 @@ const InputForm: React.FC = () => {
   );
 };
 
-export default InputForm;
+export { InputForm };

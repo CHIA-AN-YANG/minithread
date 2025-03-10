@@ -1,9 +1,9 @@
-import type { AppProps } from 'next/app'
-import { Provider } from 'react-redux'
-import { store } from '../app/store/store'
-import 'lineicons/dist/lineicons.css';
+import { store } from '@/app/store/store';
 import "@/app/styles/index.css";
+import 'lineicons/dist/lineicons.css';
+import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { Provider } from 'react-redux';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -18,4 +18,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 }
 
-export default MyApp
+export default MyApp;

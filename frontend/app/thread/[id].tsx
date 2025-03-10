@@ -1,19 +1,18 @@
 "use client";
 import { getThread } from '@/app/api/threadAdaptor';
-import InputForm from '@/app/components/form/InputForm';
-import BottomNavbar from '@/app/components/navbar/BottomNavbar';
-import Thread from '@/app/components/Thread';
+import { InputForm } from '@/app/components/form/InputForm';
+import { BottomNavbar } from '@/app/components/navbar/BottomNavbar';
+import { Thread } from '@/app/components/Thread';
 import { ThreadData } from '@/app/model/model';
 import { displayDate } from '@/app/util/date';
 import { AxiosError, AxiosResponse } from 'axios';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 export default function ThreadPage() {
   const [thread, setThread] = useState<ThreadData | null>(null);
-  const router = useRouter();
-  const { id } = router.query as { id: string };
+  const { id } = useParams() as { id: string };
 
   useEffect(() => {
     id && fetchThread(id);

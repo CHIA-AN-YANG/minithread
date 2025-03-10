@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { EntityStatus } from '../../model/model';
 import { getAuth } from '../../store/features/user/actions/authActions';
-import { selectError, selectStatus, selectUser } from '../../store/features/user/selectors/authSelectors';
+import { selectError, selectStatus } from '../../store/features/user/selectors/authSelectors';
 import { AppDispatch } from '../../store/store';
 
 interface LoginFormData {
@@ -25,7 +25,6 @@ const LoginForm: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [isClient, setIsClient] = useState(false);
-  const user = useSelector(selectUser);
 
   useEffect(() => {
     setIsClient(true);
@@ -131,4 +130,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export { LoginForm };

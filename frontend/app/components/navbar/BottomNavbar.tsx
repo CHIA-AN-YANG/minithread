@@ -1,13 +1,12 @@
 "use client"
+import { selectUser } from '@/app/store/features/user/selectors/authSelectors';
 import Link from 'next/link';
-import { startInput } from '../../store/features/user/actions/threadActions';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { startInput } from '../../store/features/user/actions/threadActions';
 import { AppDispatch } from '../../store/store';
-import { selectStatus, selectUser } from '@/app/store/features/user/selectors/authSelectors';
-import { EntityStatus } from '@/app/model/model';
-import UserCheckedIcon from '../icon/UserCheckedIcon';
-import { useRouter } from 'next/router';
-import { use, useEffect, useState } from 'react';
+import { UserCheckedIcon } from '../icon/UserCheckedIcon';
 
 const BottomNavbar: React.FC = () => {
   const user = useSelector(selectUser);
@@ -56,4 +55,4 @@ const BottomNavbar: React.FC = () => {
   );
 };
 
-export default BottomNavbar;
+export { BottomNavbar };

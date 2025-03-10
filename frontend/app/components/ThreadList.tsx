@@ -1,6 +1,6 @@
 "use client";
 import { AxiosError, AxiosResponse } from 'axios';
-import { useRouter } from 'next/router';
+import { useParams, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { ContentStatus, Pagination, ThreadData } from '../model/model';
 import { setUiStatusIdle } from '../store/features/user/reducers/slices/uiSliceReducer';
 import { selectUiStatus } from '../store/features/user/selectors/uiSelectors';
 import { AppDispatch } from '../store/store';
-import Thread from './Thread';
+import { Thread } from './Thread';
 
 
 interface ThreadListProps {
@@ -29,8 +29,8 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(false);
   const contentStatus = useSelector(selectUiStatus);
-  const router = useRouter();
-  const { id } = router.query;
+  const path = usePathname();
+  const { id } = useParams();
 
   useEffect(() => {
     setIsLoading(true);
@@ -39,7 +39,8 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
 
   useEffect(() => {
     setIsLoading(true);
-    if (router.pathname.includes('/user') && id?.length) {
+
+    if (path.includes('/user') && id?.length) {
       fetchData(
         () => getUserThreadList(id as string, 0),
         `Error fetching threads from ${id}`,
@@ -71,8 +72,8 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
   const getThreadsFunction = (newPage?: number, type?: UpdateType) => {
 
     const p = newPage ?? page;
-    console.log("getThreadsFunction:", { route: router.pathname, page: p, id });
-    switch (router.pathname) {
+    console.log("getThreadsFunction:", { route: path, page: p, id });
+    switch (path) {
       case '/me/threads':
         fetchData(
           () => getAuthorThreadList(p),
@@ -95,7 +96,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
         );
         break;
       default:
-        if (router.pathname.includes('/user') && id?.length) {
+        if (path.includes('/user') && id?.length) {
           fetchData(
             () => getUserThreadList(id as string, p),
             `Error fetching threads from ${id}`,
@@ -130,7 +131,7 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
           (newThreads.totalPages > (page + 1)) ? setHasMore(true) : setHasMore(false);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error(errorMessage);
       })
       .finally(() => {
@@ -175,4 +176,4 @@ const ThreadList: React.FC<ThreadListProps> = ({ isMePage, children }) => {
 
 };
 
-export default ThreadList;
+export { ThreadList };

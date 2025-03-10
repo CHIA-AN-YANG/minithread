@@ -1,5 +1,6 @@
+"use client";
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
@@ -63,8 +64,8 @@ const RegisterForm: React.FC = () => {
         setSuccessMessage(true);
         setFormData({ username: '', email: '', password: '' });
       }
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || 'An error occurred during registration.');
+    } catch (error) {
+      setErrorMessage((error as any).response?.data?.message || 'An error occurred during registration.');
     }
   };
 
@@ -131,4 +132,4 @@ const RegisterForm: React.FC = () => {
   );
 };
 
-export default RegisterForm;
+export { RegisterForm };

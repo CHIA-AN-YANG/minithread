@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { registerUser, updateMe } from '../../api/authAdaptor';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectError, selectUser } from '../../store/features/user/selectors/authSelectors';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
-import toast from 'react-hot-toast';
+"use client";
+import { UserData } from '@/app/model/model';
 import { getUserSuccess } from '@/app/store/features/user/actions/userActions';
 import { AppDispatch } from '@/app/store/store';
-import { UserData } from '@/app/model/model';
 import { AxiosResponse } from 'axios';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateMe } from '../../api/authAdaptor';
+import { selectError, selectUser } from '../../store/features/user/selectors/authSelectors';
 
 interface FormData {
   name: string;
@@ -28,7 +29,6 @@ const MeUpdateForm: React.FC = () => {
 
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [successMessage, setSuccessMessage] = useState<string>('');
   const apiErrorMsg = useSelector(selectError) as string;
   const dispatch = useDispatch<AppDispatch>();
 
@@ -79,7 +79,6 @@ const MeUpdateForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
 
     if (!formData.name || !formData.email || !formData.bio || !formData.profilePicture) {
       setErrorMessage('All fields are required.');
@@ -98,8 +97,8 @@ const MeUpdateForm: React.FC = () => {
         toast.success('You have updated your profile.');
         router.push('/me/threads');
       }
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || 'An error occurred during registration.');
+    } catch (error) {
+      setErrorMessage((error as any).response?.data?.message || 'An error occurred during registration.');
     }
   };
 
@@ -172,4 +171,4 @@ const MeUpdateForm: React.FC = () => {
   );
 };
 
-export default MeUpdateForm;
+export { MeUpdateForm };

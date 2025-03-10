@@ -1,7 +1,8 @@
+"use client";
 import 'lineicons/dist/lineicons.css';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
@@ -11,7 +12,7 @@ import { startInput } from '../store/features/user/actions/threadActions';
 import { setUiStatusDeleted } from '../store/features/user/reducers/slices/uiSliceReducer';
 import { AppDispatch, store } from '../store/store';
 import { displayDateWithDiff } from '../util/date';
-import FilledHeartIcon from './icon/FilledHeartIcon';
+import { FilledHeartIcon } from './icon/FilledHeartIcon';
 
 type ThreadProps = {
   id: string;
@@ -53,7 +54,7 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
         .finally(() => setLikeLoading(false));
     } else if (liked === 1) {
       setLikeLoading(true);
-      authedDelete(`/threads/${id}/like`, {})
+      authedDelete(`/threads/${id}/like`)
         .then(() => setLiked(0))
         .finally(() => setLikeLoading(false));
     }
@@ -158,4 +159,4 @@ const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, comm
   );
 };
 
-export default Thread;
+export { Thread };

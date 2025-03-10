@@ -12,7 +12,7 @@ export const get = async <T>(url: string): Promise<AxiosResponse<T> | AxiosError
   });
 }
 
-export const post = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
+export const post = async <T>(url: string, inputData: object): Promise<AxiosResponse<T> | AxiosError> => {
   const authedConfig = getConfig(false);
   return await axios.post(apiBaseUrl + url, inputData, authedConfig).then((response) => {
     return response;
@@ -32,7 +32,7 @@ export const authedGet = async <T>(url: string): Promise<AxiosResponse<T> | Axio
   });
 }
 
-export const authedPost = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
+export const authedPost = async <T>(url: string, inputData: object): Promise<AxiosResponse<T> | AxiosError> => {
   const authedConfig = getConfig(true);
   return await axios.post(apiBaseUrl + url, inputData, authedConfig).then((response) => {
     return response;
@@ -42,7 +42,7 @@ export const authedPost = async <T>(url: string, inputData: Object): Promise<Axi
   });
 }
 
-export const authedPut = async <T>(url: string, inputData: Object): Promise<AxiosResponse<T> | AxiosError> => {
+export const authedPut = async <T>(url: string, inputData: object): Promise<AxiosResponse<T> | AxiosError> => {
   const authedConfig = getConfig(true);
   return await axios.putForm(apiBaseUrl + url, inputData, authedConfig).then((response) => {
     return response;
@@ -52,7 +52,7 @@ export const authedPut = async <T>(url: string, inputData: Object): Promise<Axio
   });
 }
 
-export const authedDelete = async <T>(url: string, inputData?: Object): Promise<AxiosResponse<T> | AxiosError> => {
+export const authedDelete = async <T>(url: string): Promise<AxiosResponse<T> | AxiosError> => {
   const authedConfig = getConfig(true);
   return await axios.delete(apiBaseUrl + url, authedConfig).then((response) => {
     return response;

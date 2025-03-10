@@ -8,7 +8,7 @@ import { EntityStatus } from '../model/model';
 import { loadUser } from '../store/features/user/actions/userActions';
 import { selectStatus, selectUser } from '../store/features/user/selectors/authSelectors';
 import { AppDispatch } from '../store/store';
-import BaseUserPanel from './BaseUserPanel';
+import { BaseUserPanel } from './BaseUserPanel';
 
 const MePanel = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,4 +42,4 @@ const MePanel = () => {
   }
 };
 
-export default MePanel;
+export { MePanel };

@@ -1,4 +1,5 @@
-import { useRouter } from 'next/router';
+"use client";
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 type HeaderProps = {
@@ -7,17 +8,7 @@ type HeaderProps = {
 
 
 const Header: React.FC<HeaderProps> = ({ style }) => {
-  const [disableBack, setDisableBack] = React.useState(false);
   const router = useRouter();
-
-  React.useEffect(() => {
-    if (router.beforePopState.length === 0) {
-      setDisableBack(true);
-    } else {
-      setDisableBack(false);
-    }
-  }, [router.pathname]);
-
   const getClassName = (): string => {
     switch (style) {
       case 'form':
@@ -42,4 +33,4 @@ const Header: React.FC<HeaderProps> = ({ style }) => {
   );
 };
 
-export default Header;
+export { Header };

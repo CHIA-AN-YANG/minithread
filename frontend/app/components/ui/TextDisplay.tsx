@@ -50,4 +50,4 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ text, maxHeight, onIconClick 
   );
 };
 
-export default TextDisplay;
+export { TextDisplay };

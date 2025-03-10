@@ -1,22 +1,21 @@
 "use client";
 /* eslint-disable @next/next/no-img-element*/
 import { Axios, AxiosResponse } from 'axios';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { getUserProfile } from '../api/authAdaptor';
 import { UserData } from '../model/model';
 import { selectUser } from '../store/features/user/selectors/authSelectors';
-import BaseUserPanel from './BaseUserPanel';
+import { BaseUserPanel } from './BaseUserPanel';
 
 const UserPanel = () => {
   const [user, setUser] = useState<UserData | null>(null);
   const [isMe, setIsMe] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const me = useSelector(selectUser);
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
 
   useEffect(() => {
     setIsMe(Boolean(me?.username === id));
@@ -48,4 +47,4 @@ const UserPanel = () => {
   }
 };
 
-export default UserPanel;
+export { UserPanel };

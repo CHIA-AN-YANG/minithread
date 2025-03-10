@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { AxiosError, AxiosResponse } from 'axios';
 import { Pagination, ThreadData } from '../model/model';
 import { authedGet, authedPost, get } from './baseAdaptor';

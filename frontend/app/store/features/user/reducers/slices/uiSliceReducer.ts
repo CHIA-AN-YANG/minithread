@@ -1,4 +1,4 @@
-import { ContentStatus, EntityStatus, UiState } from '@/app/model/model';
+import { ContentStatus, UiState } from '@/app/model/model';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: UiState = {

@@ -1,13 +1,11 @@
 // components/Navbar.js
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 interface AuthNavbarProps {
   page?: string;
 }
 
 const AuthNavbar: React.FC<AuthNavbarProps> = ({ page }) => {
-  const pathname = usePathname();
 
   return (
     <nav className={`w-full flex justify-around space-x-4 p-4 text-white ${page === 'registration' ? 'bg-primary/75' : 'bg-secondary/75'}`}>
@@ -21,4 +19,4 @@ const AuthNavbar: React.FC<AuthNavbarProps> = ({ page }) => {
   );
 };
 
-export default AuthNavbar;
+export { AuthNavbar };

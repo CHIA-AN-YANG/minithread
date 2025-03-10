@@ -1,15 +1,14 @@
 "use client";
 /* eslint-disable @next/next/no-img-element*/
 import Image from "next/image";
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { UserData } from '../model/model';
 import { logoutUser } from '../store/features/user/actions/userActions';
-import { selectUser } from '../store/features/user/selectors/authSelectors';
 import { AppDispatch } from '../store/store';
-import TextDisplay from './ui/TextDisplay';
+import { TextDisplay } from './ui/TextDisplay';
 
 type BaseUserPanelProps = {
   user?: UserData;
@@ -19,9 +18,7 @@ type BaseUserPanelProps = {
 
 const BaseUserPanel: React.FC<BaseUserPanelProps> = ({ user, isMe, isLoading }) => {
   const [isClient, setIsClient] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const me = useSelector(selectUser);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,7 +30,7 @@ const BaseUserPanel: React.FC<BaseUserPanelProps> = ({ user, isMe, isLoading }) 
     router.push('/login');
   };
 
-  const getFollowed = (list: String[]) => {
+  const getFollowed = (list: string[]) => {
     if (list.length === 0) return "0 followers";
     if (list.length === 1) return `Followed by ${list[0]}`;
     if (list.length > 1) return `Followed by ${list[0]} and ${list.length - 1} others`;
@@ -102,7 +99,6 @@ const BaseUserPanel: React.FC<BaseUserPanelProps> = ({ user, isMe, isLoading }) 
             placeholder='empty'
             width={200}
             height={200}
-            onLoad={() => setImageLoaded(true)}
             priority
           /> : <Image src="/images/avatar-presets/avatar-13.jpg"
             alt={user.username + "\'s profilePicture"}
@@ -115,4 +111,4 @@ const BaseUserPanel: React.FC<BaseUserPanelProps> = ({ user, isMe, isLoading }) 
   );
 };
 
-export default BaseUserPanel;
+export { BaseUserPanel };

@@ -2,8 +2,6 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { AuthData, UserData } from '../model/model';
 import { authedDelete, authedGet, authedPost, get } from './baseAdaptor';
 import { apiBaseUrl, getConfig } from './util';
-const Cookies = require('js-cookie');
-const AUTH_COOKIE = 'auth_token';
 export const CSRF_COOKIE = 'csrf_token';
 
 export const postAuthToken = async (formData: FormData): Promise<AxiosResponse<AuthData> | AxiosError> => {
@@ -49,7 +47,7 @@ export const followUser = async (id: string): Promise<AxiosResponse<UserData> | 
 }
 
 export const unfollowUser = async (id: string): Promise<AxiosResponse<UserData> | AxiosError> => {
-  return await authedDelete<UserData>(`/user/${id}/unfollow`, {});
+  return await authedDelete<UserData>(`/user/${id}/unfollow`);
 }
 
 

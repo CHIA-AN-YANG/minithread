@@ -1,6 +1,17 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-require-imports": "off"
-  }
+    "@typescript-eslint/no-require-imports": "off",
+    "@typescript-eslint/no-unused-expression": "off",
+    "@typescript-eslint/no-explicit-any": "warn"
+  },
+  "overrides": [
+        {
+            "files": ["*.tsx", "./app/**/*.tsx"],
+            "rules": {
+                "no-unused-expressions": "off"
+            }
+        }
+    ]
 }
