@@ -15,8 +15,7 @@ const nextConfig: NextConfig = {
   },
   compiler: {
     //  removeConsole: true,
-  },
-  output: 'export',
+  }
 };
 
 export default nextConfig;

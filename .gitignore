@@ -47,3 +47,6 @@ certs/
 
 ### Database
 /database/version/
+
+### env file
+.env
