@@ -1,4 +1,5 @@
 import ReduxProvider from '@/components/ReduxProvider';
+import '@/styles/index.css';
 
 export const metadata = {
   title: 'Mini Thread',

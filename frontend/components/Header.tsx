@@ -1,4 +1,5 @@
 "use client";
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -26,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ style }) => {
         <i className="lni lni-chevron-left lni-32"></i>
       </button>
       <div onClick={() => router.push("/")} className="flex-1 text-center">
-        <img src="/images/logos/minithread-md.png" alt="Logo" className="mb-4 h-10 inline-block" />
+        <Image src="/images/logos/minithread-md.png" alt="Logo" className="mb-4 h-10 inline-block" width={50} height={40} />
       </div>
       <div className="w-6"></div> {/* Placeholder for right alignment */}
     </div>
