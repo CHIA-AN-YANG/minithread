@@ -1,0 +1,151 @@
+"use client";
+import { authedDelete, authedPost } from '@/api/baseAdaptor';
+import { startInput } from '@/store/features/user/actions/threadActions';
+import { setUiStatusDeleted } from '@/store/features/user/reducers/slices/uiSliceReducer';
+import { selectUser } from '@/store/features/user/selectors/authSelectors';
+import { AppDispatch } from '@/store/store';
+import { ThreadProps } from '@/types/thread';
+import { displayDateWithDiff } from '@/util/date';
+import 'lineicons/dist/lineicons.css';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { FilledHeartIcon } from './icon/FilledHeartIcon';
+
+const Thread: React.FC<ThreadProps> = ({ id, content, author, parentThread, commentList, commentCount, createdAt, likedByCount, likedByMe }) => {
+  const [liked, setLiked] = useState(likedByMe ? 1 : 0);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const username = useSelector(selectUser)?.username;
+  const auth = author?.username && author.username === username;
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (likedByMe && likedByCount) {
+      likedByCount = likedByCount - 1;
+    }
+    setLiked(likedByMe ? 1 : 0);
+  }, []);
+
+  const handleLiked = () => {
+    if (!username) {
+      router.push('/login');
+      return;
+    }
+    if (liked === 0) {
+      // set liked asap for better UX
+      setLikeLoading(true);
+      authedPost(`/threads/${id}/like`, {})
+        .then(() => setLiked(1))
+        .finally(() => setLikeLoading(false));
+    } else if (liked === 1) {
+      setLikeLoading(true);
+      authedDelete(`/threads/${id}/like`)
+        .then(() => setLiked(0))
+        .finally(() => setLikeLoading(false));
+    }
+  };
+
+  const handleReply = () => {
+    if (!username) {
+      router.push('/login?from=/thread/${id}&mode=reply');
+    }
+    dispatch(startInput(id));
+  };
+
+  const handleDelete = () => {
+    authedDelete(`/threads/${id}`).then(() => {
+      dispatch(setUiStatusDeleted());
+      toast.success('Post deleted successfully!');
+    });
+  };
+  const handleDate = (isoDate: string): string => {
+    return displayDateWithDiff(isoDate);
+  };
+
+  const copyPostLink = (id: string): void => {
+    console.log('copying post link');
+    const baseUrl = window.location.origin;
+    const postUrl = `${baseUrl}/thread/${id}`;
+    navigator.clipboard.writeText(postUrl)
+      .then(() => toast.success('Post link copied to clipboard!'))
+      .catch(() => toast.error('Failed to copy post link.'));
+  };
+
+  return (
+    <>
+      <article className={`border border-primary rounded-lg p-4 mb-4 bg-panelBg ${parentThread ? 'ml-4 border-l-4 border-secondary' : ''}`}>
+        <header className="mb-3 flex items-center">
+          <Link className="flex items-center gap-2 mr-2" href={auth ? `me/threads` : `/user/${author.username}`}>
+            <Image src={author.profilePicture || "/images/avatar-presets/avatar-13.jpg"}
+              className='rounded-lg'
+              height={40}
+              width={40} alt="*"></Image>
+
+            <h3 className={`text-sm font-semibold ${parentThread ? 'text-secondaryDark' : 'text-primaryDark'}`}>{author.username}</h3>
+          </Link>
+          <p className="text-xs text-gray-500"><time>{handleDate(createdAt)}</time></p>
+        </header>
+        <Link href={`/thread/${parentThread ? parentThread : id}`}>
+          <p className="text-base mb-3">{content}</p>
+        </Link>
+        <footer className="flex space-x-2">
+          <button
+            onClick={handleLiked} disabled={likeLoading}
+            className="flex items-center justify-center px-1 py-1 text-lg mr-2 text-stone-500 hover:text-blue-600"
+            aria-label="like"
+          >
+            {liked > 0 ? <FilledHeartIcon className="w-6 h-6 text-red-500" /> : <i className="lni lni-heart lni-lg"></i>}
+            {(likedByCount || 0) + liked}
+          </button>
+          <button
+            onClick={handleReply}
+            className="flex items-center justify-center px-1 py-1 text-lg text-stone-500 hover:text-blue-600"
+            aria-label="reply"
+          >
+            <i className="lni lni-message-2  lni-lg"
+            ></i>{commentCount || (commentList || []).length}
+          </button>
+          <button
+            onClick={() => copyPostLink(id)}
+            className="flex items-center justify-center px-1 py-1 text-lg text-stone-500 hover:text-blue-600"
+            aria-label="copy post link"
+          >
+            <i className="lni lni-link-2-angular-right lni-lg"></i>
+          </button>
+          {auth && (
+            <button
+              onClick={handleDelete}
+              className="flex items-center justify-center px-1 py-1 text-lg text-stone-500 hover:text-blue-600"
+              aria-label="delete"
+            >
+              <i className="lni lni-trash-3 lni-lg"></i>
+            </button>
+          )}
+        </footer>
+      </article>
+      {commentList && commentList.length > 0 && (
+        <div>
+          {commentList.map((comment) => (
+            <Thread
+              key={comment.id} {...comment}
+              id={comment.id}
+              author={comment.author}
+              content={comment.content}
+              createdAt={comment.createdAt || ""}
+              likedByCount={comment.likedByCount}
+              likedByMe={comment.likedByMe}
+              commentCount={comment.commentsCount}
+              parentThread={id}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
+
+export { Thread };

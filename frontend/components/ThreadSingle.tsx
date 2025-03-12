@@ -1,0 +1,52 @@
+"use client";
+import { getThread } from '@/api/threadAdaptor';
+import { ThreadData } from '@/types/api';
+import { displayDate } from '@/util/date';
+import { AxiosError, AxiosResponse } from 'axios';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Thread } from './Thread';
+
+const SingleThread: React.FC = () => {
+  const [thread, setThread] = useState<ThreadData | null>(null);
+  const { id } = useParams() as { id: string };
+
+  useEffect(() => {
+    id && fetchThread(id);
+  }, [id]);
+
+  const fetchThread = (id: string) => {
+    getThread(id).then((response) => {
+      if (response instanceof AxiosError) {
+        return;
+      }
+      const thread = (response as AxiosResponse<ThreadData>).data;
+      setThread(thread);
+    }
+    ).catch((error) => {
+      console.error("Error fetching thread:", error);
+    });
+  };
+
+  return (
+    <>
+      <header>
+        {thread?.author && <h1 className="text-md text-center">By {thread.author.username}</h1>}
+        {thread?.createdAt && <p className="text-sm text-gray-500 text-center"><time>Posted on {displayDate(thread.createdAt)}</time></p>}
+      </header>
+      <div>
+        {thread && <Thread
+          id={id}
+          author={thread.author}
+          content={thread.content}
+          createdAt={thread.createdAt || ""}
+          likedByCount={thread.likedByCount}
+          parentThread={thread.parentThread}
+          commentList={thread.comments}
+        />}
+      </div>
+    </>
+  );
+}
+
+export { SingleThread };

@@ -7,11 +7,11 @@ ENV NEXT_PUBLIC_API_URL=http://localhost
 WORKDIR /frontend-app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json yarn.lock* ./
 
 
 # Install dependencies
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
