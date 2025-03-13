@@ -25,10 +25,7 @@ export function getConfig(auth: boolean): AxiosRequestConfig {
     header.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
   }
 
-  return { 
-    headers: header,
-    withCredentials: true
-  };
+  return { headers: header };
 }
 
 export const noAuthConfig = getConfig(false);

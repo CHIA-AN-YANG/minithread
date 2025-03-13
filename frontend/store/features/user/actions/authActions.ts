@@ -25,7 +25,7 @@ export const getAuth = (formData: FormData): AppThunk => (dispatch) => {
 };
 
 export const getAuthSuccess = (data: AuthData): AppThunk => (dispatch) => {
-  Cookies.set(TOKEN_COOKIE, data.token!, { sameSite: 'none', secure: true });
+  Cookies.set(TOKEN_COOKIE, data.token!, { sameSite: 'strict', secure: true });
   dispatch(setStatusSuccess());
 };
 
